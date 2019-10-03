@@ -45,10 +45,7 @@ function generateDockerFiles()
         cp -R $dockerTemplateDir/* "$CURR_VERSION_DIRECTORY"
 
         # Replace placeholders, changing sed delimeter since '/' is used in path
-		sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-
-		# Copy Hosting Start App
-        cp "$DIR/SampleApps/$STACK_VERSION/bin.zip" "${CURR_VERSION_DIRECTORY}/"
+        sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
         
         echo "Done."
 

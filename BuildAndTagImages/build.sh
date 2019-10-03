@@ -36,7 +36,9 @@ function buildDockerImage() {
             while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
             do
                local buildImageTag="${TEST_IMAGE_REPO_NAME}/${STACK}:${STACK_VERSION}_123"
-               local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile"   
+               local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 
+               ls "${SYSTEM_ARTIFACTS_DIR}"
+               ls "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/"
                echo
                echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
                echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
