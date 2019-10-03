@@ -24,6 +24,7 @@ jobs:
 
 - job: Job_DockerBuildImages
   displayName: Build Images
+  dependsOn: Job_GenerateDockerFiles
   pool:
     vmImage: ubuntu-16.04
   timeoutInMinutes: 100
