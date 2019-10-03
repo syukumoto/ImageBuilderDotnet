@@ -18,3 +18,8 @@ steps:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: ShellScript@2
+  displayName: 'Generate ASP .NET Core Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/BuildImages.sh
