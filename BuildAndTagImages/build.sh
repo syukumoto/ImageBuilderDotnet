@@ -30,8 +30,8 @@ function buildAndTagStage()
 function buildDockerImage() {
         
         local stacksFilePath="$CONFIG_DIR/stacks.txt"       
-	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
-	while IFS= read -r STACK || [[ -n $STACK ]]
+	
+        while IFS= read -r STACK || [[ -n $STACK ]]
 	do
             while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
             do
@@ -39,7 +39,8 @@ function buildDockerImage() {
                local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile"   
                echo
                echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
-               docker build -t $builtImageTag -f $appSvcDockerfilePath .         
+               echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
+               docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .         
             done < "$CONFIG_DIR/${STACK}Versions.txt"
         done < "$stacksFilePath"
 }
