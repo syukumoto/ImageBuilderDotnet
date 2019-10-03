@@ -22,4 +22,11 @@ jobs:
     displayName: 'Set variables'
   - template: GenerateDockerFiles/dockerFilesGenerateTask.yml
 
+- job: Job_DockerBuildImages
+  displayName: Build Images
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 100
+  steps:
+  - template: BuildAndTagImages/buildImageJob.yml
 trigger: none
