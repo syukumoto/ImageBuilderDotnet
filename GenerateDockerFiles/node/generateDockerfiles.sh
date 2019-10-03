@@ -30,10 +30,10 @@ function generateDockerFiles()
 	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
 	while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
 	do
-        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}_${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
+        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}-${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
 
         # Base Image
-        BASE_IMAGE_NAME="$BASE_IMAGE_REPO_NAME:$BASE_IMAGE_VERSION_STREAM_FEED"
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}:$BASE_IMAGE_VERSION_STREAM_FEED"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 

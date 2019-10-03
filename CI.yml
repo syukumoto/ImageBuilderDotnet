@@ -23,7 +23,7 @@ jobs:
   - template: GenerateDockerFiles/dockerFilesGenerateTask.yml
 
 - job: Job_DockerBuildImages
-  displayName: Build Images
+  displayName: Build Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
     vmImage: ubuntu-16.04
@@ -36,4 +36,32 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
   - template: BuildAndTagImages/buildImageJob.yml
+
+- job: Job_TestBuiltImages
+  displayName: Test Images for Sanity and Versions
+  dependsOn: Job_DockerBuildImages
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+
+- job: Job_TagAppSvcTestImages
+  displayName: Tag Dev Images to ACR Dev Repo
+  dependsOn: Job_TestBuiltImages
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
 trigger: none

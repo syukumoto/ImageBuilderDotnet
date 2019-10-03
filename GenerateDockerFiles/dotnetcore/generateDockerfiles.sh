@@ -33,7 +33,7 @@ function generateDockerFiles()
         FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}_${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
 
         # Base Image
-        BASE_IMAGE_NAME="$BASE_IMAGE_REPO_NAME:$BASE_IMAGE_VERSION_STREAM_FEED"
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-${BASE_IMAGE_VERSION_STREAM_FEED}"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
@@ -45,10 +45,11 @@ function generateDockerFiles()
         cp -R $dockerTemplateDir/* "$CURR_VERSION_DIRECTORY"
 
         # Replace placeholders, changing sed delimeter since '/' is used in path
-		sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+        sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
 
-		# Copy Hosting Start App
-        cp "$DIR/SampleApps/$STACK_VERSION/bin.zip" "${CURR_VERSION_DIRECTORY}/"
+        # Copy Hosting Start App
+        echo "Copying Sample App($DIR/SampleApps/$STACK_VERSION/bin.zip) to $CURR_VERSION_DIRECTORY"
+        cp "$DIR/SampleApps/$STACK_VERSION/bin.zip" "$CURR_VERSION_DIRECTORY/"
         
         echo "Done."
 
