@@ -1,0 +1,24 @@
+parameters:
+  ascName: AppSvcDevACR
+  acrName: appsvcdevacr.azurecr.io
+
+steps:
+- script: |
+    if [ "$(InitialChecks)" != "true" ]
+    then
+      echo "Invalid configuration."
+      echo "Variable 'InitialChecks' needs to be 'true' to run this build."
+      exit 1
+    fi
+  displayName: 'Validate pipeline run'
+
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
+  displayName: 'Clean Agent Directories'
+  condition: true
