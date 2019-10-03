@@ -2,40 +2,38 @@
 # --------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
-# This script generates DOTNET Core Images for Azure App Service on Linux,
-# It uses Microsoft Oryx as the base Image.
+# This script generates Dockerfiles for ASP .NETCore Runtime Images for Azure App Service on Linux.
 # --------------------------------------------------------------------------------------------
 
 set -e
 
+# Current Working Dir
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-
+# Directory for Generated Docker Files
 declare -r SYSTEM_ARTIFACTS_DIR="$1"
-declare -r ORYX_BASE_IMAGE_NAME="$2"
-declare -r ORYX_VERSION_STREAM_FEED="$3"  #
-declare -r APP_SVC_BRANCH_PREFIX="$4"     # appsvc, appsvctest
-declare -r APPSVC_DOTNETCORE_REPO="$5"    # https://github.com/Azure-App-Service/dotnetcore.git
-
-declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/GitRepo"
-declare -r APP_SVC_REPO_BRANCH="dev"
+declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx/dotnetcore
+declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"  # Base Image Version; Oryx Version : 20190819.2
+declare -r APP_SVC_BRANCH_PREFIX="$4"           # appsvc, appsvctest
+declare -r APPSVC_DOTNETCORE_REPO="$5"          # https://github.com/Azure-App-Service/dotnetcore.git
+declare -r APP_SVC_REPO_BRANCH="$6"             # dev
+declare -r STACK_VERSIONS_FILE_PATH="$7"
 declare -r STACK_NAME="dotnetcore"
+declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
+
 
 
 function generateDockerFiles()
 {
-	local versionsFile="$1"
-    local dockerTemplateDir="$2"
-    local baseImageName="$3"
-    local baseImageVersionStreamFeed="$4"
+    local dockerTemplateDir="$1"
 
 	# Example line:
-	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$ORYX_VERSION_STREAM_FEED
+	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
 	while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
 	do
-        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}_${baseImageVersionStreamFeed}" | sed -e 's/^[[:space:]]*//')"
+        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}_${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
 
-        # Oryx Image
-        BASE_IMAGE_NAME="$baseImageName:$baseImageVersionStreamFeed"
+        # Base Image
+        BASE_IMAGE_NAME="$BASE_IMAGE_REPO_NAME:$BASE_IMAGE_VERSION_STREAM_FEED"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
@@ -51,8 +49,10 @@ function generateDockerFiles()
 
 		# Copy Hosting Start App
         cp "$DIR/SampleApps/$STACK_VERSION/bin.zip" "${CURR_VERSION_DIRECTORY}/"
+        
+        echo "Done."
 
-	done < "$versionsFile"
+	done < "$STACK_VERSIONS_FILE_PATH"
 }
 
 function pullAppSvcRepo()
@@ -67,4 +67,4 @@ function pullAppSvcRepo()
 }
 
 pullAppSvcRepo
-generateDockerFiles "$DIR/dotnetCoreVersions.txt" "$DIR/debian-9" $ORYX_BASE_IMAGE_NAME $ORYX_VERSION_STREAM_FEED
+generateDockerFiles "$DIR/debian-9"

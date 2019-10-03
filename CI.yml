@@ -1,6 +1,9 @@
 resources:
 - repo: self
   fetchDepth: 15
+  
+parameters:
+  stacks: [dotnetcore]  
 
 variables:
 - group: AppServiceLinux
