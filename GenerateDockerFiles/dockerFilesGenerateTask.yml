@@ -18,7 +18,3 @@ steps:
     command: login
     azureSubscriptionEndpoint: ${{ parameters.ascName }}
     azureContainerRegistry: ${{ parameters.acrName }}
-
-- task: mspremier.PostBuildCleanup.PostBuildCleanup-task.PostBuildCleanup@3
-  displayName: 'Clean Agent Directories'
-  condition: true
