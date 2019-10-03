@@ -39,7 +39,7 @@ function buildDockerImage() {
                local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile"   
                echo
                echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
-               docker build -t $builtImageTag -f "$appSvcDockerfilePath" .         
+               docker build -t $builtImageTag -f $appSvcDockerfilePath .         
             done < "$CONFIG_DIR/${STACK}Versions.txt"
         done < "$stacksFilePath"
 }
