@@ -47,7 +47,7 @@ function buildDockerImage() {
                echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
                echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
                docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
-               docker push $buildImageTag                        
+               docker push $buildImageTag
             done < "$CONFIG_DIR/${STACK}Versions.txt"
         done < "$stacksFilePath"
 }

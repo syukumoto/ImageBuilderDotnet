@@ -12,10 +12,10 @@ declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # Directory for Generated Docker Files
 declare -r SYSTEM_ARTIFACTS_DIR="$1"
 declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx/dotnetcore
-declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"  # Base Image Version; Oryx Version : 20190819.2
-declare -r APP_SVC_BRANCH_PREFIX="$4"           # appsvc, appsvctest
-declare -r APPSVC_DOTNETCORE_REPO="$5"          # https://github.com/Azure-App-Service/dotnetcore.git
-declare -r APP_SVC_REPO_BRANCH="$6"             # dev
+declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"       # Base Image Version; Oryx Version : 20190819.2
+declare -r APP_SVC_BRANCH_PREFIX="$4"                # appsvc, appsvctest
+declare -r APPSVC_DOTNETCORE_REPO="$5"               # https://github.com/Azure-App-Service/dotnetcore.git
+declare -r APP_SVC_REPO_BRANCH="$6"                  # dev
 declare -r STACK_VERSIONS_FILE_PATH="$7"
 declare -r STACK_NAME="node"
 declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
@@ -33,7 +33,7 @@ function generateDockerFiles()
         FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}-${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
 
         # Base Image
-        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}:$BASE_IMAGE_VERSION_STREAM_FEED"
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-$BASE_IMAGE_VERSION_STREAM_FEED"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
