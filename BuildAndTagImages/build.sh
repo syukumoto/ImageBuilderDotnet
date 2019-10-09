@@ -13,6 +13,7 @@ declare -r SYSTEM_ARTIFACTS_DIR="$1"
 declare -r APP_SVC_BRANCH_PREFIX="$2"           # appsvc, appsvctest
 declare -r CONFIG_DIR="$3"
 declare -r PIPELINE_BUILD_NUMBER="$4"
+declare -r STACK="$5"
 declare -r TEST_IMAGE_REPO_NAME="appsvcdevacr.azurecr.io"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$SYSTEM_ARTIFACTS_DIR/builtImages.txt"
 
@@ -31,9 +32,6 @@ function buildAndTagStage()
 function buildDockerImage() {
         
         local stacksFilePath="$CONFIG_DIR/stacks.txt"       
-	
-        while IFS= read -r STACK || [[ -n $STACK ]]
-	do
             while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
             do
                local buildImageTag="${TEST_IMAGE_REPO_NAME}/${STACK}:${STACK_VERSION}_${PIPELINE_BUILD_NUMBER}"
@@ -49,7 +47,6 @@ function buildDockerImage() {
                docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
                docker push $buildImageTag
             done < "$CONFIG_DIR/${STACK}Versions.txt"
-        done < "$stacksFilePath"
 }
 
 buildDockerImage

@@ -2,36 +2,63 @@
 # --------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
+# This script generates Dockerfiles for ASP .NETCore Runtime Images for Azure App Service on Linux.
 # --------------------------------------------------------------------------------------------
 
 set -e
 
+# Current Working Dir
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-declare -r PYTHON_VERSIONS_PATH=$DIR/../../../build/__pythonVersions.sh
-declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
-# Python major version, e.g. '2', '3'
-declare -r PYTHON_MAJOR_VERSION_PLACEHOLDER="%PYTHON_MAJOR_VERSION%"
-# Python version as we usually refer to, e.g. '2.7', '3.6'
-declare -r PYTHON_VERSION_PLACEHOLDER="%PYTHON_VERSION%"
-# Python full version, including patch, e.g. '3.7.3'
-declare -r PYTHON_FULL_VERSION_PLACEHOLDER="%PYTHON_FULL_VERSION%"
-declare -r ORYX_IMAGE_TAG_PLACEHOLDER="%IMAGE_TAG%"
+# Directory for Generated Docker Files
+declare -r SYSTEM_ARTIFACTS_DIR="$1"
+declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx
+declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"       # Base Image Version; Oryx Version : 20190819.2
+declare -r APPSVC_DOTNETCORE_REPO="$4"               # https://github.com/Azure-App-Service/dotnetcore.git
+declare -r CONFIG_DIR="$5"
+declare -r STACK_NAME="python"
+declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
 
-source "$PYTHON_VERSIONS_PATH"
-while IFS= read -r PYTHON_VERSION_VAR_NAME || [[ -n $PYTHON_VERSION_VAR_NAME ]]
-do
-	PYTHON_VERSION=${!PYTHON_VERSION_VAR_NAME}
-	IFS='.' read -ra SPLIT_VERSION <<< "$PYTHON_VERSION"
-	MAJOR_MINOR_VERSION="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
 
-	mkdir -p "$DIR/$MAJOR_MINOR_VERSION/"
-	TARGET_DOCKERFILE="$DIR/$MAJOR_MINOR_VERSION/Dockerfile"
-	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
 
-	# Replace placeholders
-	sed -i "s|$PYTHON_VERSION_PLACEHOLDER|$MAJOR_MINOR_VERSION|g" "$TARGET_DOCKERFILE"
-	sed -i "s|$PYTHON_FULL_VERSION_PLACEHOLDER|$PYTHON_VERSION|g" "$TARGET_DOCKERFILE"
-	sed -i "s|$PYTHON_MAJOR_VERSION_PLACEHOLDER|${SPLIT_VERSION[0]}|g" "$TARGET_DOCKERFILE"
-	sed -i "s|$ORYX_IMAGE_TAG_PLACEHOLDER|$PYTHON_BASE_TAG|g" "$TARGET_DOCKERFILE"
+function generateDockerFiles()
+{
+   
+    local stackVersionsMapFilePath="${CONFIG_DIR}/${STACK_NAME}VersionTemplateMap.txt"
 
-done < <(compgen -A variable | grep 'PYTHON[0-9]\{2,\}_VERSION')
+	# Example line:
+	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
+	while IFS=, read -r STACK_VERSION STACK_VERSION_TEMPLATE_DIR || [[ -n $STACK_VERSION ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]]
+	do
+        # Base Image
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-$BASE_IMAGE_VERSION_STREAM_FEED"
+        CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
+        TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
+
+        echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
+
+        # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
+        rm -rf "$CURR_VERSION_DIRECTORY"
+        mkdir -p "$CURR_VERSION_DIRECTORY"
+        cp -R ${DIR}/${STACK_VERSION_TEMPLATE_DIR}/* "$CURR_VERSION_DIRECTORY"
+
+        # Replace placeholders, changing sed delimeter since '/' is used in path
+        sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+        
+        echo "Done."
+
+	done < "$stackVersionsMapFilePath"
+}
+
+function pullAppSvcRepo()
+{
+    echo "Cloning App Service Python Repository in $APP_SVC_REPO_DIR"
+    git clone $APPSVC_DOTNETCORE_REPO $APP_SVC_REPO_DIR
+    echo "Cloning App Service Python Repository in $APP_SVC_REPO_DIR"
+    cd $APP_SVC_REPO_DIR
+    echo "Checking out branch $APP_SVC_REPO_BRANCH"
+    git checkout $APP_SVC_REPO_BRANCH
+    chmod -R 777 $APP_SVC_REPO_DIR
+}
+
+pullAppSvcRepo
+generateDockerFiles
