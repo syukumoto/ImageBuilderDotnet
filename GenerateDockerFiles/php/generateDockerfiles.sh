@@ -2,37 +2,66 @@
 # --------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
+# This script generates Dockerfiles for ASP .NETCore Runtime Images for Azure App Service on Linux.
 # --------------------------------------------------------------------------------------------
 
 set -e
 
+# Current Working Dir
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
-declare -r DOCKERFILE_TEMPLATE="$DIR/Dockerfile.template"
-declare -r DOCKERFILE_BASE_TEMPLATE="$DIR/Dockerfile.base.template"
-declare -r IMAGE_NAME_PLACEHOLDER="%PHP_BASE_IMAGE%"
-declare -r PHP_VERSION_PLACEHOLDER="%PHP_VERSION%"
-. $DIR/../../../build/__phpVersions.sh
-declare -r VERSION_ARRAY=($PHP73_VERSION $PHP72_VERSION $PHP70_VERSION $PHP56_VERSION)
-declare -r RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER="%RUNTIME_BASE_IMAGE_NAME%"
+# Directory for Generated Docker Files
+declare -r SYSTEM_ARTIFACTS_DIR="$1"
+declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx/dotnetcore
+declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"       # Base Image Version; Oryx Version : 20190819.2
+declare -r APP_SVC_BRANCH_PREFIX="$4"                # appsvc, appsvctest
+declare -r APPSVC_DOTNETCORE_REPO="$5"               # https://github.com/Azure-App-Service/dotnetcore.git
+declare -r APP_SVC_REPO_BRANCH="$6"                  # dev
+declare -r STACK_VERSIONS_FILE_PATH="$7"
+declare -r STACK_NAME="node"
+declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
 
-for PHP_VERSION in "${VERSION_ARRAY[@]}"
-do
-	PHP_IMAGE_NAME="$PHP_VERSION-apache"
 
-	IFS='.' read -ra SPLIT_VERSION <<< "$PHP_VERSION"
-	VERSION_DIRECTORY="${SPLIT_VERSION[0]}.${SPLIT_VERSION[1]}"
-	echo "Generating Dockerfile for image '$PHP_IMAGE_NAME' in directory '$VERSION_DIRECTORY'..."
 
-	mkdir -p "$DIR/$VERSION_DIRECTORY/"
-	TARGET_DOCKERFILE="$DIR/$VERSION_DIRECTORY/Dockerfile"
-	TARGET_DOCKERFILE_BASE="$DIR/$VERSION_DIRECTORY/Dockerfile.base"
-	cp "$DOCKERFILE_TEMPLATE" "$TARGET_DOCKERFILE"
-	cp "$DOCKERFILE_BASE_TEMPLATE" "$TARGET_DOCKERFILE_BASE"
+function generateDockerFiles()
+{
+    local dockerTemplateDir="$1"
 
-	# Replace placeholders
-	sed -i "s|$IMAGE_NAME_PLACEHOLDER|$PHP_IMAGE_NAME|g" "$TARGET_DOCKERFILE_BASE"
-	sed -i "s|$PHP_VERSION_PLACEHOLDER|$PHP_VERSION|g" "$TARGET_DOCKERFILE_BASE"
+	# Example line:
+	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
+	while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
+	do
+        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}-${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
 
-	RUNTIME_BASE_IMAGE_NAME="mcr.microsoft.com/oryx/php-base:$VERSION_DIRECTORY-$PHP_RUNTIME_BASE_TAG"
-	sed -i "s|$RUNTIME_BASE_IMAGE_NAME_PLACEHOLDER|$RUNTIME_BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-done
+        # Base Image
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-$BASE_IMAGE_VERSION_STREAM_FEED"
+        CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
+        TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
+
+        echo "Generating Dockerfile for image '$FINAL_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
+
+        # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
+        rm -rf "$CURR_VERSION_DIRECTORY"
+        mkdir -p "$CURR_VERSION_DIRECTORY"
+        cp -R $dockerTemplateDir/* "$CURR_VERSION_DIRECTORY"
+
+        # Replace placeholders, changing sed delimeter since '/' is used in path
+        sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+        
+        echo "Done."
+
+	done < "$STACK_VERSIONS_FILE_PATH"
+}
+
+function pullAppSvcRepo()
+{
+    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
+    git clone $APPSVC_DOTNETCORE_REPO $APP_SVC_REPO_DIR
+    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
+    cd $APP_SVC_REPO_DIR
+    echo "Checking out branch $APP_SVC_REPO_BRANCH"
+    git checkout $APP_SVC_REPO_BRANCH
+    chmod -R 777 $APP_SVC_REPO_DIR
+}
+
+pullAppSvcRepo
+generateDockerFiles "$DIR/debian-9"

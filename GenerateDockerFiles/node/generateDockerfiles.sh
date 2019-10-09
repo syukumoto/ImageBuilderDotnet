@@ -10,12 +10,12 @@ set -e
 # Current Working Dir
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # Directory for Generated Docker Files
-declare -r SYSTEM_ARTIFACTS_DIR="$1"
-declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx
-declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"       # Base Image Version; Oryx Version : 20190819.2
-declare -r APPSVC_DOTNETCORE_REPO="$4"               # https://github.com/Azure-App-Service/dotnetcore.git
-declare -r CONFIG_DIR="$5"
 declare -r STACK_NAME="node"
+declare -r SYSTEM_ARTIFACTS_DIR="$1"
+declare -r BASE_IMAGE_REPO_NAME="$2/${STACK_NAME}"                 # mcr.microsoft.com/oryx
+declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"                     # Base Image Version; Oryx Version : 20190819.2
+declare -r APPSVC_DOTNETCORE_REPO="$4/${STACK_NAME}.git"           # https://github.com/Azure-App-Service/dotnetcore.git
+declare -r CONFIG_DIR="$5"                                         # ${Current_Repo}/Config
 declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
 
 
@@ -51,9 +51,9 @@ function generateDockerFiles()
 
 function pullAppSvcRepo()
 {
-    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
+    echo "Cloning App Service Node Js Repository in $APP_SVC_REPO_DIR"
     git clone $APPSVC_DOTNETCORE_REPO $APP_SVC_REPO_DIR
-    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
+    echo "Cloning App Service Node Js Repository in $APP_SVC_REPO_DIR"
     cd $APP_SVC_REPO_DIR
     echo "Checking out branch $APP_SVC_REPO_BRANCH"
     git checkout $APP_SVC_REPO_BRANCH
@@ -61,4 +61,4 @@ function pullAppSvcRepo()
 }
 
 pullAppSvcRepo
-generateDockerFiles "$DIR/debian-9"
+generateDockerFiles

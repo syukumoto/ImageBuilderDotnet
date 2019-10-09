@@ -1,0 +1,23 @@
+parameters:
+  ascName: AppSvcDevACR
+  acrName: appsvcdevacr.azurecr.io
+
+steps:
+- script: |
+    docker ps -a
+    docker system prune -af
+    docker ps -a
+  
+  displayName: 'Remove all existing docker images from machine'
+- task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+- task: ShellScript@2
+  displayName: 'Cleaning Up Dev ACR Repo - Removing old images'
+  inputs:
+    scriptPath: ./cleanDevACR.sh
+    args: --yes
