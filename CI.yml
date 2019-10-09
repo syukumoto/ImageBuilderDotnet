@@ -22,8 +22,8 @@ jobs:
     displayName: 'Set variables'
   - template: GenerateDockerFiles/dockerFilesGenerateTask.yml
 
-- job: Job_DockerBuildImages
-  displayName: Build Dev Images
+- job: Job_DockerBuildNodeImages
+  displayName: Build Node JS Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
     vmImage: ubuntu-16.04
@@ -36,13 +36,34 @@ jobs:
       echo "##vso[task.setvariable variable=PushBuildImages;]false"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
   - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: node
 
-- job: Job_TestBuiltImages
-  displayName: Test Images for Sanity and Versions
-  dependsOn: Job_DockerBuildImages
+- job: Job_DockerBuildDotNetCoreImages
+  displayName: Build ASP NET Core Dev Images
+  dependsOn: Job_GenerateDockerFiles
   pool:
     vmImage: ubuntu-16.04
   timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: dotnetcore
+
+- job: Job_TestBuiltImages
+  displayName: Test Images for Sanity and Versions
+  dependsOn: 
+  - Job_DockerBuildNodeImages
+  - Job_DockerBuildDotNetCoreImages
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 30
   steps:
   - script: |
       echo "##vso[task.setvariable variable=InitialChecks;]true"
@@ -56,7 +77,7 @@ jobs:
   dependsOn: Job_TestBuiltImages
   pool:
     vmImage: ubuntu-16.04
-  timeoutInMinutes: 100
+  timeoutInMinutes: 5
   steps:
   - script: |
       echo "##vso[task.setvariable variable=InitialChecks;]true"

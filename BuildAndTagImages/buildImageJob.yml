@@ -1,6 +1,7 @@
 parameters:
   ascName: AppSvcDevACR
   acrName: appsvcdevacr.azurecr.io
+  stackName: ""
 
 steps:
 - script: |
@@ -28,4 +29,4 @@ steps:
   displayName: 'Build Images'
   inputs:
     scriptPath: ./BuildAndTagImages/build.sh
-    args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber)
+    args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber) ${{ parameters.stackName }}
