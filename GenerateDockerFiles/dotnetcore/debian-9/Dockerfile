@@ -49,6 +49,14 @@ ENV PATH ${PATH}:/home/site/wwwroot
 ENV ASPNETCORE_URLS=
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
 
+# Enable automatic creation of dumps when a process crashes
+ENV COMPlus_DbgEnableMiniDump="1"
+# Create a base directory for dumps under /home so that the
+# dumps are accessible from the build container too (since a runtime container might have already crashed)
+ENV DUMP_DIR="/home/logs/dumps"
+RUN mkdir -p "$DUMP_DIR"
+RUN chmod 777 "$DUMP_DIR"
+
 WORKDIR /home/site/wwwroot
 
 ENTRYPOINT ["/bin/init_container.sh"]
