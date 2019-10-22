@@ -29,24 +29,38 @@ function buildAndTagStage()
 	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$dockerFile" .
 }
 
-function buildDockerImage() {
-        
-        local stacksFilePath="$CONFIG_DIR/stacks.txt"       
-            while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
-            do
-               local buildImageTag="${TEST_IMAGE_REPO_NAME}/${STACK}:${STACK_VERSION}_${PIPELINE_BUILD_NUMBER}"
-               local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 
-               echo "Listing artifacts dir"
-               ls "${SYSTEM_ARTIFACTS_DIR}"
-               echo "Listing stacks dir"
-               ls "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
-               cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
-               echo
-               echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
-               echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
-               docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
-               docker push $buildImageTag
-            done < "$CONFIG_DIR/${STACK}Versions.txt"
+function buildDockerImage() 
+{
+    if [ -f "$CONFIG_DIR/${STACK}Versions.txt" ]; then
+        while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
+        do
+            local buildImageTag="${TEST_IMAGE_REPO_NAME}/${STACK}:${STACK_VERSION}_${PIPELINE_BUILD_NUMBER}"
+            local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 
+            echo "Listing artifacts dir"
+            ls "${SYSTEM_ARTIFACTS_DIR}"
+            echo "Listing stacks dir"
+            ls "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
+            cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
+            echo
+            echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
+            echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
+            docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
+            docker push $buildImageTag
+        done < "$CONFIG_DIR/${STACK}Versions.txt"
+    else
+        local buildImageTag="${TEST_IMAGE_REPO_NAME}/${STACK}:${PIPELINE_BUILD_NUMBER}"
+        local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/kudu/Dockerfile" 
+        echo "Listing artifacts dir"
+        ls "${SYSTEM_ARTIFACTS_DIR}"
+        echo "Listing stacks dir"
+        ls "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/kudu"
+        cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/kudu"
+        echo
+        echo "Building test image with tag '$buildImageTag' and file $appSvcDockerfilePath..."
+        echo docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
+        docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
+        docker push $buildImageTag
+    fi
 }
 
 buildDockerImage

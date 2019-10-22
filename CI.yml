@@ -5,15 +5,31 @@ resources:
 variables:
 - group: AppServiceLinux
 
+schedules:
+- cron: "0 0 * * *"
+  displayName: Daily midnight build
+  branches:
+    include:
+    - master
+    - releases/*
+    exclude:
+    - releases/ancient/*
+- cron: "0 12 * * 0"
+  displayName: Weekly Sunday build
+  branches:
+    include:
+    - releases/*
+  always: true
+
 jobs:
 
 - job: Job_CleanUp
-  displayName: Clean Up ACR + Remove Stale Images Locally
+  displayName: Clean Machine
   pool:
     vmImage: ubuntu-16.04
   timeoutInMinutes: 100
   steps:
-  - template: CleanUp/cleanUpJob.yml
+  - template: CleanUp/cleanImageCache.yml
 
 - job: Job_GenerateDockerFiles
   displayName: Generate DockerFiles

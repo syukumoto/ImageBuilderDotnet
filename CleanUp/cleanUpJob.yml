@@ -2,12 +2,6 @@ parameters:
   ascName: AppSvcDevACR
   acrName: appsvcdevacr.azurecr.io
 
-steps:
-- script: |
-    docker ps -a
-    docker system prune -af
-    docker ps -a
-  
   displayName: 'Remove all existing docker images from machine'
 - task: Docker@1
   displayName: Container registry login

@@ -3,7 +3,7 @@ parameters:
   acrName: appsvcdevacr.azurecr.io
   baseImageName: "mcr.microsoft.com/oryx"
   baseImageVersion: "20191004.5"
-  appSvcBaseGitRepo: "https://github.com/Azure-App-Service"
+  appSvcGitUrl: "https://github.com/Azure-App-Service"
 
 steps:
 - script: |
@@ -26,19 +26,25 @@ steps:
   displayName: 'Generate Node Docker Files'
   inputs:
     scriptPath: ./GenerateDockerFiles/node/generateDockerfiles.sh
-    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcBaseGitRepo }} $(System.DefaultWorkingDirectory)/Config
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
   displayName: 'Generate ASP .NET Core Docker Files'
   inputs:
     scriptPath: ./GenerateDockerFiles/dotnetcore/generateDockerfiles.sh
-    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcBaseGitRepo }} $(System.DefaultWorkingDirectory)/Config
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
   displayName: 'Generate Python Docker Files'
   inputs:
     scriptPath: ./GenerateDockerFiles/python/generateDockerfiles.sh
-    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcBaseGitRepo }} $(System.DefaultWorkingDirectory)/Config
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
+
+- task: ShellScript@2
+  displayName: 'Generate KuduLite Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/KuduLite/generateDockerfiles.sh
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 # Publish Build Artifacts
 # Publish build artifacts to Azure Pipelines/TFS or a file share
