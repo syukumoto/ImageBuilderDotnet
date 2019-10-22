@@ -14,9 +14,11 @@ cat >/etc/motd <<EOL
 DEBUG CONSOLE | AZURE APP SERVICE ON LINUX
 
 Documentation: http://aka.ms/webapp-linux
-Kudu Version : 1.0.0.6
+Kudu Version : 1.0.0.7
+Commit       : `cat /kudu_commit.log`
 
 EOL
+
 cat /etc/motd
 
 if [ $# -ne 5 ]; then

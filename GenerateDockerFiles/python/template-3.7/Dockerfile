@@ -26,8 +26,8 @@ ENV SSH_PORT 2222
 
 # setup SSH
 RUN mkdir -p /home/LogFiles \
-    && echo "root:Docker!" | chpasswd \
-    && echo "cd /home" >> /etc/bash.bashrc 
+     && echo "root:Docker!" | chpasswd \
+     && echo "cd /home" >> /etc/bash.bashrc 
 
 COPY sshd_config /etc/ssh/
 RUN mkdir -p /opt/startup

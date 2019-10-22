@@ -27,7 +27,7 @@ function generateDockerFiles()
 
 	# Example line:
 	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
-	while IFS=, read -r STACK_VERSION STACK_VERSION_TEMPLATE_DIR || [[ -n $STACK_VERSION ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]]
+	while IFS=, read -r STACK_VERSION STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
 	do
         # Base Image
         BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-$BASE_IMAGE_VERSION_STREAM_FEED"

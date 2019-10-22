@@ -1,36 +1,62 @@
-FROM appsvctest/kudu-ruby AS RUBY
-FROM mcr.microsoft.com/oryx/build:20191018.1 as main
+FROM BASE_IMAGE_NAME_PLACEHOLDER as main
 
-# Ruby installations
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update \
   && apt-get install -y libreadline-dev bzip2 build-essential libssl-dev zlib1g-dev libpq-dev libsqlite3-dev \
   curl patch gawk g++ gcc git make libc6-dev patch libreadline6-dev libyaml-dev sqlite3 autoconf \
   libgdbm-dev libncurses5-dev automake libtool bison pkg-config libffi-dev bison libxslt-dev \
-  libxml2-dev default-libmysqlclient-dev wget unixodbc-dev freetds-dev freetds-bin --no-install-recommends
-
-RUN wget security-cdn.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.0.0_1.0.1t-1+deb8u11_amd64.deb \
-  && dpkg -i libssl1.0.0_1.0.1t-1+deb8u11_amd64.deb
+  libxml2-dev --no-install-recommends wget default-libmysqlclient-dev
 
 # rbenv
+RUN git clone https://github.com/rbenv/rbenv.git /usr/local/.rbenv
+RUN chmod -R 777 /usr/local/.rbenv
+
 ENV RBENV_ROOT="/usr/local/.rbenv"
-COPY --from=RUBY $RBENV_ROOT $RBENV_ROOT
+
 ENV PATH="$RBENV_ROOT/bin:/usr/local:$PATH"
+
+RUN git clone https://github.com/rbenv/ruby-build.git /usr/local/.rbenv/plugins/ruby-build
+RUN chmod -R 777 /usr/local/.rbenv/plugins/ruby-build
+
+RUN /usr/local/.rbenv/plugins/ruby-build/install.sh
 
 # Install ruby 2.3.3 (default), 2.3.8, 2.4.5
 ENV RUBY_CONFIGURE_OPTS=--disable-install-doc
+
 ENV RUBY_CFLAGS=-O3
 
-# Because Nokogiri tries to build libraries on its own otherwise
-ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
+RUN apt-get install -y libssl1.0-dev
+RUN eval "$(rbenv init -)" \
+  && export WEBSITES_DEFAULT_RUBY_VERSION="2.3.3" \
+  && rbenv install $WEBSITES_DEFAULT_RUBY_VERSION \
+  && rbenv install "2.3.8" \
+  && rbenv install "2.4.5" \
+  && rbenv install "2.5.5" \
+  && rbenv install "2.6.2" \
+  && rbenv rehash \
+  && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
+  && ls /usr/local -a \
+  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
+  && gem install bundler --version "=1.13.6" \
+  && rbenv local 2.3.8 \
+  && gem install bundler --version "=1.13.6" \
+  && rbenv local 2.4.5 \
+  && gem install bundler --version "=1.13.6" \
+  && rbenv local 2.5.5 \
+  && gem install bundler --version "=1.13.6" \
+  && rbenv local 2.6.2 \
+  && gem install bundler --version "=1.13.6" \
+  && rbenv local $WEBSITES_DEFAULT_RUBY_VERSION \
+  && chmod -R 777 /usr/local/.rbenv/versions \
+  && chmod -R 777 /usr/local/.rbenv/version
 
 RUN eval "$(rbenv init -)" \
   && rbenv global $WEBSITES_DEFAULT_RUBY_VERSION \
   && bundle config --global build.nokogiri -- --use-system-libraries
 
-
-COPY deploy.bash.ruby.template /opt/Kudu/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
-
-ENV DEBIAN_FRONTEND noninteractive
+# Because Nokogiri tries to build libraries on its own otherwise
+ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 
 # Install dependencies
 RUN apt-get update \
@@ -83,11 +109,13 @@ ENV NUGET_XMLDOC_MODE=skip
 RUN dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
 ENV PATH=$PATH:/root/.dotnet/tools
 
+RUN echo September Release.....
 #Install Kudu
 RUN cd /tmp \
     && git clone https://github.com/Azure-App-Service/KuduLite.git \
     && cd ./KuduLite \
-    && git checkout dev \
+    && git checkout user/sanmeht/KuduCOnsoleLog4Net \
+    && git log --format="%H" -n 1 > /kudu_commit.log \
     && cd ./Kudu.Services.Web \
     && benv dotnet=2.2 dotnet publish -c Release -o /opt/Kudu \
     && chmod 777 /opt/Kudu/Kudu.Services.Web.dll \
@@ -111,6 +139,12 @@ EXPOSE 8181
 RUN mkdir /custom_scripts
 COPY custom_scripts/* /custom_scripts/
 RUN chmod 755 /custom_scripts/*
+
+COPY deploy.bash.ruby.template /opt/Kudu/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
+COPY deploy.bash.ruby.template /opt/Kudu/KuduConsole/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
+
+# Patch, remove for future builds
+RUN apt-get install -y libssl1.0-dev
 
 ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
