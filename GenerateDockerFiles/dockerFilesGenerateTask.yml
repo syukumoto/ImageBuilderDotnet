@@ -2,7 +2,7 @@ parameters:
   ascName: AppSvcDevACR
   acrName: appsvcdevacr.azurecr.io
   baseImageName: "mcr.microsoft.com/oryx"
-  baseImageVersion: "20191004.5"
+  baseImageVersion: "20191018.1"
   appSvcGitUrl: "https://github.com/Azure-App-Service"
 
 steps:
