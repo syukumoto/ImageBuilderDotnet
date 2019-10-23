@@ -114,7 +114,7 @@ RUN echo September Release.....
 RUN cd /tmp \
     && git clone https://github.com/Azure-App-Service/KuduLite.git \
     && cd ./KuduLite \
-    && git checkout user/sanmeht/KuduCOnsoleLog4Net \
+    && git checkout dev \
     && git log --format="%H" -n 1 > /kudu_commit.log \
     && cd ./Kudu.Services.Web \
     && benv dotnet=2.2 dotnet publish -c Release -o /opt/Kudu \
