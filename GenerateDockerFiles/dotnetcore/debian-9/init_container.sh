@@ -10,8 +10,8 @@ A P P   S E R V I C E   O N   L I N U X
 
 Documentation: http://aka.ms/webapp-linux
 Dotnet quickstart: https://aka.ms/dotnet-qs
-.NETCore runtime version: `ls -X /usr/share/dotnet/shared/Microsoft.NETCore.App | tail -n 1`
-
+ASP .NETCore Version: `ls -X /usr/share/dotnet/shared/Microsoft.NETCore.App | tail -n 1`
+Note: Any data outside '/home' is not persisted
 EOL
 cat /etc/motd
 
