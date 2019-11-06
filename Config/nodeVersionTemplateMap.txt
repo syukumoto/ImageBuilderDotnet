@@ -16,10 +16,9 @@
 8.12,debian-9,8.12
 8,debian-9,8-LTS
 9.4,debian-9,9.4
-10,debian-9,10-LTS
+10,debian-9,10-LTS|10.16
 10.1,debian-9,10.1
 10.10,debian-9,10.10|LTS
 10.12,debian-9,10.12
 10.14,debian-9,10.14
-10.16,debian-9,10.16
 12,debian-9,12-LTS|Latest
