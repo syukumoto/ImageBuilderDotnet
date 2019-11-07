@@ -48,7 +48,7 @@ ENV WEBSITE_INSTANCE_ID localInstance
 ENV PATH ${PATH}:/home/site/wwwroot
 ENV ASPNETCORE_URLS=
 ENV ASPNETCORE_FORWARDEDHEADERS_ENABLED=true
-ENV HOME="/home"
+ENV HOME /home
 
 # Enable automatic creation of dumps when a process crashes
 ENV COMPlus_DbgEnableMiniDump="1"
