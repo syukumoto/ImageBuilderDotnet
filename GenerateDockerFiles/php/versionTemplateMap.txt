@@ -1,4 +1,0 @@
-5.0,template-apache
-7.0,template-apache
-7.2,template-apache
-7.3,template-apache
