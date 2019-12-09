@@ -82,6 +82,8 @@ COPY webssh.zip ssh /tmp/
 
 # Install Kudu
 RUN mkdir -p /opt/Kudu/local \
+  && mkdir -p /node_modules \
+  && chmod -R 777 /node_modules \
   && chmod 755 /opt/Kudu/local \
   && apt-get update \
   && apt-get  install -y unzip \
@@ -109,7 +111,6 @@ ENV NUGET_XMLDOC_MODE=skip
 RUN dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
 ENV PATH=$PATH:/root/.dotnet/tools
 
-RUN echo September Release.....
 #Install Kudu
 RUN cd /tmp \
     && git clone https://github.com/Azure-App-Service/KuduLite.git \
@@ -131,7 +132,10 @@ RUN benv node=9 npm=6 npm install -g kudusync
 RUN benv node=9 npm=6 npm install pm2@latest -g
 
 RUN ln -s /opt/nodejs/9/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
+
 ENV PATH=$PATH:/opt/nodejs/9/bin
+
+ENV KUDU_WEBSSH_PORT=3000
 
 EXPOSE 8181
 

@@ -1,13 +1,13 @@
-FROM buildpack-deps:jessie-curl
+FROM buildpack-deps:stretch-curl
 
 # Ruby installations
 
 # Dependencies for various ruby and rubygem installations
 RUN apt-get update \
-  && apt-get install -y libreadline-dev bzip2 build-essential libssl-dev zlib1g-dev libpq-dev libsqlite3-dev \
+  && apt-get install -y libreadline-dev bzip2 build-essential libssl1.0-dev zlib1g-dev libpq-dev libsqlite3-dev \
   curl patch gawk g++ gcc git make libc6-dev patch libreadline6-dev libyaml-dev sqlite3 autoconf \
   libgdbm-dev libncurses5-dev automake libtool bison pkg-config libffi-dev bison libxslt-dev \
-  libxml2-dev libmysqlclient-dev wget unixodbc-dev freetds-dev freetds-bin --no-install-recommends
+  libxml2-dev default-libmysqlclient-dev wget unixodbc-dev freetds-dev freetds-bin --no-install-recommends
 
 # rbenv
 RUN git clone https://github.com/rbenv/rbenv.git /usr/local/.rbenv

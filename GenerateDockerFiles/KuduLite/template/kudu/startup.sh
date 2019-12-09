@@ -42,6 +42,7 @@ chown -R $USER_NAME:$GROUP_NAME /tmp
 mkdir -p /home/LogFiles/webssh
 
 /bin/bash -c "benv node=9 npm=6 pm2 start /opt/webssh/index.js -o /home/LogFiles/webssh/pm2.log -e /home/LogFiles/webssh/pm2.err &"
+sed -i "s/webssh-port-placeholder/$KUDU_WEBSSH_PORT/g" /opt/webssh/config.json
 
 export KUDU_RUN_USER="$USER_NAME"
 export HOME=/home
@@ -49,6 +50,7 @@ export WEBSITE_SITE_NAME=$SITE_NAME
 export APPSETTING_SCM_USE_LIBGIT2SHARP_REPOSITORY=0
 export KUDU_APPPATH=/opt/Kudu
 export APPDATA=/opt/Kudu/local
+
 
 # Get environment variables to show up in SSH session
 eval $(printenv | awk -F= '{print "export " $1"="$2 }' >> /etc/profile)
