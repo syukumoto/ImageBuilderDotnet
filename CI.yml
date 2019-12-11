@@ -27,9 +27,10 @@ jobs:
   displayName: Clean Machine
   pool:
     vmImage: ubuntu-16.04
-  timeoutInMinutes: 100
+  timeoutInMinutes: 150
   steps:
   - template: CleanUp/cleanImageCache.yml
+  - template: CleanUp/cleanUpJob.yml
 
 - job: Job_GenerateDockerFiles
   displayName: Generate DockerFiles
