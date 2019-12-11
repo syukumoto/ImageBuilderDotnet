@@ -22,7 +22,7 @@ echo
 datecmd='date'
 if [[ "$OSTYPE" == "darwin"* ]]; then datecmd='gdate'; fi
 
-tsLimit=`$datecmd --iso-8601=seconds -d '2 months ago'`
+tsLimit=`$datecmd --iso-8601=seconds -d '-1 month'`
 declare -r azQuery="[?timestamp<=\`$tsLimit\`].digest"
 
 for repo in "${REPOS[@]}"

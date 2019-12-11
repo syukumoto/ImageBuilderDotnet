@@ -17,18 +17,6 @@ declare -r STACK="$5"
 declare -r TEST_IMAGE_REPO_NAME="appsvcdevacr.azurecr.io"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$SYSTEM_ARTIFACTS_DIR/builtImages.txt"
 
-
-function buildAndTagStage()
-{
-	local dockerFile="$1"
-	local stageName="$2"
-	local stageTagName="$ACR_PUBLIC_PREFIX/$2"
-
-	echo
-	echo "Building stage '$stageName' with tag '$stageTagName'..."
-	docker build --target $stageName -t $stageTagName $ctxArgs $BASE_TAG_BUILD_ARGS -f "$dockerFile" .
-}
-
 function buildDockerImage() 
 {
     if [ -f "$CONFIG_DIR/${STACK}VersionTemplateMap.txt" ]; then
@@ -38,6 +26,9 @@ function buildDockerImage()
             IFS='|' read -ra STACK_TAGS_ARR <<< "$STACK_TAGS"
             for TAG in "${STACK_TAGS_ARR[@]}"
             do
+                # Build Image Tags are converted to lower case because docker doesn't accept upper case tags
+                local buildImageTagUpperCaseDocker="${APP_SVC_BRANCH_PREFIX}/${STACK}:${TAG}"
+                local buildImageTagDocker="${buildImageTagUpperCaseDocker,,}"
                 local buildImageTagUpperCase="${TEST_IMAGE_REPO_NAME}/${STACK}:${TAG}_${PIPELINE_BUILD_NUMBER}"
                 local buildImageTag="${buildImageTagUpperCase,,}"
                 local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 
@@ -52,6 +43,9 @@ function buildDockerImage()
                 docker build -t "$buildImageTag" -f "$appSvcDockerfilePath" .
                 docker push $buildImageTag
                 echo $buildImageTag > $SYSTEM_ARTIFACTS_DIR/builtImageList
+                echo "Pushing test image to $buildImageTagDocker"
+                docker tag $buildImageTag $buildImageTagDocker
+                docker push $buildImageTagDocker
             done
         done < "$CONFIG_DIR/${STACK}VersionTemplateMap.txt"
     else
