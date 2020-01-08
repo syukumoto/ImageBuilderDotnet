@@ -3,4 +3,5 @@
 2.0,debian-9,2.0
 2.1,debian-9,2.1
 2.2,debian-9,2.2|LTS
-3.0,debian-9,3.0|Latest
+3.0,debian-9,3.0
+3.1,debian-9,3.1-latest|Latest
