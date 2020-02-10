@@ -35,7 +35,7 @@ steps:
   displayName: 'Build Images'
   inputs:
     scriptPath: ./BuildAndTagImages/build.sh
-    args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber) ${{ parameters.stackName }}
+    args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber) ${{ parameters.stackName }} $(Build.Reason)
 
 # Publish Build Artifacts
 # Publish build artifacts to Azure Pipelines/TFS or a file share

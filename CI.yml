@@ -99,6 +99,40 @@ jobs:
     parameters:
       stackName: python
 
+- job: Job_DockerBuildPhpImages
+  displayName: Build PHP Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: php
+
+- job: Job_DockerBuildPhpXdebugImages
+  displayName: Build PHP xdebug Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-16.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: php-xdebug
+
 - job: Job_BuildKuduLiteImage
   displayName: Build KuduLite Dev Images
   dependsOn: Job_GenerateDockerFiles

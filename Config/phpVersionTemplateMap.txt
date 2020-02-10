@@ -1,4 +1,4 @@
-5.0,template-apache,5.0
-7.0,template-apache,7.0
-7.2,template-apache,7.2
-7.3,template-apache,7.3
+5.6-apache,5.6,apache,5.6-apache
+7.0-apache,7.0,apache,7.0-apache
+7.2-apache,7.2,apache,7.2-apache
+7.3-apache,7.3,apache,7.3-apache|latest

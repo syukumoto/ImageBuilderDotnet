@@ -1,4 +1,4 @@
-FROM ${TAG}
+FROM BASE_IMAGE_NAME_PLACEHOLDER
 LABEL maintainer="Azure App Services Container Images <appsvc-images@microsoft.com>"
 
 RUN yes | pecl install xdebug \

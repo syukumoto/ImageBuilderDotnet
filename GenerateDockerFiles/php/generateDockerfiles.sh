@@ -10,53 +10,49 @@ set -e
 # Current Working Dir
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # Directory for Generated Docker Files
+declare -r STACK_NAME="php"
 declare -r SYSTEM_ARTIFACTS_DIR="$1"
-declare -r BASE_IMAGE_REPO_NAME="$2"                 # mcr.microsoft.com/oryx/dotnetcore
-declare -r BASE_IMAGE_VERSION_STREAM_FEED="$3"       # Base Image Version; Oryx Version : 20190819.2
-declare -r APP_SVC_BRANCH_PREFIX="$4"                # appsvc, appsvctest
-declare -r APPSVC_DOTNETCORE_REPO="$5"               # https://github.com/Azure-App-Service/dotnetcore.git
-declare -r APP_SVC_REPO_BRANCH="$6"                  # dev
-declare -r STACK_VERSIONS_FILE_PATH="$7"
-declare -r STACK_NAME="node"
+declare -r BASE_IMAGE_REPO_NAME="$2/${STACK_NAME}"                 # mcr.microsoft.com/oryx/php
+declare -r BASE_IMAGE_VERSION="$3"                                 # Base Image Version; Oryx Version : 20190819.2
+declare -r APPSVC_REPO="$4/${STACK_NAME}.git"                      # https://github.com/Azure-App-Service/php.git
+declare -r CONFIG_DIR="$5"                                         # ${Current_Repo}/Config
 declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
-
-
+declare -r APP_SVC_REPO_BRANCH="dev"
 
 function generateDockerFiles()
 {
-    local dockerTemplateDir="$1"
+   
+    local stackVersionsMapFilePath="${CONFIG_DIR}/${STACK_NAME}VersionTemplateMap.txt"
 
 	# Example line:
-	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
-	while IFS= read -r STACK_VERSION || [[ -n $STACK_VERSION ]]
+	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/php:1.0-$BASE_IMAGE_VERSION
+	while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
 	do
-        FINAL_IMAGE_NAME="$(echo -e "${APP_SVC_BRANCH_PREFIX}/${STACK_NAME}:${STACK_VERSION}-${BASE_IMAGE_VERSION_STREAM_FEED}" | sed -e 's/^[[:space:]]*//')"
-
         # Base Image
-        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${STACK_VERSION}-$BASE_IMAGE_VERSION_STREAM_FEED"
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${BASE_IMAGE}-${BASE_IMAGE_VERSION}"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
-        echo "Generating Dockerfile for image '$FINAL_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
+        echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
 
         # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
         rm -rf "$CURR_VERSION_DIRECTORY"
         mkdir -p "$CURR_VERSION_DIRECTORY"
-        cp -R $dockerTemplateDir/* "$CURR_VERSION_DIRECTORY"
+        cp -R ${DIR}/${STACK_VERSION_TEMPLATE_DIR}/* "$CURR_VERSION_DIRECTORY"
 
         # Replace placeholders, changing sed delimeter since '/' is used in path
         sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-        
+        sed -i "s|VERSION_PLACEHOLDER|$BASE_IMAGE_VERSION|g" "$TARGET_DOCKERFILE"
         echo "Done."
 
-	done < "$STACK_VERSIONS_FILE_PATH"
+	done < "$stackVersionsMapFilePath"
 }
 
 function pullAppSvcRepo()
 {
-    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
-    git clone $APPSVC_DOTNETCORE_REPO $APP_SVC_REPO_DIR
-    echo "Cloning App Service DOTNETCORE Repository in $APP_SVC_REPO_DIR"
+    mkdir -p $APP_SVC_REPO_DIR
+    echo "Cloning App Service php Repository in $APP_SVC_REPO_DIR"
+    git clone $APPSVC_REPO $APP_SVC_REPO_DIR
     cd $APP_SVC_REPO_DIR
     echo "Checking out branch $APP_SVC_REPO_BRANCH"
     git checkout $APP_SVC_REPO_BRANCH
@@ -64,4 +60,4 @@ function pullAppSvcRepo()
 }
 
 pullAppSvcRepo
-generateDockerFiles "$DIR/debian-9"
+generateDockerFiles

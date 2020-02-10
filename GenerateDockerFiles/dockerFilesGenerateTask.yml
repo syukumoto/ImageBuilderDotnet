@@ -41,6 +41,19 @@ steps:
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
+  displayName: 'Generate PHP Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/php/generateDockerfiles.sh
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
+
+- task: ShellScript@2
+  displayName: 'Generate PHP Xdebug Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/php-xdebug/generateDockerfiles.sh
+    args: $(Build.ArtifactStagingDirectory) appsvctest $(Build.BuildNumber) ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
+
+
+- task: ShellScript@2
   displayName: 'Generate KuduLite Docker Files'
   inputs:
     scriptPath: ./GenerateDockerFiles/KuduLite/generateDockerfiles.sh
