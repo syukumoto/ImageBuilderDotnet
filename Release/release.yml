@@ -32,10 +32,12 @@ jobs:
       scriptType: bash
       scriptLocation: inlineScript
       inlineScript: |
-          REPOS=(`az acr repository list -n appsvcdevacr -o tsv`)
+          REPOS=`az acr repository list -n appsvcdevacr -o tsv`
+          rm -rf $(System.DefaultWorkingDirectory)/tags
+          rm -rf $(System.DefaultWorkingDirectory)/tags_list
           mkdir $(System.DefaultWorkingDirectory)/tags
           touch $(System.DefaultWorkingDirectory)/tags_list
-          for repo in "${REPOS[@]}"
+          for repo in $REPOS
           do
             echo "repo is $repo"
             echo $repo >> $(System.DefaultWorkingDirectory)/tags_list
@@ -47,4 +49,5 @@ jobs:
     inputs:
       scriptPath: ./Release/release.sh
       args: $(System.DefaultWorkingDirectory)
+  condition: ne(variables['Build.Reason'], 'PullRequest')
 trigger: none

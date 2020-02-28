@@ -52,6 +52,11 @@ steps:
     scriptPath: ./GenerateDockerFiles/php-xdebug/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) appsvctest $(Build.BuildNumber) ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
+- task: ShellScript@2
+  displayName: 'Generate Ruby Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/ruby/generateDockerfiles.sh
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
   displayName: 'Generate KuduLite Docker Files'
