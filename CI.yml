@@ -172,6 +172,11 @@ jobs:
   dependsOn: 
   - Job_DockerBuildNodeImages
   - Job_DockerBuildDotNetCoreImages
+  - Job_DockerBuildPythonImages
+  - Job_DockerBuildPhpImages
+  - Job_DockerBuildPhpXdebugImages
+  - Job_DockerBuildRubyImages
+  - Job_BuildKuduLiteImage
   pool:
     vmImage: ubuntu-16.04
   timeoutInMinutes: 30
