@@ -67,7 +67,9 @@ RUN apt-get update \
   && apt-get install -y squashfs-tools \
   && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
   && chmod 755 /usr/bin/tcpping \
-  && apt-get install -y clamav \
+  && apt-get install -y libclamav9=0.102.1+dfsg-0+deb9u2 \
+    clamav-freshclam=0.102.1+dfsg-0+deb9u2 \
+    clamav=0.102.1+dfsg-0+deb9u2 \
   && freshclam
 
 # Enable SSH for Kudu Console
