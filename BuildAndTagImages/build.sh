@@ -21,7 +21,7 @@ declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$SYSTEM_ARTIFACTS_DIR/builtImages.tx
 function buildDockerImage() 
 {
     if [ -f "$CONFIG_DIR/${STACK}VersionTemplateMap.txt" ]; then
-	    while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
+        while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
         do
             echo "Stack Tag is ${STACK_TAGS}"
             IFS='|' read -ra STACK_TAGS_ARR <<< "$STACK_TAGS"
@@ -32,7 +32,7 @@ function buildDockerImage()
                 local TestRepoTag="${TestRepoTagUpperCase,,}"
                 local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 
                 
-		echo "Listing artifacts dir"
+        echo "Listing artifacts dir"
                 ls "${SYSTEM_ARTIFACTS_DIR}"
                 echo "Listing stacks dir"
                 ls "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
@@ -47,11 +47,11 @@ function buildDockerImage()
                     docker push $TestRepoTag
                 fi
 
-                echo $TestRepoTag > $SYSTEM_ARTIFACTS_DIR/builtImageList
+                echo $TestRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
             done
         done < "$CONFIG_DIR/${STACK}VersionTemplateMap.txt"
     else
-    	# KuduLite Image, add single image support
+        # KuduLite Image, add single image support
         local TestRepoTagUpperCase="${TEST_IMAGE_REPO_NAME}/${STACK}:${PIPELINE_BUILD_NUMBER}"
         local TestRepoTag="${TestRepoTagUpperCase,,}"
         local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/kudu/Dockerfile"
@@ -64,13 +64,13 @@ function buildDockerImage()
         echo "Building test image with tag '$TestRepoTag' and file $appSvcDockerfilePath..."
         echo docker build -t "$TestRepoTag" -f "$appSvcDockerfilePath" .
         docker build -t "$TestRepoTag" -f "$appSvcDockerfilePath" .
-	
-	# only push the images if merging to the master
+    
+    # only push the images if merging to the master
         if [ "$BUILD_REASON" != "PullRequest" ]; then
             docker push $TestRepoTag
         fi
 
-        echo $TestRepoTag > $SYSTEM_ARTIFACTS_DIR/builtImageList
+        echo $TestRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
     fi
 }
 
