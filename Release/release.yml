@@ -43,6 +43,7 @@ jobs:
             echo $repo >> $(System.DefaultWorkingDirectory)/tags_list
             echo "writting all tags to file"
             az acr repository show-tags -n appsvcdevacr --repository $repo -o tsv > $(System.DefaultWorkingDirectory)/tags/$repo
+            cat $(System.DefaultWorkingDirectory)/tags/$repo
           done
   - task: ShellScript@2
     displayName: 'Push approved images from AppSvcDevACR to WAWSImages'
