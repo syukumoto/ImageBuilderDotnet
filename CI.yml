@@ -118,7 +118,9 @@ jobs:
 
 - job: Job_DockerBuildPhpXdebugImages
   displayName: Build PHP xdebug Dev Images
-  dependsOn: Job_GenerateDockerFiles
+  dependsOn: 
+  - Job_GenerateDockerFiles
+  - Job_DockerBuildPhpImages
   pool:
     vmImage: ubuntu-18.04
   timeoutInMinutes: 100
