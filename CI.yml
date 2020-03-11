@@ -26,7 +26,7 @@ jobs:
 - job: Job_CleanUp
   displayName: Clean Machine
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 150
   steps:
   - template: CleanUp/cleanImageCache.yml
@@ -52,7 +52,7 @@ jobs:
   displayName: Build Node JS Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -69,7 +69,7 @@ jobs:
   displayName: Build ASP NET Core Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -86,7 +86,7 @@ jobs:
   displayName: Build Python Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -103,7 +103,7 @@ jobs:
   displayName: Build PHP Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -120,7 +120,7 @@ jobs:
   displayName: Build PHP xdebug Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -137,7 +137,7 @@ jobs:
   displayName: Build Ruby Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -154,7 +154,7 @@ jobs:
   displayName: Build KuduLite Dev Images
   dependsOn: Job_GenerateDockerFiles
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 100
   steps:
   - script: |
@@ -178,7 +178,7 @@ jobs:
   - Job_DockerBuildRubyImages
   - Job_BuildKuduLiteImage
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 30
   steps:
   - script: |
@@ -192,7 +192,7 @@ jobs:
   displayName: Tag Dev Images to ACR Dev Repo
   dependsOn: Job_TestBuiltImages
   pool:
-    vmImage: ubuntu-16.04
+    vmImage: ubuntu-18.04
   timeoutInMinutes: 5
   steps:
   - script: |
