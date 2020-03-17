@@ -22,30 +22,29 @@ declare -r APP_SVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo"
 
 function generateDockerFiles()
 {
-   
     local stackVersionsMapFilePath="${CONFIG_DIR}/${STACK_NAME}VersionTemplateMap.txt"
 
-	# Example line:
-	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
-	while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
-	do
-            # Base Image
-            BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${BASE_IMAGE}-$BASE_IMAGE_VERSION_STREAM_FEED"
-            CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
-            TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
+    # Example line:
+    # 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/dotnetcore:1.0-$BASE_IMAGE_VERSION_STREAM_FEED
+    while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
+    do
+        # Base Image
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${BASE_IMAGE}-$BASE_IMAGE_VERSION_STREAM_FEED"
+        CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
+        TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
-            echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
-            # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
-            rm -rf "$CURR_VERSION_DIRECTORY"
-            mkdir -p "$CURR_VERSION_DIRECTORY"
-            cp -R ${DIR}/${STACK_VERSION_TEMPLATE_DIR}/* "$CURR_VERSION_DIRECTORY"
+        echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
+        # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
+        rm -rf "$CURR_VERSION_DIRECTORY"
+        mkdir -p "$CURR_VERSION_DIRECTORY"
+        cp -R ${DIR}/${STACK_VERSION_TEMPLATE_DIR}/* "$CURR_VERSION_DIRECTORY"
 
-            # Replace placeholders, changing sed delimeter since '/' is used in path
-            sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-        
-            echo "Done."
+        # Replace placeholders, changing sed delimeter since '/' is used in path
+        sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
+    
+        echo "Done."
 
-        done < "$stackVersionsMapFilePath"
+    done < "$stackVersionsMapFilePath"
 }
 
 function pullAppSvcRepo()

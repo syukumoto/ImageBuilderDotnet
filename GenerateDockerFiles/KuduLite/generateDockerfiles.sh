@@ -22,7 +22,6 @@ declare -r APP_SVC_REPO_BRANCH="dev"
 
 function generateDockerFiles()
 {
-   
     # Example line:
     # 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/build:$BASE_IMAGE_VERSION_STREAM_FEED
 

@@ -19,13 +19,12 @@ declare -r APP_SVC_REPO_BRANCH="dev"
 
 function generateDockerFiles()
 {
-   
     local stackVersionsMapFilePath="${CONFIG_DIR}/${STACK_NAME}VersionTemplateMap.txt"
 
-	# Example line:
-	# 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/php:1.0-$BASE_IMAGE_VERSION
-	while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
-	do
+    # Example line:
+    # 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/php:1.0-$BASE_IMAGE_VERSION
+    while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
+    do
         # Base Image
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
@@ -41,7 +40,7 @@ function generateDockerFiles()
         sed -i "s|VERSION_PLACEHOLDER|$STACK_VERSION|g" "$TARGET_DOCKERFILE"
         echo "Done."
 
-	done < "$stackVersionsMapFilePath"
+    done < "$stackVersionsMapFilePath"
 }
 
 function pullAppSvcRepo()
