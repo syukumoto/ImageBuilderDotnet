@@ -47,8 +47,8 @@ function buildDockerImage()
 
                 if [ "$BUILD_REASON" != "PullRequest" ]; then
                     docker push $BuildVerRepoTag
-	            docker tag $BuildVerRepoTag $MCRRepoTag
-	            docker push $MCRRepoTag
+                docker tag $BuildVerRepoTag $MCRRepoTag
+                docker push $MCRRepoTag
                 fi
 
                 echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
@@ -58,8 +58,8 @@ function buildDockerImage()
         # KuduLite Image, add single image support
         local BuildVerRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${PIPELINE_BUILD_NUMBER}"
         local BuildVerRepoTag="${BuildVerRepoTagUpperCase,,}"
-	local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK}:${PIPELINE_BUILD_NUMBER}"
-	local MCRRepoTag="${MCRRepoTagUpperCase,,}"
+        local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK}:${PIPELINE_BUILD_NUMBER}"
+        local MCRRepoTag="${MCRRepoTagUpperCase,,}"
         local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/kudu/Dockerfile"
 
         echo "Listing artifacts dir"
@@ -71,12 +71,12 @@ function buildDockerImage()
         echo "Building test image with tag '$BuildVerRepoTag' and file $appSvcDockerfilePath..."
         echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
         docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
-	docker tag $BuildVerRepoTag $MCRRepoTag
+        docker tag $BuildVerRepoTag $MCRRepoTag
 
         # only push the images if merging to the master
         if [ "$BUILD_REASON" != "PullRequest" ]; then
             docker push $BuildVerRepoTag
-	    docker push $MCRRepoTag
+            docker push $MCRRepoTag
         fi
 
         echo $ImageRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
