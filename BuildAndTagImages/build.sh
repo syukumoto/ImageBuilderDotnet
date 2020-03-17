@@ -47,8 +47,8 @@ function buildDockerImage()
 
                 if [ "$BUILD_REASON" != "PullRequest" ]; then
                     docker push $BuildVerRepoTag
-                docker tag $BuildVerRepoTag $MCRRepoTag
-                docker push $MCRRepoTag
+                    docker tag $BuildVerRepoTag $MCRRepoTag
+                    docker push $MCRRepoTag
                 fi
 
                 echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList

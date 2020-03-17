@@ -22,7 +22,7 @@ function tagACRImagesToDockerHub()
     echo "Build number is $BUILD"
 
     while IFS=, read -r STACK ||  [[ -n $STACK ]]
-	do
+    do
         echo "Processing $STACK tags"
         while IFS=, read -r TAG ||  [[ -n $TAG ]]
         do
