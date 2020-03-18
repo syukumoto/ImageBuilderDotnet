@@ -67,7 +67,7 @@ function buildDockerImage()
                     docker push $MCRRepoTag
                 fi
 
-                echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
+                echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
             done
         done < "$CONFIG_DIR/${STACK}VersionTemplateMap.txt"
     else
@@ -95,7 +95,7 @@ function buildDockerImage()
             docker push $MCRRepoTag
         fi
 
-        echo $ImageRepoTag >> $SYSTEM_ARTIFACTS_DIR/builtImageList
+        echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
     fi
 }
 
