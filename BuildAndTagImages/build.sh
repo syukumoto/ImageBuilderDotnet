@@ -42,8 +42,12 @@ function buildDockerImage()
 
                 echo
                 echo "Building test image with tag '$BuildVerRepoTag' and file $appSvcDockerfilePath..."
-                echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
-                docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+
+                # php-xdebug depends of published images
+                if [ "$BUILD_REASON" != "PullRequest" ] || ["$STACK" != "php-xdebug" ]; then
+                    echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+                    docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+                fi
 
                 if [ "$BUILD_REASON" != "PullRequest" ]; then
                     docker push $BuildVerRepoTag

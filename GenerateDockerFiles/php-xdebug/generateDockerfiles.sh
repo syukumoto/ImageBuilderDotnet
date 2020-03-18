@@ -13,7 +13,7 @@ declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 declare -r STACK_NAME="php-xdebug"
 declare -r BASE_STACK_NAME="php"
 declare -r SYSTEM_ARTIFACTS_DIR="$1"
-declare -r BASE_IMAGE_REPO_NAME="$2/${BASE_STACK_NAME}"            # appsvctest/php
+declare -r BASE_IMAGE_REPO_NAME="$2/${BASE_STACK_NAME}"            # mcr.microsoft.com/appsvc/php
 declare -r BASE_IMAGE_VERSION="$3"                                 # Base Image Version : 20190819.2
 declare -r APPSVC_REPO="$4/${STACK_NAME}.git"                      # https://github.com/Azure-App-Service/php-xdebug.git
 declare -r CONFIG_DIR="$5"                                         # ${Current_Repo}/Config
@@ -25,11 +25,11 @@ function generateDockerFiles()
     local stackVersionsMapFilePath="${CONFIG_DIR}/${STACK_NAME}VersionTemplateMap.txt"
 
     # Example line:
-    # 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/php:1.0-$BASE_IMAGE_VERSION
+    # 1.0 -> uses Oryx Base Image mcr.microsoft.com/oryx/php:1.0_$BASE_IMAGE_VERSION
     while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
     do
         # Base Image
-        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${BASE_IMAGE}"
+        BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:${BASE_IMAGE}_${BASE_IMAGE_VERSION}"
         CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/${STACK_VERSION}"
         TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 

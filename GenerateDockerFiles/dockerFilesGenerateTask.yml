@@ -50,7 +50,7 @@ steps:
   displayName: 'Generate PHP Xdebug Docker Files'
   inputs:
     scriptPath: ./GenerateDockerFiles/php-xdebug/generateDockerfiles.sh
-    args: $(Build.ArtifactStagingDirectory) appsvctest $(Build.BuildNumber) ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
+    args: $(Build.ArtifactStagingDirectory) mcr.microsoft.com/appsvc $(Build.BuildNumber) ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
   displayName: 'Generate Ruby Docker Files'
