@@ -1,4 +1,6 @@
 5.6-apache,5.6,apache,5.6-apache
 7.0-apache,7.0,apache,7.0-apache
 7.2-apache,7.2,apache,7.2-apache
-7.3-apache,7.3,apache,7.3-apache|latest
+7.3-apache,7.3,apache,7.3-apache
+7.4-apache,7.4,apache,7.4-apache|latest
+7.3-fpm,7.3-fpm,nginx,7.3-fpm
