@@ -43,7 +43,7 @@ function generateDockerFiles()
 
         # Replace placeholders, changing sed delimeter since '/' is used in path
         sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"
-        sed -i "s|VERSION_PLACEHOLDER|$BASE_IMAGE_VERSION|g" "$TARGET_DOCKERFILE"
+        sed -i "s|VERSION_PLACEHOLDER|$BASE_IMAGE|g" "$TARGET_DOCKERFILE"
         echo "Done."
 
     done < "$stackVersionsMapFilePath"
