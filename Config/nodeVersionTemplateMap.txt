@@ -21,4 +21,4 @@
 10.10,10.10,debian-9,10.10|LTS
 10.12,10.12,debian-9,10.12
 10.14,10.14,debian-9,10.14
-12,12,debian-9,12-LTS|Latest
+12,12,debian-9,12-LTS|Latest|12.9
