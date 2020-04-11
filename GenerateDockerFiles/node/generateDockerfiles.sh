@@ -8,6 +8,7 @@
 set -e
 
 # Current Working Dir
+declare -r ORIG_DIR=`pwd`
 declare -r DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # Directory for Generated Docker Files
 declare -r STACK_NAME="node"
@@ -56,6 +57,7 @@ function pullAppSvcRepo()
     cd $APP_SVC_REPO_DIR
     echo "Checking out branch $APP_SVC_REPO_BRANCH"
     git checkout $APP_SVC_REPO_BRANCH
+    cd $ORIG_DIR
     chmod -R 777 $APP_SVC_REPO_DIR
 }
 
