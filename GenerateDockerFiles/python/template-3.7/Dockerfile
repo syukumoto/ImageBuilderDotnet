@@ -32,7 +32,7 @@ ENV SSH_PORT 2222
 RUN mkdir -p /home/LogFiles \
      && echo "root:Docker!" | chpasswd \
      && echo "cd /home" >> /root/.bashrc \
-     && echo "source /home/site/wwwroot/antenv/bin/activate" >> /root/.bashrc  
+     && echo "source /home/site/wwwroot/venv/bin/activate" >> /root/.bashrc  
      
 COPY sshd_config /etc/ssh/
 RUN mkdir -p /opt/startup
@@ -47,7 +47,5 @@ COPY application.py /opt/defaultsite
 # configure startup
 RUN chmod -R 777 /opt/startup
 COPY entrypoint.py /usr/local/bin
-
-WORKDIR /home/site/wwwroot
 
 ENTRYPOINT ["/opt/startup/init_container.sh"]
