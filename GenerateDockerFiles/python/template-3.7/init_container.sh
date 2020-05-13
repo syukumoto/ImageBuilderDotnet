@@ -17,6 +17,9 @@ Note: Any data outside '/home' is not persisted
 EOL
 cat /etc/motd
 
+# Create the virtual environment for python
+python3 -m venv /home/site/wwwroot/antenv
+
 sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
 service ssh start
 
