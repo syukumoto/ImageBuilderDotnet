@@ -29,10 +29,11 @@ EXPOSE 8000
 ENV PORT 8000
 ENV SSH_PORT 2222
 
-# setup SSH
+# setup SSH and acitvate virtual env on ssh into container
 RUN mkdir -p /home/LogFiles \
      && echo "root:Docker!" | chpasswd \
-     && echo "cd /home" >> /root/.bashrc 
+     && echo "cd /home" >> /root/.bashrc \
+     && echo "source /home/site/wwwroot/venv/bin/activate" >> /root/.bashrc
 
 COPY sshd_config /etc/ssh/
 RUN mkdir -p /opt/startup
