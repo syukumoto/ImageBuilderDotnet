@@ -13,7 +13,7 @@ rm -rf $artifactStagingDirectory
 chmod u+x GenerateDockerFiles/node/generateDockerfiles.sh
 GenerateDockerFiles/node/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir
 
-# Generate ASP .NET Core Docker Files
+# Generate .NET Core Docker Files
 chmod u+x GenerateDockerFiles/dotnetcore/generateDockerfiles.sh 
 GenerateDockerFiles/dotnetcore/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir
 
