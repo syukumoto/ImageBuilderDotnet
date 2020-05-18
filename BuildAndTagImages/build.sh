@@ -32,7 +32,7 @@ function buildDockerImage()
                 then
                     STACK_MOD="php"
                 fi
-		            # Build Image Tags are converted to lower case because docker doesn't accept upper case tags
+                # Build Image Tags are converted to lower case because docker doesn't accept upper case tags
                 local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK_MOD}:${TAG}_${PIPELINE_BUILD_NUMBER}"
                 local MCRRepoTag="${MCRRepoTagUpperCase,,}"
                 local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile" 

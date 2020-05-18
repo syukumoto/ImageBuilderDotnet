@@ -43,3 +43,14 @@ steps:
 - task: PublishBuildArtifacts@1
   inputs:
     pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
+
+- task: DownloadBuildArtifacts@0
+  displayName: 'Download Build Artifacts'
+  inputs:
+    artifactName: drop
+
+- task: ShellScript@2
+  displayName: 'Run unit tests'
+  inputs:
+    scriptPath: ./localRunTests.sh
+    args: ${{ parameters.stackName }} $(Build.ArtifactStagingDirectory)

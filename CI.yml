@@ -207,6 +207,9 @@ jobs:
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]true"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  - template: Tests/Tests.yml
+    parameters:
+      BuildNumber: $(Build.BuildNumber) 
 
 - job: Job_TagAppSvcTestImages
   displayName: Tag Dev Images to ACR Dev Repo
