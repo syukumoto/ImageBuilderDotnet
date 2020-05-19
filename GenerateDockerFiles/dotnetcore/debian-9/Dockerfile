@@ -14,6 +14,7 @@ RUN apt-get update \
         dnsutils \
         tcpdump \
         iproute2 \
+    && apt-get upgrade -y openssl \
     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /defaulthome/hostingstart \
