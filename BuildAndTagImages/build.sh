@@ -49,10 +49,10 @@ function buildDockerImage()
                 echo "Building test image with tag '$BuildVerRepoTag' and file $appSvcDockerfilePath..."
 
                 # php-xdebug depends of published images
-                if [ "$BUILD_REASON" != "PullRequest" ] || ["$STACK" != "php-xdebug" ]; then
+                if [ "$BUILD_REASON" != "PullRequest" ] || [ "$STACK" != "php-xdebug" ]; then
                     echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
                     docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
-                elif [ "$BUILD_REASON" != "PullRequest" ] && ["$STACK" == "php-xdebug" ]; then
+                elif [ "$BUILD_REASON" != "PullRequest" ] && [ "$STACK" == "php-xdebug" ]; then
                     # poll until php image is published
                     BASE_TAG=`head -n 1 Dockerfile | sed 's/FROM //g'`
                     PULL_OUTPUT=`docker pull $BASE_TAG`
