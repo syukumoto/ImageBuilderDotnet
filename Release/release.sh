@@ -10,7 +10,7 @@ set -e
 
 # Set BUILD to the images' build number you wish to push to APP_SVC_MCR_REPO
 # TODO: Move to Params
-declare -r BUILD="$2"
+declare -r BUILD="20200311.2"
 
 declare -r DEFAULT_WORKING_DIRECTORY="$1" # $(System.DefaultWorkingDirectory)
 declare -r APP_SVC_MCR_REPO="wawsimages.azurecr.io"
