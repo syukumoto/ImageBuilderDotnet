@@ -18,17 +18,7 @@ RUN dpkg -i packages-microsoft-prod.deb
 #RUN add-apt-repository universe
 #RUN apt-get install apt-transport-https
 
-RUN apt-get update
-RUN apt-get install -y dotnet-sdk-2.2
-
-# Install ruby 2.3.3 (default), 2.3.8, 2.4.5
-ENV RUBY_CONFIGURE_OPTS=--disable-install-doc
-
-ENV RUBY_CFLAGS=-O3
-
 RUN apt-get install -y libssl1.0-dev
-
-ENV NOKOGIRI_USE_SYSTEM_LIBRARIES=true
 
 # Install dependencies
 RUN apt-get update \
@@ -85,7 +75,7 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 # Skip extraction of XML docs - generally not useful within an image/container - helps performance
 ENV NUGET_XMLDOC_MODE=skip
 
-RUN dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
+RUN benv dotnet=2.2 dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
 ENV PATH=$PATH:/root/.dotnet/tools
 
 RUN apt-get update && apt-get install -y nodejs && apt-get purge -y nodejs
