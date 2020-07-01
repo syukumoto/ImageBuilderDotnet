@@ -184,8 +184,8 @@ jobs:
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
   - template: BuildAndTagImages/buildImageJob.yml
     parameters:
-      stackName: KuduLite-Dynamic
-      filesRootPath: "GitRepo-DynInst"
+      stackName: KuduLite
+      filesRootPath: GitRepo-DynInst
       imgTag: dynamic-$(Build.BuildNumber)
 
 - job: Job_BuildStaticSiteImage
