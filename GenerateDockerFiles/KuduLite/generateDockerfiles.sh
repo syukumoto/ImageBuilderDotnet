@@ -64,7 +64,7 @@ function generateKuduLiteDynamicInstallsDockerFiles()
     # Remove Existing Version directory, eg: GitRepo/1.0 to replace with realized files
     rm -rf "$CURR_VERSION_DIRECTORY"
     mkdir -p "$CURR_VERSION_DIRECTORY"
-    cp -R ${DIR}/template/* "$CURR_VERSION_DIRECTORY"
+    cp -R ${DIR}/template_dynamicinstalls/* "$CURR_VERSION_DIRECTORY"
 
     # Replace placeholders, changing sed delimeter since '/' is used in path
     sed -i "s|BASE_IMAGE_NAME_PLACEHOLDER|$BASE_IMAGE_NAME|g" "$TARGET_DOCKERFILE"

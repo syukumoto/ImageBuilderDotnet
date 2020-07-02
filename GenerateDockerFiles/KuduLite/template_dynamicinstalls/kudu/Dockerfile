@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/oryx/build:github-actions-20200626.1 as main
+FROM BASE_IMAGE_NAME_PLACEHOLDER as main
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -34,9 +34,6 @@ RUN apt-get update \
     clamav=0.102.1+dfsg-0+deb9u2 \
   && freshclam
 
-# Install NETCore 2.2 and NODE 10 for Kudu
-RUN oryx prep --skip-detection --platforms-and-versions "dotnet=2.2,nodejs=10,npm=6"
-
 # Enable SSH for Kudu Console
 RUN apt-get install -y ssh \
    && sed -i '/^#Port* /s/^#//' /etc/ssh/sshd_config \
@@ -64,8 +61,10 @@ RUN mkdir -p /opt/Kudu/local \
   && mv /tmp/ssh /usr/bin/ssh \
   && chown root:root /usr/bin/ssh \
   && chmod 755 /usr/bin/ssh \
-  && chmod -R 777 /home \
+  && chmod -R 777 /home \ 
   && rm -rf /tmp/*
+
+RUN oryx prep --skip-detection --platforms-and-versions "dotnet=2.2.8,nodejs=10.19.0"
 
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
@@ -75,13 +74,9 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 # Skip extraction of XML docs - generally not useful within an image/container - helps performance
 ENV NUGET_XMLDOC_MODE=skip
 
-RUN benv dotnet=2.2 dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
-ENV PATH=$PATH:/root/.dotnet/tools
-
-RUN apt-get update && apt-get install -y nodejs && apt-get purge -y nodejs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y nodejs
-RUN apt-get install -y npm
+# Build KuduLite
+RUN benv dotnet=2.2.8 dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
+ENV PATH=$PATH:/root/.dotnet/tools:/tmp/oryx/platforms/nodejs/10.19.0/bin:/tmp/oryx/platforms/dotnet/2.2.8/bin
 
 #Install Kudu
 RUN cd /tmp \
@@ -90,9 +85,9 @@ RUN cd /tmp \
     && git checkout dev \
     && git log --format="%H" -n 1 > /kudu_commit.log \
     && cd ./Kudu.Services.Web \
-    && benv dotnet=2.2 dotnet publish -c Release -o /opt/Kudu \
+    && cat /tmp/KuduLite/Kudu.Services.Web//updateNodeModules.sh \
+    && benv dotnet=2.2.8 dotnet publish -c Release -o /opt/Kudu \
     && chmod 777 /opt/Kudu/Kudu.Services.Web.dll \
-    && rm -rf /tmp/* \
     && chmod a+rw /var/nuget \
     && find /var/nuget -type d -exec chmod 777 {} \;
 
@@ -100,28 +95,18 @@ COPY startup.sh /
 
 RUN chmod 777 /startup.sh
 
-RUN benv node=9 npm=6 npm install -g kudusync
-RUN benv node=9 npm=6 install pm2@latest -g
-
-RUN ln -s /opt/nodejs/9/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
-
-ENV PATH=$PATH:/opt/nodejs/9/bin
+RUN ls /tmp/oryx/platforms/nodejs/10.19.0/bin
+RUN benv node=10.19.0 npm install -g kudusync
+RUN benv node=10.19.0 npm install pm2@latest -g
 
 ENV KUDU_WEBSSH_PORT=3000
-ENV ENABLE_DYNAMIC_INSTALL=true
-ENV ORYX_SDK_STORAGE_BASE_URL=https://oryx-cdn.microsoft.io
-EXPOSE 8181
 
 # Copy custom scripts
 RUN mkdir /custom_scripts
 COPY custom_scripts/* /custom_scripts/
 RUN chmod 755 /custom_scripts/*
 
-COPY deploy.bash.ruby.template /opt/Kudu/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
-COPY deploy.bash.ruby.template /opt/Kudu/KuduConsole/node_modules/kuduscript/lib/templates/deploy.bash.ruby.template
-
-# Patch, remove for future builds
-RUN apt-get install -y libssl1.0-dev
+EXPOSE 8181
 
 ENTRYPOINT [ "/startup.sh" ]
 CMD [ "1002", "kudu_group", "1001", "kudu_user", "localsite" ]
