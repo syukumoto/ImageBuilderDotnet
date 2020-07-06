@@ -2,7 +2,7 @@ parameters:
   ascName: WAWS_Container_Images
   acrName: wawsimages.azurecr.io
   baseImageName: "mcr.microsoft.com/oryx"
-  baseImageVersion: "20200611.1"
+  baseImageVersion: "20200629.1"
   appSvcGitUrl: "https://github.com/Azure-App-Service"
 
 steps:
@@ -69,15 +69,15 @@ steps:
   inputs:
     scriptPath: ./GenerateDockerFiles/staticsite/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
-  
-  
+
+
 
     # Publish Build Artifacts
 # Publish build artifacts to Azure Pipelines/TFS or a file share
 - task: PublishBuildArtifacts@1
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)' 
-    #artifactName: 'drop' 
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    #artifactName: 'drop'
     #publishLocation: 'Container' # Options: container, filePath
     #targetPath: # Required when publishLocation == FilePath
     #parallel: false # Optional
