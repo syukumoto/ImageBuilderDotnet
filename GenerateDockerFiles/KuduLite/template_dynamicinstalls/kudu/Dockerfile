@@ -75,8 +75,9 @@ ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 ENV NUGET_XMLDOC_MODE=skip
 
 # Build KuduLite
+ENV PATH=$PATH:/root/.dotnet/tools:/tmp/oryx/platforms/nodejs/10.19.0/bin:/tmp/oryx/platforms/nodejs/:/tmp/oryx/platforms/dotnet/2.2.8/bin:/usr/bin
+RUN ln -s /tmp/oryx/platforms/nodejs/10.19.0/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
 RUN benv dotnet=2.2.8 dotnet tool install -g --version 2.2 dotnet-aspnet-codegenerator
-ENV PATH=$PATH:/root/.dotnet/tools:/tmp/oryx/platforms/nodejs/10.19.0/bin:/tmp/oryx/platforms/dotnet/2.2.8/bin
 
 #Install Kudu
 RUN cd /tmp \
@@ -89,7 +90,8 @@ RUN cd /tmp \
     && benv dotnet=2.2.8 dotnet publish -c Release -o /opt/Kudu \
     && chmod 777 /opt/Kudu/Kudu.Services.Web.dll \
     && chmod a+rw /var/nuget \
-    && find /var/nuget -type d -exec chmod 777 {} \;
+    && find /var/nuget -type d -exec chmod 777 {} \; \
+    && rm -rf /tmp/KuduLite
 
 COPY startup.sh /
 
@@ -105,6 +107,8 @@ ENV KUDU_WEBSSH_PORT=3000
 RUN mkdir /custom_scripts
 COPY custom_scripts/* /custom_scripts/
 RUN chmod 755 /custom_scripts/*
+
+RUN chmod -R 777 /tmp/*
 
 EXPOSE 8181
 

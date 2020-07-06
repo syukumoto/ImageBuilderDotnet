@@ -3,14 +3,14 @@
 #!/usr/bin/env bash
 
 cat >/etc/motd <<EOL
-    __ __          __      __    _ __     
-   / //_/_  _ ____/ /_  __/ /   (_) /____ 
+    __ __          __      __    _ __
+   / //_/_  _ ____/ /_  __/ /   (_) /____
   / ,< / / / / __  / / / / /   / / __/ _ \
- 
- / /| / /_/ / /_/ / /_/ / /___/ / /_/  __/
-/_/ |_\__,_/\__,_/\__,_/_____/_/\__/\___/ 
 
-                                          
+ / /| / /_/ / /_/ / /_/ / /___/ / /_/  __/
+/_/ |_\__,_/\__,_/\__,_/_____/_/\__/\___/
+
+
 DEBUG CONSOLE | AZURE APP SERVICE ON LINUX
 
 Documentation: http://aka.ms/webapp-linux
@@ -36,9 +36,13 @@ USER_ID=$3
 USER_NAME=$4
 SITE_NAME=$5
 
+mkdir -p /tmp/BuildScriptGenerator
+
 groupadd -g $GROUP_ID $GROUP_NAME
 useradd -u $USER_ID -g $GROUP_NAME $USER_NAME
-chown -R $USER_NAME:$GROUP_NAME /tmp
+#chown -R $USER_NAME:$GROUP_NAME /tmp/oryx
+#chown -R $USER_NAME:$GROUP_NAME /tmp/BuildScriptGenerator
+#chown -R $USER_NAME:$GROUP_NAME /tmp/zipdeploy
 mkdir -p /home/LogFiles/webssh
 
 /bin/bash -c "pm2 start /opt/webssh/index.js -o /dev/null -e /home/LogFiles/webssh/pm2.err &"
@@ -60,4 +64,4 @@ service ssh restart
 cd /opt/Kudu
 
 echo $(date) running .net core
-ASPNETCORE_URLS=http://0.0.0.0:"$PORT" runuser -p -u "$USER_NAME" -- dotnet Kudu.Services.Web.dll
+ASPNETCORE_URLS=http://0.0.0.0:"$PORT" runuser -p -u "$USER_NAME" -- benv dotnet=2.2.8 dotnet Kudu.Services.Web.dll
