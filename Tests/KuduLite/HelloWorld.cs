@@ -114,7 +114,7 @@ namespace Tests
                 Cmd = new List<String>
                 {
                     "benv",
-                    "dotnet=2.2",
+                    "dotnet=2.2.8",
                     "dotnet",
                     "/opt/Kudu/KuduConsole/kudu.dll",
                     "/home/site",
@@ -169,6 +169,10 @@ namespace Tests
                         Directory.Delete($"{appDir}/wwwroot", true);
                     }
 
+                    tryNumber = 4;
+                }
+                catch (Exception ex)
+                {
                     tryNumber = maxTries + 1;
                 }
                 finally

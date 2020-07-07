@@ -111,6 +111,8 @@ function buildDockerImage()
         cd "${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/12"
         echo docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
         docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
+        echo $NodeTag >> $SYSTEM_ARTIFACTS_DIR/nodebuiltImageList
+
 
         local DotnetcoreTagUpperCase="${WAWS_IMAGE_REPO_NAME}/dotnetcore:3.1_${PIPELINE_BUILD_NUMBER}"
         local DotnetcoreTag="${DotnetcoreTagUpperCase,,}"
@@ -118,6 +120,7 @@ function buildDockerImage()
         cd "${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/3.1"
         echo docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
         docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
+        echo $DotnetcoreTag >> $SYSTEM_ARTIFACTS_DIR/dotnetcorebuiltImageList
     fi
 }
 
