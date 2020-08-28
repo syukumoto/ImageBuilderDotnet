@@ -55,6 +55,7 @@ RUN { \
    echo '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">'; \
    echo '   SetHandler application/x-httpd-php'; \
    echo '</FilesMatch>'; \
+   echo 'EnableMMAP Off'; \
 } >> /etc/apache2/apache2.conf
 
 RUN rm -f /usr/local/etc/php/conf.d/php.ini \
