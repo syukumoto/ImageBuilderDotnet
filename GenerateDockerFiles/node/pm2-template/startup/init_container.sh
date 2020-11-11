@@ -33,7 +33,7 @@ ORYX_ARGS="create-script -appPath /home/site/wwwroot -output $STARTUP_COMMAND_PA
 if [[ $APPSVC_REMOTE_DEBUGGING == "TRUE" ]]; then
     ORYX_ARGS="-remoteDebug -debugPort $APPSVC_TUNNEL_PORT $ORYX_ARGS"
 elif [[ "$APPSVC_REMOTE_DEBUGGING_BREAK" == "TRUE" ]]; then
-    ORYX_ARGS="-remoteDebug -debugPort $APPSVC_TUNNEL_PORT $ORYX_ARGS"
+    ORYX_ARGS="-remoteDebugBrk -debugPort $APPSVC_TUNNEL_PORT $ORYX_ARGS"
 fi
 
 if [ -f "oryx-manifest.toml" ] && [[ "$APPSVC_RUN_ZIP" == "TRUE" ]]; then
