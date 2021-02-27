@@ -30,6 +30,8 @@ ENV KUDU_WEBSSH_PORT=3000
 ENV WEBSITE_SSH_USER=root
 ENV WEBSITE_SSH_PASSWORD=Docker!
 
+ENV KUDU_BUILD_VERSION=1.0.0
+
 COPY webssh.zip ssh /tmp/
 COPY --from=build-env /kudu_commit.log /kudu_commit.log
 
