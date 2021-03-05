@@ -2,4 +2,5 @@
 7.0-apache,7.0,apache,7.0-apache
 7.2-apache,7.2,apache,7.2-apache
 7.3-apache,7.3,apache,7.3-apache
-7.4-apache,7.4,apache,7.4-apache|latest
+7.4-apache,7.4,apache,7.4-apache
+8.0-apache,8.0,apache,8.0-apache|latest
