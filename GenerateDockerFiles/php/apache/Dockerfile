@@ -9,7 +9,8 @@ RUN apt-get update \
       net-tools \
       dnsutils \
       tcpdump \
-      iproute2
+      iproute2 \
+      nano
 
 COPY init_container.sh /bin/
 COPY hostingstart.html /home/site/wwwroot/hostingstart.html
@@ -54,6 +55,7 @@ RUN { \
    echo '<FilesMatch "\.(?i:ph([[p]?[0-9]*|tm[l]?))$">'; \
    echo '   SetHandler application/x-httpd-php'; \
    echo '</FilesMatch>'; \
+   echo 'EnableMMAP Off'; \
 } >> /etc/apache2/apache2.conf
 
 RUN rm -f /usr/local/etc/php/conf.d/php.ini \
@@ -68,6 +70,8 @@ RUN rm -f /usr/local/etc/php/conf.d/php.ini \
 
 RUN rm -f /etc/apache2/conf-enabled/other-vhosts-access-log.conf
 RUN rm /etc/apache2/sites-enabled/000-default.conf
+
+COPY mpm_prefork.conf /etc/apache2/mods-available/mpm_prefork.conf
 
 WORKDIR /home/site/wwwroot
 

@@ -2,4 +2,5 @@
 7.0-apache-xdebug,7.0-apache,7.0-apache-xdebug,7.0-apache-xdebug
 7.2-apache-xdebug,7.2-apache,7-apache-xdebug,7.2-apache-xdebug
 7.3-apache-xdebug,7.3-apache,7-apache-xdebug,7.3-apache-xdebug
-7.4-apache-xdebug,7.4-apache,7-apache-xdebug,7.4-apache-xdebug|latest-xdebug
+7.4-apache-xdebug,7.4-apache,7-apache-xdebug,7.4-apache-xdebug
+8.0-apache-xdebug,8.0-apache,8.0-apache-xdebug,8.0-apache-xdebug|latest-xdebug

@@ -1,7 +1,7 @@
 FROM nginx
 LABEL maintainer="Azure App Services Container Images <appsvc-images@microsoft.com>"
 
-RUN mkdir -p /home/LogFiles /opt/startup \
+RUN mkdir -p /home/LogFiles /opt/startup /home/site/wwwroot \
      && echo "root:Docker!" | chpasswd \
      && echo "cd /home" >> /etc/bash.bashrc \
      && apt-get update \  
@@ -16,11 +16,13 @@ RUN mkdir -p /home/LogFiles /opt/startup \
       net-tools \
       dnsutils \
       tcpdump \
-      iproute2
+      iproute2 \
+      nano
 
 # setup default site
 RUN rm -f /etc/ssh/sshd_config
 COPY startup /opt/startup
+COPY hostingstart.html /home/site/wwwroot
 
 # setup SSH
 COPY sshd_config /etc/ssh/

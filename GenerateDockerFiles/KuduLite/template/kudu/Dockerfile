@@ -67,9 +67,9 @@ RUN apt-get update \
   && apt-get install -y squashfs-tools \
   && wget -O /usr/bin/tcpping http://www.vdberg.org/~richard/tcpping \
   && chmod 755 /usr/bin/tcpping \
-  && apt-get install -y libclamav9=0.102.1+dfsg-0+deb9u2 \
-    clamav-freshclam=0.102.1+dfsg-0+deb9u2 \
-    clamav=0.102.1+dfsg-0+deb9u2 \
+  && apt-get install -y libclamav9=0.102.3+dfsg-0~deb9u1 \
+    clamav-freshclam=0.102.3+dfsg-0~deb9u1 \
+    clamav=0.102.3+dfsg-0~deb9u1 \
   && freshclam
 
 # Enable SSH for Kudu Console
@@ -77,8 +77,7 @@ RUN apt-get install -y ssh \
    && sed -i '/^#Port* /s/^#//' /etc/ssh/sshd_config \
    && sed -i '/^#PermitRootLogin* /s/^#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config \
    && sed -i '/^#PrintLastLog* /s/^#PrintLastLog yes/PrintLastLog no/' /etc/ssh/sshd_config \
-   && chmod -R 0644 /etc/update-motd.d/ \
-   && echo "root:Docker!" | chpasswd
+   && chmod -R 0644 /etc/update-motd.d/
 
 COPY webssh.zip ssh /tmp/
 
@@ -138,6 +137,11 @@ RUN ln -s /opt/nodejs/9/lib/node_modules/npm/bin/npm-cli.js /usr/bin/npm-cli.js
 ENV PATH=$PATH:/opt/nodejs/9/bin
 
 ENV KUDU_WEBSSH_PORT=3000
+ENV KUDU_BUILD_VERSION=1.0.0
+
+# Default App Settings for Main App Container SSH
+ENV WEBSITE_SSH_USER=root
+ENV WEBSITE_SSH_PASSWORD=Docker!
 
 EXPOSE 8181
 

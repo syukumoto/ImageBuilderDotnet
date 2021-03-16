@@ -3,7 +3,7 @@
 # values from ImageBuilder/GenerateDockerFiles/dockerFilesGenerateTask.yml
 artifactStagingDirectory="output/DockerFiles"
 baseImageName="mcr.microsoft.com/oryx"
-baseImageVersion="20200312.1"
+baseImageVersion="20210225.2" # change me as needed
 appSvcGitUrl="https://github.com/Azure-App-Service"
 configDir="Config"
 
@@ -13,7 +13,7 @@ rm -rf $artifactStagingDirectory
 chmod u+x GenerateDockerFiles/node/generateDockerfiles.sh
 GenerateDockerFiles/node/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir
 
-# Generate ASP .NET Core Docker Files
+# Generate .NET Core Docker Files
 chmod u+x GenerateDockerFiles/dotnetcore/generateDockerfiles.sh 
 GenerateDockerFiles/dotnetcore/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir
 
