@@ -45,6 +45,10 @@ if [ "$APP_SVC_RUN_FROM_COPY" = true ]; then
     runFromPathArg="-runFromPath $runFromPath"
 fi
 
+if [ "$USE_DOTNET_MONITOR" = true ]; then
+    /opt/dotnetcore-tools/dotnet-monitor collect --metrics true --metricUrls "http://0.0.0.0:50050" > /var/log/dotnet-monitor.log 2>&1 &
+fi
+
 oryxArgs="create-script -appPath $appPath -output $startupCommandPath -defaultAppFilePath $defaultAppPath \
     -bindPort $PORT -userStartupCommand '$userStartupCommand' $runFromPathArg"
 
