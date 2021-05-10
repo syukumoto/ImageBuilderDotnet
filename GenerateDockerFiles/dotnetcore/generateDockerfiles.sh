@@ -45,7 +45,7 @@ function generateDockerFiles()
         echo "Copying ${DIR}/SampleApps/${STACK_VERSION}/bin.zip to ${CURR_VERSION_DIRECTORY}..."
         cp "${DIR}/SampleApps/${STACK_VERSION}/bin.zip" "${CURR_VERSION_DIRECTORY}"
 
-        if [ "$BASE_IMAGE" == "5.0" ]; then
+        if [ "$BASE_IMAGE" == "5.0" ] || [ "$BASE_IMAGE" == "6.0" ]; then
             BRANDING=".Net"
         fi
 
