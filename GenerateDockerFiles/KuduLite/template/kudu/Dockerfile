@@ -72,6 +72,9 @@ RUN apt-get update \
     clamav=0.102.3+dfsg-0~deb9u1 \
   && freshclam
 
+# Install azcopy
+RUN curl -L https://aka.ms/downloadazcopy-v10-linux | tar -C /usr/local/bin -xzf - --strip-components=1
+
 # Enable SSH for Kudu Console
 RUN apt-get install -y ssh \
    && sed -i '/^#Port* /s/^#//' /etc/ssh/sshd_config \

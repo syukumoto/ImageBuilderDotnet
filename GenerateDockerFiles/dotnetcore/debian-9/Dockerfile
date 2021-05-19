@@ -18,6 +18,8 @@ RUN apt-get update \
     && apt-get upgrade -y openssl \
     && rm -rf /var/lib/apt/lists/*
 
+RUN curl -L https://aka.ms/downloadazcopy-v10-linux | tar -C /usr/local/bin -xzf - --strip-components=1
+
 RUN mkdir -p /defaulthome/hostingstart \
     && mkdir -p /home/LogFiles/ \
     && echo "root:Docker!" | chpasswd \
