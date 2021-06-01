@@ -46,7 +46,7 @@ function generateDockerFiles()
         cp "${DIR}/SampleApps/${STACK_VERSION}/bin.zip" "${CURR_VERSION_DIRECTORY}"
 
         if [ "$BASE_IMAGE" == "5.0" ] || [ "$BASE_IMAGE" == "6.0" ]; then
-            BRANDING=".Net"
+            BRANDING=".NET"
         fi
 
         # Replace the DOTNET_BRANDING_PLACEHOLDER in hostinstart.html
