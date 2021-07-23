@@ -33,6 +33,9 @@ function generateKuduLiteDockerFiles()
     CURR_VERSION_DIRECTORY="${APP_SVC_REPO_DIR}/"
     TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
 
+    #Rename Dockerfile for main kudu
+    mv ${CURR_VERSION_DIRECTORY}/Dockerfile-Main ${CURR_VERSION_DIRECTORY}/Dockerfile
+
     echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
 
     # Replace placeholders, changing sed delimeter since '/' is used in path
@@ -53,6 +56,9 @@ function generateKuduLiteBusterInstallsDockerFiles()
     BASE_IMAGE_NAME="${BASE_IMAGE_REPO_NAME}:github-actions-buster-$BASE_IMAGE_VERSION_STREAM_FEED"
     CURR_VERSION_DIRECTORY="${DYN_INST_REPO_DIR}/"
     TARGET_DOCKERFILE="${CURR_VERSION_DIRECTORY}/Dockerfile"
+
+    #Rename Dockerfile for buster kudu
+    mv ${CURR_VERSION_DIRECTORY}/Dockerfile-Buster ${CURR_VERSION_DIRECTORY}/Dockerfile
 
     echo "Generating App Service Dockerfile and dependencies for image '$BASE_IMAGE_NAME' in directory '$CURR_VERSION_DIRECTORY'..."
 
