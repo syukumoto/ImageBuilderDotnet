@@ -1,14 +1,16 @@
-FROM buildpack-deps:jessie-curl
+FROM buildpack-deps:stretch-curl
 LABEL maintainer="Azure App Services Container Images <appsvc-images@microsoft.com>"
 
 ENV RUBY_VERSION=VERSION_PLACEHOLDER
 
-RUN echo "deb http://deb.debian.org/debian/ jessie main" > /etc/apt/sources.list \
- && echo "deb-src http://deb.debian.org/debian/ jessie main" >> /etc/apt/sources.list \
- && echo "deb http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
- && echo "deb-src http://security.debian.org/ jessie/updates main" >> /etc/apt/sources.list \
- && echo "deb http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
- && echo "deb-src http://archive.debian.org/debian jessie-backports main" >> /etc/apt/sources.list \
+ENV DEBIAN_FRONTEND noninteractive
+
+RUN echo "deb http://deb.debian.org/debian/ stretch main" > /etc/apt/sources.list \
+ && echo "deb-src http://deb.debian.org/debian/ stretch main" >> /etc/apt/sources.list \
+ && echo "deb http://security.debian.org/ stretch/updates main" >> /etc/apt/sources.list \
+ && echo "deb-src http://security.debian.org/ stretch/updates main" >> /etc/apt/sources.list \
+ && echo "deb http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
+ && echo "deb-src http://deb.debian.org/debian stretch-backports main" >> /etc/apt/sources.list \
  && echo "Acquire::Check-Valid-Until \"false\";" > /etc/apt/apt.conf
 
 RUN apt-get update -qq
@@ -17,7 +19,7 @@ RUN apt-get update -qq
 RUN apt-get install -y --no-install-recommends libreadline-dev bzip2 build-essential libssl-dev zlib1g-dev libpq-dev \
   libsqlite3-dev patch gawk g++ gcc make libc6-dev patch libreadline6-dev libyaml-dev sqlite3 autoconf \
   libgdbm-dev libncurses5-dev automake libtool bison pkg-config libffi-dev bison libxslt-dev \
-  libxml2-dev libmysqlclient-dev wget git net-tools dnsutils curl tcpdump iproute2
+  libxml2-dev default-libmysqlclient-dev  wget git net-tools dnsutils curl tcpdump iproute2
 
 # rbenv 
 ENV RBENV_ROOT="/usr/local/.rbenv"
@@ -104,8 +106,8 @@ ENV PATH ${PATH}:/home/site/wwwroot
 # maybe save a copy locally
 RUN wget http://ftp.us.debian.org/debian/pool/main/o/openssl1.0/libssl1.0.2_1.0.2u-1~deb9u1_amd64.deb \
   && dpkg -i libssl1.0.2_1.0.2u-1~deb9u1_amd64.deb \
-  && wget http://ftp.us.debian.org/debian/pool/main/libx/libxcrypt/libcrypt1-udeb_4.4.16-1_amd64.udeb \
-  && dpkg -i libcrypt1-udeb_4.4.16-1_amd64.udeb \
+  && wget http://ftp.us.debian.org/debian/pool/main/libx/libxcrypt/libcrypt1-udeb_4.4.18-4_amd64.udeb \
+  && dpkg -i libcrypt1-udeb_4.4.18-4_amd64.udeb \
   && wget http://http.us.debian.org/debian/pool/main/g/glibc/libc6-udeb_2.28-10_amd64.udeb \
   && dpkg -i --force-overwrite libc6-udeb_2.28-10_amd64.udeb \
   && wget http://ftp.us.debian.org/debian/pool/main/o/openssl/libcrypto1.1-udeb_1.1.0l-1~deb9u1_amd64.udeb \

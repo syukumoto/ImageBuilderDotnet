@@ -2,7 +2,7 @@ parameters:
   ascName: WAWS_Container_Images
   acrName: wawsimages.azurecr.io
   baseImageName: "mcr.microsoft.com/oryx"
-  baseImageVersion: "20210225.2"
+  baseImageVersion: "20210708.1"
   appSvcGitUrl: "https://github.com/Azure-App-Service"
   kuduliteInternalRepo: $(KUDU_REPO)
 
@@ -15,6 +15,8 @@ steps:
       exit 1
     fi
   displayName: 'Validate pipeline run'
+
+- task: ComponentGovernanceComponentDetection@0
 
 - task: Docker@1
   displayName: Container registry login
