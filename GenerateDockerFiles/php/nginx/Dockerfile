@@ -44,9 +44,6 @@ ENV WEBSITE_ROLE_INSTANCE_ID localRoleInstance
 ENV WEBSITE_INSTANCE_ID localInstance
 ENV PATH ${PATH}:/home/site/wwwroot
 
-# update nginx default site config
-COPY nginx_default /etc/nginx/sites-available/default
-
 RUN sed -i "s/access_log \/var\/log\/nginx\/access.log;/access_log off;/g" /etc/nginx/nginx.conf
 RUN sed -i "s/error_log \/var\/log\/nginx\/error.log;/error_log \/dev\/stderr;/g" /etc/nginx/nginx.conf
 
