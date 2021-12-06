@@ -1,7 +1,7 @@
 CODE_PROFILER_LOGS_DIR = "/home/LogFiles/CodeProfiler"
 CODE_PROFILER_INSTALLER_LOG_FILE = f"{CODE_PROFILER_LOGS_DIR}/installation.log"
 CODE_PROFILER_TRACE_NAME = f"{CODE_PROFILER_LOGS_DIR}/profiler_trace.json"
-PID_FILE_LOCATION = f"{CODE_PROFILER_LOGS_DIR}/app.pid"
+PID_FILE_LOCATION = f"{CODE_PROFILER_LOGS_DIR}/master_process.pid"
 
 GUNICORN_LOGFILE_SIGNAL_HANDLER_INFO = "Worker.handle_usr1 of <gunicorn.workers.sync.SyncWorker object"
 
