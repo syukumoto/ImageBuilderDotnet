@@ -1,5 +1,5 @@
-import signal
 import constants
+import signal
 
 class SignalHelper():
 
