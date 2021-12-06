@@ -1,6 +1,6 @@
+import constants
 import logging
 import os
-import constants as c
 from pathlib import Path
 from signal_helper import SignalHelper
 
@@ -18,12 +18,12 @@ class CodeProfilerInstaller:
                           f"and was updated to {logging.getLevelName(LOG_LEVEL)}")
     
     def _ensure_logs_dir_is_created(self):
-        Path(c.CODE_PROFILER_LOGS_DIR).mkdir(parents=True, exist_ok=True)
+        Path(constants.CODE_PROFILER_LOGS_DIR).mkdir(parents=True, exist_ok=True)
         
     def _initialize_logger(self):
         logger = logging.getLogger(__name__)
         logFormatter = logging.Formatter("%(asctime)s  [%(threadName)-10.10s] [%(levelname)-5.5s] : %(message)s")
-        fh = logging.FileHandler(c.CODE_PROFILER_INSTALLER_LOG_FILE)
+        fh = logging.FileHandler(constants.CODE_PROFILER_INSTALLER_LOG_FILE)
         fh.setLevel(logging.DEBUG)
         fh.setFormatter(logFormatter)
         logger.addHandler(fh)
@@ -33,7 +33,7 @@ class CodeProfilerInstaller:
         try:
             if self._should_profiler_be_enabled() and self.signal_helper.can_usr_signals_be_used():
                 from viztracer import VizTracer 
-                tracer = VizTracer(output_file= c.CODE_PROFILER_TRACE_NAME,
+                tracer = VizTracer(output_file= constants.CODE_PROFILER_TRACE_NAME,
                                    ignore_c_function=True, 
                                    plugins=['vizplugins.cpu_usage','vizplugins.memory_usage'], 
                                    max_stack_depth=20)
@@ -53,12 +53,12 @@ class CodeProfilerInstaller:
             self.shut_down()
     
     def _should_profiler_be_enabled(self):
-        enable_profiler_appsetting_value = os.environ.get(c.APP_SETTING_TO_ENABLE_CODE_PROFILER)    
+        enable_profiler_appsetting_value = os.environ.get(constants.APP_SETTING_TO_ENABLE_CODE_PROFILER)    
         return (enable_profiler_appsetting_value is not None
                 and enable_profiler_appsetting_value.lower() == "true")          
         
     def _set_signal_handler_not_initialized_env(status):
-        os.environ[c.CODE_PROFILER_SIGNAL_HANDLER_NOT_INITIALIZED_ENV_NAME] = f"{status}".lower()        
+        os.environ[constants.CODE_PROFILER_SIGNAL_HANDLER_NOT_INITIALIZED_ENV_NAME] = f"{status}".lower()        
     
     def _disable_code_profiler(self):
         self._set_signal_handler_not_initialized_env = True
