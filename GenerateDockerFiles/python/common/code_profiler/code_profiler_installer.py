@@ -54,8 +54,8 @@ class CodeProfilerInstaller:
     
     def _should_profiler_be_enabled(self):
         enable_profiler_appsetting_value = os.environ.get(c.APP_SETTING_TO_ENABLE_CODE_PROFILER)    
-        return enable_profiler_appsetting_value is not None \
-                and enable_profiler_appsetting_value.lower() == "true"           
+        return (enable_profiler_appsetting_value is not None
+                and enable_profiler_appsetting_value.lower() == "true")          
         
     def _set_signal_handler_not_initialized_env(status):
         os.environ[c.CODE_PROFILER_SIGNAL_HANDLER_NOT_INITIALIZED_ENV_NAME] = f"{status}".lower()        
