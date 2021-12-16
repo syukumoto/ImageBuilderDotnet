@@ -270,6 +270,7 @@ RUN set -ex \
 # Download and Install
 # ~. tools
 # 1. redis
+# 2. wp-cli
 # ====================
 RUN set -ex \
     # --------
@@ -301,6 +302,12 @@ RUN set -ex \
 	&& apk add --virtual .wordpress-phpexts-rundeps $runDeps \
 	&& apk del .build-deps \
 	&& docker-php-source delete \
+	# ----------
+	# 2. wp-cli tool
+	# ----------
+	&& curl -L -o /tmp/wp-cli.phar https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+	&& chmod +x /tmp/wp-cli.phar \
+	&& mv /tmp/wp-cli.phar /usr/local/bin/wp \
 	# ----------
 	# ~. upgrade/clean up
 	# ----------

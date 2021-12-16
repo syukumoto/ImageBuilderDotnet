@@ -33,9 +33,14 @@ setup_wordpress(){
 	        git branch --track $GIT_BRANCH origin/$GIT_BRANCH && git checkout $GIT_BRANCH
 	    fi
 
-	#remove .git
+        #remove .git
         rm  -rf $WORDPRESS_HOME/.git
         
+        echo "INFO: Installing WordPress..."
+        wp core install --url=$WEBSITE_HOSTNAME --title="${WORDPRESS_TITLE}" --admin_user=$WORDPRESS_ADMIN_USER --admin_password=$WORDPRESS_ADMIN_PASSWORD --admin_email=$WORDPRESS_ADMIN_EMAIL --path=$WORDPRESS_HOME --allow-root
+        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
+        wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
+
     else
         echo "INFO: Wordpress already exists, no need to GIT pull again."
     fi
