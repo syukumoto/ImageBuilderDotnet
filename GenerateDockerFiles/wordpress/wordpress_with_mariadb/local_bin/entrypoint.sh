@@ -109,7 +109,10 @@ setup_wordpress(){
         wp core install --url=$WEBSITE_HOSTNAME --title="${WORDPRESS_TITLE}" --admin_user=$WORDPRESS_ADMIN_USER --admin_password=$WORDPRESS_ADMIN_PASSWORD --admin_email=$WORDPRESS_ADMIN_EMAIL --path=$WORDPRESS_HOME --allow-root
         wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
         wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
+
         wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/' --path=$WORDPRESS_HOME --allow-root
+        wp option set rss_user_excerpt 1 --path=$WORDPRESS_HOME --allow-root
+        wp option set page_comments 1 --path=$WORDPRESS_HOME --allow-root
 
     else
         echo "INFO: There is one wordpress exist, no need to GIT pull again."
