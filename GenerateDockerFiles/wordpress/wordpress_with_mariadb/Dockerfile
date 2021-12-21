@@ -361,6 +361,7 @@ COPY logrotate.d/. /etc/logrotate.d/
 RUN chmod -R 444 /etc/logrotate.d
 # sysctl
 COPY sysctl.conf /etc/
+RUN sysctl vm.overcommit_memory=1
 # supervisor
 COPY supervisord.conf /etc/
 # wordpress
