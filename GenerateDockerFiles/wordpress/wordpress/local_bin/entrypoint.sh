@@ -89,7 +89,7 @@ fi
 
 # setup server root
 echo "chown for "$WORDPRESS_HOME 
-chown -R nginx-nginx $WORDPRESS_HOME
+chown -R nginx:nginx $WORDPRESS_HOME
 
 echo "Starting Redis ..."
 redis-server &
