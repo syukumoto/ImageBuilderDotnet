@@ -359,6 +359,8 @@ COPY logrotate.conf /etc/logrotate.conf
 RUN chmod 444 /etc/logrotate.conf
 COPY logrotate.d/. /etc/logrotate.d/
 RUN chmod -R 444 /etc/logrotate.d
+# sysctl
+COPY sysctl.conf /etc/
 # supervisor
 COPY supervisord.conf /etc/
 # wordpress
