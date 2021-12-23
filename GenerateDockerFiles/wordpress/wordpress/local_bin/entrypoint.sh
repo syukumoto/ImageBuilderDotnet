@@ -48,6 +48,7 @@ setup_wordpress(){
         wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings original 1 --path=$WORDPRESS_HOME --allow-root
 
+	chmod 755 /home/site/wwwroot/wp-content
     else
         echo "INFO: Wordpress already exists, no need to GIT pull again."
     fi
@@ -103,7 +104,7 @@ test ! -d "$SUPERVISOR_LOG_DIR" && echo "INFO: $SUPERVISOR_LOG_DIR not found. cr
 test ! -d "$NGINX_LOG_DIR" && echo "INFO: Log folder for nginx/php not found. creating..." && mkdir -p "$NGINX_LOG_DIR"
 test ! -e /home/50x.html && echo "INFO: 50x file not found. createing..." && cp /usr/share/nginx/html/50x.html /home/50x.html
 test -d "/home/etc/nginx" && mv /etc/nginx /etc/nginx-bak && ln -s /home/etc/nginx /etc/nginx
-test ! -d "/home/etc/nginx" && mkdir -p /home/etc && mv /etc/nginx /home/etc/nginx && ln -s /home/etc/nginx /etc/nginx
+test ! -d "/home/etc/nginx" && mkdir -p /home/etc && cp -R /etc/nginx /home/etc/ && rm -rf /etc/nginx && ln -s /home/etc/nginx /etc/nginx && ln -sf /usr/lib/nginx/modules /home/etc/nginx/modules
 
 
 echo "INFO: creating /run/php/php-fpm.sock ..."
