@@ -115,7 +115,13 @@ setup_wordpress(){
         wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
 
         wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
+        wp option set skip_smush_setup 1 --path=$WORDPRESS_HOME --allow-root
+        wp option patch update wp-smush-settings auto 1 --path=$WORDPRESS_HOME --allow-root
+        wp option patch update wp-smush-settings lossy 0 --path=$WORDPRESS_HOME --allow-root
+        wp option patch update wp-smush-settings strip_exif 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings original 1 --path=$WORDPRESS_HOME --allow-root
+        wp option patch update wp-smush-settings lazy_load 0 --path=$WORDPRESS_HOME --allow-root
+        wp option patch update wp-smush-settings usage 0 --path=$WORDPRESS_HOME --allow-root
 
     else
         echo "INFO: There is one wordpress exist, no need to GIT pull again."
