@@ -74,6 +74,10 @@ RUN set -ex \
             libxslt-dev                     \    
     && docker-php-source extract \
     && pecl install xdebug-beta apcu \
+    && pecl install imagick \
+    && docker-php-ext-enable imagick \
+    && docker-php-ext-install exif \
+    && docker-php-ext-install bcmath \
     && docker-php-ext-install -j "$(nproc)" \
 	    mysqli \
 		opcache \
