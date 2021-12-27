@@ -7,6 +7,57 @@ php -v
 # if defined, assume the container is running on Azure
 AZURE_DETECTED=$WEBSITES_ENABLE_APP_SERVICE_STORAGE
 
+
+update_php_config() {
+	local CONFIG_FILE="${1}"
+	local PARAM_NAME="${2}"
+	local PARAM_VALUE="${3}"
+	local VALUE_TYPE="${4}"
+	local PARAM_UPPER_BOUND="${5}"
+
+	if [[ -e $CONFIG_FILE && $PARAM_VALUE ]]; then
+		local FINAL_PARAM_VALUE
+
+		if [[ "$VALUE_TYPE" == "NUM" && $PARAM_VALUE =~ ^[0-9]+$ && $PARAM_UPPER_BOUND =~ ^[0-9]+$ ]]; then
+
+			if [[ "$PARAM_VALUE" -le "$PARAM_UPPER_BOUND" ]]; then
+				FINAL_PARAM_VALUE=$PARAM_VALUE
+			else
+				FINAL_PARAM_VALUE=$PARAM_UPPER_BOUND
+			fi
+
+		elif [[ "$VALUE_TYPE" == "MEM" && $PARAM_VALUE =~ ^[0-9]+M$ && $PARAM_UPPER_BOUND =~ ^[0-9]+M$ ]]; then
+
+			if [[ "${PARAM_VALUE::-1}" -le "${PARAM_UPPER_BOUND::-1}" ]]; then
+				FINAL_PARAM_VALUE=$PARAM_VALUE
+			else
+				FINAL_PARAM_VALUE=$PARAM_UPPER_BOUND
+			fi
+
+		elif [[ "$VALUE_TYPE" == "TOGGLE" ]] && [[ "$PARAM_VALUE" == "On" || "$PARAM_VALUE" == "Off" ]]; then
+			FINAL_PARAM_VALUE=$PARAM_VALUE
+		fi
+
+
+		if [[ $FINAL_PARAM_VALUE ]]; then
+			echo "updating php config value "$PARAM_NAME
+			sed -i "s/.*$PARAM_NAME.*/$PARAM_NAME = $FINAL_PARAM_VALUE/" $CONFIG_FILE
+		fi
+	fi
+}
+
+#Updating php configuration values
+if [[ -e $PHP_CUSTOM_CONF_FILE ]]; then
+    update_php_config $PHP_CUSTOM_CONF_FILE "file_uploads" $FILE_UPLOADS "TOGGLE"
+    update_php_config $PHP_CUSTOM_CONF_FILE "memory_limit" $PHP_MEMORY_LIMIT "MEM" $UB_PHP_MEMORY_LIMIT
+    update_php_config $PHP_CUSTOM_CONF_FILE "upload_max_filesize" $UPLOAD_MAX_FILESIZE "MEM" $UB_UPLOAD_MAX_FILESIZE
+    update_php_config $PHP_CUSTOM_CONF_FILE "post_max_size" $POST_MAX_SIZE "MEM" $UB_POST_MAX_SIZE
+    update_php_config $PHP_CUSTOM_CONF_FILE "max_execution_time" $MAX_EXECUTION_TIME "NUM" $UB_MAX_EXECUTION_TIME
+    update_php_config $PHP_CUSTOM_CONF_FILE "max_input_time" $MAX_INPUT_TIME "NUM" $UB_MAX_INPUT_TIME
+    update_php_config $PHP_CUSTOM_CONF_FILE "max_input_vars" $MAX_INPUT_VARS "NUM" $UB_MAX_INPUT_VARS
+fi
+
+
 setup_wordpress(){
 	if ! [ -e wp-includes/version.php ]; then
         echo "INFO: There in no wordpress, going to GIT pull...:"
@@ -92,6 +143,8 @@ fi
 # else
 #     echo "INFO: Permalink setting is exist!"
 # fi
+
+
 
 # setup server root
 if [ ! $AZURE_DETECTED ]; then 
