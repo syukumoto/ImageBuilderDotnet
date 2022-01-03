@@ -14,7 +14,8 @@ start-viztracer-profiler(){
 
 enable-code-profiler-helper-message(){
     echo "To enable code profiler, add the App Setting WEBSITE_ENABLE_DEFAULT_CODE_PROFILER=true"
-    echo "NOTE : Removing any App Setting will cause a restart of your App Service !!"        
+    echo "NOTE : Adding this App Setting will restart your App Service !!"
+    echo ""
 }
 
 code-profiler(){
