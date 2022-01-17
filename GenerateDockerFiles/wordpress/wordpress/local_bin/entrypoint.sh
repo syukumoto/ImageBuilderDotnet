@@ -9,6 +9,7 @@ AZURE_DETECTED=$WEBSITES_ENABLE_APP_SERVICE_STORAGE
 
 
 update_php_config() {
+	echo "INFO : inside update php"
 	local CONFIG_FILE="${1}"
 	local PARAM_NAME="${2}"
 	local PARAM_VALUE="${3}"
@@ -83,7 +84,7 @@ setup_wordpress(){
         wp option set page_comments 1 --path=$WORDPRESS_HOME --allow-root
 
         echo "INFO: Installing W3TC plugin..."
-        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
+        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --debug --allow-root
         wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
 
         echo "INFO: Installing Smush plugin..."
@@ -103,6 +104,7 @@ setup_wordpress(){
 	# Although in AZURE, we still need below chown cmd.
     chown -R nginx:nginx $WORDPRESS_HOME
 }
+
 echo "Setup openrc ..." && openrc && touch /run/openrc/softlevel
 
 # That wp-config.php doesn't exist means WordPress is not installed/configured yet.
@@ -110,7 +112,11 @@ if [ ! -e "$WORDPRESS_HOME/wp-config.php" ] || [ ! -e "$WORDPRESS_HOME/wp-includ
 	echo "INFO: $WORDPRESS_HOME/wp-config.php not found."    
 	echo "Installing WordPress ..." 
 	setup_wordpress
+	echo "Wordpress Installation Complete ..." 
+else 
+	echo "INFO: WordPress is already installed ... skipping setup"
 fi
+
 
 if [  -e "$WORDPRESS_HOME/wp-config.php" ]; then
     echo "INFO: Check SSL Setting..."    
@@ -119,7 +125,7 @@ if [  -e "$WORDPRESS_HOME/wp-config.php" ]; then
         echo "INFO: Add SSL Setting..."
         sed -i "/stop editing!/r $WORDPRESS_SOURCE/ssl-settings.txt" $WORDPRESS_HOME/wp-config.php        
     else        
-        echo "INFO: SSL Setting is exist!"
+        echo "INFO: SSL Settings exist!"
     fi
 fi
 
