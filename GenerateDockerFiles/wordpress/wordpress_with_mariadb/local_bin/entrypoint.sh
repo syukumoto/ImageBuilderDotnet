@@ -48,6 +48,7 @@ update_php_config() {
 
 #Updating php configuration values
 if [[ -e $PHP_CUSTOM_CONF_FILE ]]; then
+    echo "INFO: Updating PHP configurations..."
     update_php_config $PHP_CUSTOM_CONF_FILE "file_uploads" $FILE_UPLOADS "TOGGLE"
     update_php_config $PHP_CUSTOM_CONF_FILE "memory_limit" $PHP_MEMORY_LIMIT "MEM" $UB_PHP_MEMORY_LIMIT
     update_php_config $PHP_CUSTOM_CONF_FILE "upload_max_filesize" $UPLOAD_MAX_FILESIZE "MEM" $UB_UPLOAD_MAX_FILESIZE
@@ -162,9 +163,11 @@ setup_wordpress(){
         wp option set rss_user_excerpt 1 --path=$WORDPRESS_HOME --allow-root
         wp option set page_comments 1 --path=$WORDPRESS_HOME --allow-root
 
+        echo "INFO: Installing W3TC plugin..."
         wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
         wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
 
+        echo "INFO: Installing Smush plugin..."
         wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
         wp option set skip-smush-setup 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings auto 1 --path=$WORDPRESS_HOME --allow-root
