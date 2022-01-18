@@ -124,7 +124,7 @@ setup_wordpress() {
         echo "SMUSH_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+    if [ $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
         wp option set skip-smush-setup 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings auto 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings lossy 0 --path=$WORDPRESS_HOME --allow-root
