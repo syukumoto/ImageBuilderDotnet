@@ -97,17 +97,8 @@ setup_wordpress() {
         echo "WP_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
-        echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
-    fi
-
-    if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
-        wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
-        echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
-    fi
-    
     if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
+        rm -rf $WORDPRESS_HOME/wp-content/plugins/wp-smushit
         wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
@@ -122,6 +113,17 @@ setup_wordpress() {
         wp option patch update wp-smush-settings usage 0 --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
+
+    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
+        rm -rf $WORDPRESS_HOME/wp-content/plugins/w3-total-cache
+        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
+        echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
+    fi
+
+    if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+        wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
+        echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
+    fi    
 
     # Although in AZURE, we still need below chown cmd.
     chown -R nginx:nginx $WORDPRESS_HOME
@@ -196,8 +198,6 @@ setup_wordpress() {
 # 	echo "INFO: WordPress is already installed ... skipping setup"
 # fi
 
-echo "Setup openrc ..." && openrc && touch /run/openrc/softlevel
-
 setup_wordpress
 
 if [  -e "$WORDPRESS_HOME/wp-config.php" ]; then
@@ -223,7 +223,7 @@ fi
 #     echo "INFO: Permalink setting is exist!"
 # fi
 
-
+echo "Setup openrc ..." && openrc && touch /run/openrc/softlevel
 
 # setup server root
 if [ ! $AZURE_DETECTED ]; then 
