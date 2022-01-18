@@ -102,29 +102,29 @@ setup_wordpress() {
         echo "WP_INSTALLATION_COMPLETED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ ! $(grep "WP_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "WP_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
         wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/' --path=$WORDPRESS_HOME --allow-root
         wp option set rss_user_excerpt 1 --path=$WORDPRESS_HOME --allow-root
         wp option set page_comments 1 --path=$WORDPRESS_HOME --allow-root
         echo "WP_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
+    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
+        wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root
         echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+    if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
         wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
         echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
     
-    if [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
+    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
+        wp plugin install wp-smushit --force --activate --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ ! $(grep "SMUSH_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+    if [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
         wp option set skip-smush-setup 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings auto 1 --path=$WORDPRESS_HOME --allow-root
         wp option patch update wp-smush-settings lossy 0 --path=$WORDPRESS_HOME --allow-root
