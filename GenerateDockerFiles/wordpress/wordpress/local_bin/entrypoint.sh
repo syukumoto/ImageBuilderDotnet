@@ -98,7 +98,7 @@ setup_wordpress() {
     fi
 
     if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root
+        wp plugin install w3-total-cache --activate --path=$WORDPRESS_HOME --allow-root
         echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
 
@@ -108,7 +108,7 @@ setup_wordpress() {
     fi
     
     if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install wp-smushit --force --activate --path=$WORDPRESS_HOME --allow-root
+        wp plugin install wp-smushit --activate --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
     fi
 
