@@ -97,16 +97,6 @@ setup_wordpress() {
         echo "WP_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
 
-    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
-        wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root
-        echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
-    fi
-
-    if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
-        wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
-        echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
-    fi
-    
     if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "SMUSH_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
         wp plugin install wp-smushit --force --activate --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
@@ -122,6 +112,16 @@ setup_wordpress() {
         wp option patch update wp-smush-settings usage 0 --path=$WORDPRESS_HOME --allow-root
         echo "SMUSH_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
     fi
+
+    if [ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
+        wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root
+        echo "W3TC_PLUGIN_INSTALLED" >> $WORDPRESS_LOCK_FILE
+    fi
+
+    if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
+        wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root
+        echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
+    fi    
 
     # Although in AZURE, we still need below chown cmd.
     chown -R nginx:nginx $WORDPRESS_HOME
@@ -196,11 +196,14 @@ setup_wordpress() {
 # 	echo "INFO: WordPress is already installed ... skipping setup"
 # fi
 
-echo "Setup openrc ..." && openrc && touch /run/openrc/softlevel
+if ! [[ $SKIP_WP_INSTALLATION ]] || ! [[ "$SKIP_WP_INSTALLATION" == "true" 
+    || "$SKIP_WP_INSTALLATION" == "TRUE" || "$SKIP_WP_INSTALLATION" == "True" ]]; then
+    setup_wordpress
+else 
+    echo "INFO: Skipping WP installation..."
+fi
 
-setup_wordpress
-
-if [  -e "$WORDPRESS_HOME/wp-config.php" ]; then
+if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     echo "INFO: Check SSL Setting..."    
     SSL_DETECTED=$(grep "\$_SERVER\['HTTPS'\] = 'on';" $WORDPRESS_HOME/wp-config.php)
     if [ ! SSL_DETECTED ];then
@@ -223,7 +226,7 @@ fi
 #     echo "INFO: Permalink setting is exist!"
 # fi
 
-
+echo "Setup openrc ..." && openrc && touch /run/openrc/softlevel
 
 # setup server root
 if [ ! $AZURE_DETECTED ]; then 
