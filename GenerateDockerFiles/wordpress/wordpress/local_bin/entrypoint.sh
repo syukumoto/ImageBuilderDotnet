@@ -196,9 +196,14 @@ setup_wordpress() {
 # 	echo "INFO: WordPress is already installed ... skipping setup"
 # fi
 
-setup_wordpress
+if ! [[ $SKIP_WP_INSTALLATION ]] || ! [[ "$SKIP_WP_INSTALLATION" == "true" 
+    || "$SKIP_WP_INSTALLATION" == "TRUE" || "$SKIP_WP_INSTALLATION" == "True" ]]; then
+    setup_wordpress
+else 
+    echo "INFO: Skipping WP installation..."
+fi
 
-if [  -e "$WORDPRESS_HOME/wp-config.php" ]; then
+if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     echo "INFO: Check SSL Setting..."    
     SSL_DETECTED=$(grep "\$_SERVER\['HTTPS'\] = 'on';" $WORDPRESS_HOME/wp-config.php)
     if [ ! SSL_DETECTED ];then
