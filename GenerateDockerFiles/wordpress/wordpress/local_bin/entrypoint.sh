@@ -132,10 +132,11 @@ setup_wordpress() {
     fi
 
     if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
-        if wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root; then
+        if mkdir -p $WORDPRESS_HOME/wp-content/cache/tmp \
+        && wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root; then
             echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
         fi
-    fi    
+    fi
 
     # Although in AZURE, we still need below chown cmd.
     chown -R nginx:nginx $WORDPRESS_HOME
