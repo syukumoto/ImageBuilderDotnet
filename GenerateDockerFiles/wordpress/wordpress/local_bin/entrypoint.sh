@@ -133,6 +133,7 @@ setup_wordpress() {
 
     if [ $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ]; then
         if mkdir -p $WORDPRESS_HOME/wp-content/cache/tmp \
+        && mkdir -p $WORDPRESS_HOME/wp-content/w3tc-config \
         && wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root; then
             echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
         fi
