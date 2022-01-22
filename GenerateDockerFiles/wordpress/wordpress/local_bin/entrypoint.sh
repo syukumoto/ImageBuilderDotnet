@@ -146,7 +146,7 @@ if ! [[ $SKIP_WP_INSTALLATION ]] || ! [[ "$SKIP_WP_INSTALLATION" == "true"
 
     if [ ! -e "$WORDPRESS_HOME/wp-config.php" ] || [ ! -e "$WORDPRESS_HOME/wp-includes/version.php" ]; then
         echo "INFO: $WORDPRESS_HOME/wp-config.php or wp-includes/version.php not found."
-        rm -f WORDPRESS_LOCK_FILE
+        rm -f $WORDPRESS_LOCK_FILE
     fi
 
     setup_wordpress
