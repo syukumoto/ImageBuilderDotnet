@@ -175,6 +175,7 @@ setup_wordpress() {
         if wp rewrite structure '/%year%/%monthnum%/%day%/%postname%/' --path=$WORDPRESS_HOME --allow-root \
         && wp option set rss_user_excerpt 1 --path=$WORDPRESS_HOME --allow-root \
         && wp option set page_comments 1 --path=$WORDPRESS_HOME --allow-root \
+        && wp option update blogdescription "" --path=$WORDPRESS_HOME --allow-root \
         && wp option set auto_update_core_major disabled --path=$WORDPRESS_HOME --allow-root \
         && wp option set auto_update_core_minor disabled --path=$WORDPRESS_HOME --allow-root \
         && wp option set auto_update_core_dev disabled --path=$WORDPRESS_HOME --allow-root; then
