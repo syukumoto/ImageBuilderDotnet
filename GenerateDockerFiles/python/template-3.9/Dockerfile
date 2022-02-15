@@ -54,7 +54,7 @@ ENV PYTHONPATH "${PYTHONPATH}:/opt/startup/code_profiler"
 RUN mkdir -p /opt/startup/code_profiler
 COPY common/code_profiler/ /opt/startup/code_profiler/
 RUN echo "alias vizviewer=/opt/startup/code_profiler/vizviewer.sh" >>/root/.bashrc \
-    && cat '/opt/startup/code_profiler/collect_trace.sh' >>/root/.bashrc 
+    && pip install /opt/startup/code_profiler/appsvc_code_profiler-1.0.0-py3-none-any.whl
 
 # configure startup
 RUN chmod -R 777 /opt/startup
