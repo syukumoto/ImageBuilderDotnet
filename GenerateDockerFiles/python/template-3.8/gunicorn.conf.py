@@ -14,9 +14,8 @@ except Exception as e:
 
 def post_worker_init(worker):
     try:
-        profiler_installer = CodeProfilerInstaller()
-        profiler_installer.add_signal_handlers()              
+        cpi = CodeProfilerInstaller()
+        cpi.install()              
             
     except Exception as e:
         print(e)
-        os.environ[constants.CODE_PROFILER_SIGNAL_HANDLER_NOT_INITIALIZED_ENV_NAME]="true"
