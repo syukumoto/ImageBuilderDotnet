@@ -1,5 +1,8 @@
-import constants
-import code_profiler_installer as cpi
+import os
+
+# appsvc_profiler is currenly installed from appsvc_code_profiler-1.0.0-py3-none-any.whl
+from appsvc_profiler import CodeProfilerInstaller
+from appsvc_profiler.constants import CodeProfilerConstants as constants
 from pathlib import Path
 
 try:
@@ -11,8 +14,8 @@ except Exception as e:
 
 def post_worker_init(worker):
     try:
-        profiler_installer = cpi.CodeProfilerInstaller()
-        profiler_installer.add_signal_handlers()              
+        cpi = CodeProfilerInstaller()
+        cpi.install()              
             
     except Exception as e:
         print(e)
