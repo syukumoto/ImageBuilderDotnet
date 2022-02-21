@@ -40,6 +40,15 @@ COPY sshd_config /etc/ssh/
 RUN mkdir -p /opt/startup
 COPY init_container.sh /opt/startup/init_container.sh
 
+# gunicorn custom config
+COPY gunicorn.conf.py /opt/startup
+ENV PYTHON_USE_GUNICORN_CONFIG_FROM_PATH "/opt/startup/gunicorn.conf.py"
+
+# setup appServiceAppLogs
+RUN mkdir -p /opt/startup/app_logs
+COPY common/app_logs/ /opt/startup/app_logs/
+ENV PYTHONPATH "${PYTHONPATH}:/opt/startup/app_logs"
+
 # setup default site
 RUN mkdir /opt/defaultsite
 COPY hostingstart.html /opt/defaultsite
