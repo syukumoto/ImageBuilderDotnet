@@ -1,6 +1,7 @@
 import threading
-import appServiceAppLogs as asal
 import os
+import appServiceAppLogs as asal
+
 from pathlib import Path
 
 # For python version > 3.6, the following constants are dervied from appsvc_profiler package.
