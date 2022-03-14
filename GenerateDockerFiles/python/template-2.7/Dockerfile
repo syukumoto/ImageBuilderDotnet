@@ -24,8 +24,7 @@ RUN apt-get update \
     && pip install gunicorn \ 
     && pip install virtualenv \
     && pip install flask \
-    && pip install scandir \
-    && pip install pathlib2
+    && pip install scandir 
 
 WORKDIR ${HOME_SITE}
 
