@@ -48,7 +48,7 @@ update_php_config() {
 
 temp_server_start() {
     mkdir -p /home/site/temp-root
-    cp $WORDPRESS_SOURCE/hostingstart.html /home/site/temp-root/hostingstart.html
+    cp -r /usr/src/temp-server/* /home/site/temp-root/
     cp /usr/src/nginx/temp-server.conf /etc/nginx/conf.d/default.conf
     /usr/sbin/nginx
 }

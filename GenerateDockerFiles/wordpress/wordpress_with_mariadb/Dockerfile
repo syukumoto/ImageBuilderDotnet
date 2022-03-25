@@ -380,6 +380,8 @@ RUN chmod -R 444 /etc/logrotate.d
 COPY supervisord.conf /etc/
 # wordpress
 COPY wordpress_src/. $WORDPRESS_SOURCE/
+#temporary server
+COPY temp_server_src/. /usr/src/temp-server/
 # php
 COPY uploads.ini /usr/local/etc/php/conf.d/
 
