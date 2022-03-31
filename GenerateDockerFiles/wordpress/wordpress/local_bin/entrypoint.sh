@@ -50,7 +50,22 @@ temp_server_start() {
     mkdir -p /home/site/temp-root
     cp -r /usr/src/temp-server/* /home/site/temp-root/
     cp /usr/src/nginx/temp-server.conf /etc/nginx/conf.d/default.conf
-    /usr/sbin/nginx
+    local try_count=1
+    while [ $try_count -le 10 ]
+    do 
+        /usr/sbin/nginx
+        local port=`netstat -nlt|grep 80|wc -l`
+        local process=`ps -ef |grep nginx|grep -v grep |wc -l`
+        if [ $port -ge 1 ] && [ $process -ge 1 ]; then 
+            echo "INFO: Temporary Server started... "            
+            break
+        else            
+            echo "INFO: Nginx couldn't start, trying again..."
+            killall nginx 2> /dev/null 
+            sleep 5s
+        fi
+        let try_count+=1 
+    done
 }
 
 temp_server_stop() {
