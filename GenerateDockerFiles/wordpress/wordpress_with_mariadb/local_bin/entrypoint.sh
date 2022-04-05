@@ -187,7 +187,7 @@ setup_wordpress() {
     fi
     
     if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-        if [[ $CDN_ENABLED ]] || [[ "$CDN_ENABLED" == "true" || "$CDN_ENABLED" == "TRUE" || "$CDN_ENABLED" == "True" ]];then
+        if [[ $CDN_ENABLED ]] && [[ "$CDN_ENABLED" == "true" || "$CDN_ENABLED" == "TRUE" || "$CDN_ENABLED" == "True" ]];then
             if [[ $CDN_ENDPOINT ]]; then
                 echo "INFO: Scheduling CDN configuration 10 minutes from now.."
                 #start atd daemon
