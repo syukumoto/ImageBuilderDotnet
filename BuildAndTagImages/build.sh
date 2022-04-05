@@ -158,7 +158,7 @@ function buildDockerImage()
 	
         displayArtifactsDir "${SYSTEM_ARTIFACTS_DIR}"
         cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}"
-        displayInformationRegardingImageBeingBuilt $BuildVerRepoTag $appSvcDockerfilePath
+        displayInformationRegardingImageToBeBuilt $BuildVerRepoTag $appSvcDockerfilePath
         echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
         docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
         docker tag $BuildVerRepoTag $MCRRepoTag

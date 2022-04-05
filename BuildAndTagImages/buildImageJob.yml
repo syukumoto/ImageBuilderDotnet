@@ -1,10 +1,10 @@
 parameters:
   ascName: WAWS_Container_Images
   acrName: wawsimages.azurecr.io
-  stackName: $(STACK)
+  stackName: ""
   imgTag: "$(Build.BuildNumber)"
   filesRootPath: "GitRepo"
-  stackVersion: $(STACK_VERSION)
+  stackVersion: ""
 
 steps:
 - script: |
