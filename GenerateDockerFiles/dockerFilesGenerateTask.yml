@@ -31,7 +31,7 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Generate Go Docker Files'
-  condition: or(eq(variables.stack, ''), eq(variables.stack,'go')
+  condition: or(eq(variables.stack, ''), eq(variables.stack,'go'))
   inputs:
     scriptPath: ./GenerateDockerFiles/go/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
