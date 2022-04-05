@@ -38,14 +38,14 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Generate Node Docker Files'
-    condition: or(eq(parameters.stack, ''), eq(parameters.stack,'node'))
+  condition: or(eq(parameters.stack, ''), eq(parameters.stack,'node'))
   inputs:
     scriptPath: ./GenerateDockerFiles/node/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
 - task: ShellScript@2
   displayName: 'Generate ASP .NET Core Docker Files'
-    condition: or(eq(parameters.stack, ''), eq(parameters.stack,'dotnetcore'))
+  condition: or(eq(parameters.stack, ''), eq(parameters.stack,'dotnetcore'))
   inputs:
     scriptPath: ./GenerateDockerFiles/dotnetcore/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config ${{ parameters.stackVersion }}
@@ -59,7 +59,7 @@ steps:
 
 - task: ShellScript@2
   displayName: 'Generate PHP Docker Files'
-    condition: or(eq(parameters.stack, ''), eq(parameters.stack,'php'))
+  condition: or(eq(parameters.stack, ''), eq(parameters.stack,'php'))
   inputs:
     scriptPath: ./GenerateDockerFiles/php/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
