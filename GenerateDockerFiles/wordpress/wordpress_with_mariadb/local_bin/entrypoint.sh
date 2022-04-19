@@ -118,6 +118,31 @@ setup_phpmyadmin(){
     fi 
 }    
 
+translate_welcome_content() {
+    if [  $(grep "WP_LANGUAGE_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "WP_TRANSLATE_WELCOME_DATA_COMPLETED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
+        if [[ $WORDPRESS_LOCALE_CODE ]] && [[ ! "$WORDPRESS_LOCALE_CODE" == "en_US"  ]]; then
+            local welcomedatapath="$WORDPRESS_SRC_PATH/welcome-data/$WORDPRESS_LOCALE_CODE"
+            local blogname=$(cat "$welcomedatapath/$WORDPRESS_LOCALE_CODE.blogname" 2>/dev/null)
+	        local blogdesc=$(cat "$welcomedatapath/$WORDPRESS_LOCALE_CODE.blogdesc" 2>/dev/null)
+	        local postname=$(cat "$welcomedatapath/$WORDPRESS_LOCALE_CODE.postname" 2>/dev/null)
+	        local postcontent=$(cat "$welcomedatapath/$WORDPRESS_LOCALE_CODE.postcontent" 2>/dev/null)
+
+            if [[ $postname ]] && [[ $postcontent ]] && [[ $blogname ]] && [[ $blogdesc ]]; then
+                if wp option update blogname "$blogname" --path=$WORDPRESS_HOME --allow-root \
+                && wp option update blogdescription "$blogdesc" --path=$WORDPRESS_HOME --allow-root \
+                && wp post delete 1 --force --path=$WORDPRESS_HOME --allow-root \
+                && wp post create --post_content="$postcontent" --post_title="$postname" --post_status=publish --path=$WORDPRESS_HOME --allow-root; then
+                    echo "WP_TRANSLATE_WELCOME_DATA_COMPLETED" >> $WORDPRESS_LOCK_FILE
+                fi
+            else
+                echo "WP_TRANSLATE_WELCOME_DATA_COMPLETED" >> $WORDPRESS_LOCK_FILE
+            fi
+        else
+            echo "WP_TRANSLATE_WELCOME_DATA_COMPLETED" >> $WORDPRESS_LOCK_FILE
+        fi
+    fi
+}
+
 setup_wordpress() { 
     if [ ! $(grep "WORDPRESS_PULL_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
         while [ -d $WORDPRESS_HOME ]
@@ -135,7 +160,7 @@ setup_wordpress() {
     fi
 
     if [ $(grep "WORDPRESS_PULL_COMPLETED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
-        if wp core install --url=$WEBSITE_HOSTNAME --title="${WORDPRESS_TITLE}" --admin_user=$WORDPRESS_ADMIN_USER --admin_password=$WORDPRESS_ADMIN_PASSWORD --admin_email=$WORDPRESS_ADMIN_EMAIL --skip-email --path=$WORDPRESS_HOME --allow-root; then
+        if wp core install --url=$WEBSITE_HOSTNAME --title="WordPress on Azure" --admin_user=$WORDPRESS_ADMIN_USER --admin_password=$WORDPRESS_ADMIN_PASSWORD --admin_email=$WORDPRESS_ADMIN_EMAIL --skip-email --path=$WORDPRESS_HOME --allow-root; then
             echo "WP_INSTALLATION_COMPLETED" >> $WORDPRESS_LOCK_FILE
         fi
     fi
@@ -213,6 +238,8 @@ setup_wordpress() {
         fi
     fi
     
+    translate_welcome_content
+
     if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ $(grep "SMUSH_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
         echo "FIRST_TIME_SETUP_COMPLETED" >> $WORDPRESS_LOCK_FILE
     fi
