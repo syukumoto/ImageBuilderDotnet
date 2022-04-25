@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# This script generates Dockerfiles for Kudulite Hotfix Images for Azure App Service on Linux.
+# This script generates Dockerfiles for Kudulite HotPatch Images for Azure App Service on Linux.
 #
 # --------------------------------
 # What are Kudulite HotPatch Images?
 # --------------------------------
 # Generally we use oryx/build as the base image to build Kudulite images. During a release, 
 # oryx/build image remains constant. We only keep updating Kudulite code to take in any fixes.
-# To keep the number of unique layers smaller, we use take a HotPatch approach and generate Kudulite Hotfix Images
+# To keep the number of unique layers smaller, we use take a HotPatch approach and generate Kudulite HotPatch Images
 # We use previous Kudulite image as base image and just build the Kudulite code
 
 set -e
@@ -30,7 +30,7 @@ declare -r DYN_INST_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/$STACK_NAME/GitRepo-DynInst"
 declare -r DYN_INST_REPO_BRANCH="${KUDULITE_BRANCH:="dev"}"
 
 
-function generateDockerFilesForKuduliteHotfixImage()
+function generateDockerFilesForKuduliteHotPatchImage()
 {
 
     local is_buster_image=$1
@@ -50,14 +50,14 @@ function generateDockerFilesForKuduliteHotfixImage()
     # use base image as Kudulite - mcr.microsoft.com/appsvc/kudulite:$BASE_IMAGE_VERSION_STREAM_FEED
 
     # Base Image
-    local base_image_name="${BASE_IMAGE_REPO_NAME}:hotfix_$kudulite_tag"
+    local base_image_name="${BASE_IMAGE_REPO_NAME}:$kudulite_tag"
     
     local target_dockerfile="${current_version_directory}/RolePatcher/$dockerfile_name"
     
     #Rename Dockerfile for kudu
     mv ${target_dockerfile} ${current_version_directory}/Dockerfile
 
-    echo "Generating Dockerfile for hotfix kudulite image '$base_image_name' in directory '$current_version_directory'..."
+    echo "Generating Dockerfile for HotPatch kudulite image '$base_image_name' in directory '$current_version_directory'..."
 
     # Replace placeholders, changing sed delimeter since '/' is used in path
     sed -i "s|BASE_IMAGE|$base_image_name|g" "${current_version_directory}/Dockerfile"
@@ -71,7 +71,7 @@ function generateDockerFilesForKuduliteHotfixImage()
 
 function pullAppSvcRepo()
 {
-    # Create Stretch based Kudulite Hotfix Image 
+    # Create Stretch based Kudulite HotPatch Image 
     echo "Cloning App Service KuduLiteBuild Repository in $APP_SVC_REPO_DIR"
     git clone $APPSVC_KUDULITE_REPO $APP_SVC_REPO_DIR
     cd $APP_SVC_REPO_DIR
@@ -81,7 +81,7 @@ function pullAppSvcRepo()
     chmod -R 777 $APP_SVC_REPO_DIR
     echo
 
-    # Create Buster based Kudulite Hotfix Image 
+    # Create Buster based Kudulite HotPatch Image 
     echo "Cloning App Service KuduLiteBuild Repository in $DYN_INST_REPO_DIR"
     git clone $APPSVC_KUDULITE_REPO $DYN_INST_REPO_DIR
     cd $DYN_INST_REPO_DIR
@@ -94,6 +94,6 @@ function pullAppSvcRepo()
 pullAppSvcRepo
 
 # Arg 1 : Is Buster Image
-generateDockerFilesForKuduliteHotfixImage false
+generateDockerFilesForKuduliteHotPatchImage false
 echo
-generateDockerFilesForKuduliteHotfixImage true
+generateDockerFilesForKuduliteHotPatchImage true
