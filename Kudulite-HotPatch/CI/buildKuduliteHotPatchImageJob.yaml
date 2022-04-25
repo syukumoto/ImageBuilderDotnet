@@ -37,7 +37,7 @@ steps:
 - task: ShellScript@2
   displayName: 'Build Images'
   inputs:
-    scriptPath: ./Kudulite-HotPatch/Scripts/buildKuduliteHotPatchImages.sh
+    scriptPath: ./Kudulite-HotPatch/Scripts/buildKuduliteHotPatchImage.sh
     args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber) ${{ parameters.stackName }} $(Build.Reason) ${{ parameters.filesRootPath }} ${{ parameters.imgTag }}
 
 # Publish Build Artifacts
