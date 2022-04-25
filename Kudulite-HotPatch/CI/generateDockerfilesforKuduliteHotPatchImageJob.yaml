@@ -24,3 +24,7 @@ steps:
     scriptPath: ./Kudulite-HotPatch/Scripts/generateDockerfilesforKuduliteHotPatchImage.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.kuduliteInternalRepo }} $(System.DefaultWorkingDirectory)/Config ${{ parameters.kuduliteBranch }}
 
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    artifactName: 'drop'
