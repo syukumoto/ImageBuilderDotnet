@@ -2,7 +2,7 @@
 # --------------------------------------------------------------------------------------------
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT license.
-# This script builds Docker Images for all stacks on Azure App Service on Linux.
+# This script builds Kudulite Hot Patch stretch and buster based images
 # --------------------------------------------------------------------------------------------
 
 set -e
