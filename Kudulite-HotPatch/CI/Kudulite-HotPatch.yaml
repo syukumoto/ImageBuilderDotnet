@@ -12,7 +12,7 @@ jobs:
     vmImage: ubuntu-18.04
   timeoutInMinutes: 150
   steps:
-  - template: CleanUp/cleanImageCache.yml
+  - template: ../../CleanUp/cleanImageCache.yml
 
 - job: Job_GenerateDockerFiles
   displayName: Generate DockerFiles
