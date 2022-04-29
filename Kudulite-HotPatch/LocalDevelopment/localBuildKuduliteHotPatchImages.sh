@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage : Build and tag docker image for Kudulite hotfix locally
+# Usage : Build and tag docker image for Kudulite HotPatch locally
 # 
 
 BuildNumber=$1
@@ -21,7 +21,7 @@ function buildAndTagImages()
 
     local buildNumber=$3  
     buildNumber="${buildNumber:="$BuildNumber"}" 
-    Kudulite-Hotfix/Scripts/buildKuduliteHotfixImage.sh $DockerFileDir appsvctest "Config" $BuildNumber "kudulite" "PullRequest" $githubRepo $buildNumber $stackVersion
+    Kudulite-HotPatch/Scripts/buildKuduliteHotPatchImage.sh $DockerFileDir appsvctest "Config" $BuildNumber "kudulite" "PullRequest" $githubRepo $buildNumber $stackVersion
 }
 
 buildAndTagImages "kudulite"
