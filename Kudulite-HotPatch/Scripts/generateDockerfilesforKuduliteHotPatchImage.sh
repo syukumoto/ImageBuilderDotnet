@@ -33,14 +33,14 @@ declare -r DYN_INST_REPO_BRANCH="${KUDULITE_BRANCH:="dev"}"
 function generateDockerFilesForKuduliteHotPatchImage()
 {
 
-    local is_buster_image=$1
-    is_buster_image="${is_buster_image:=false}" 
+    local image_type=$1
+    image_type="${image_type:=stretch}" 
 
     local dockerfile_name="Dockerfile-RP-Main"
     local kudulite_tag=$BASE_IMAGE_VERSION_STREAM_FEED
     local current_version_directory="${APP_SVC_REPO_DIR}/"
 
-    if [ "$is_buster_image" = "true" ]; then
+    if [ "$image_type" = "buster" ]; then
         dockerfile_name="Dockerfile-RP-Buster"
         kudulite_tag="buster_$BASE_IMAGE_VERSION_STREAM_FEED"
         current_version_directory="$DYN_INST_REPO_DIR"
@@ -93,7 +93,7 @@ function pullAppSvcRepo()
 
 pullAppSvcRepo
 
-# Arg 1 : Is Buster Image
-generateDockerFilesForKuduliteHotPatchImage false
+# Arg 1 : Kudulite Image type
+generateDockerFilesForKuduliteHotPatchImage "stretch"
 echo
-generateDockerFilesForKuduliteHotPatchImage true
+generateDockerFilesForKuduliteHotPatchImage "buster"
