@@ -294,4 +294,4 @@ pr:
   paths:
     exclude: 
       - "Kudulite-HotPatch/*"
-      - "V2/*"
+      - "v2/*"
