@@ -48,3 +48,8 @@ jobs:
       stackName: KuduLite
 
 trigger: none
+
+pr:
+  paths:
+    include: 
+      - "../*"
