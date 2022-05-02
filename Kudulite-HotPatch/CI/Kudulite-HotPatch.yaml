@@ -53,3 +53,5 @@ pr:
   paths:
     include: 
       - "../*"
+    exclude:
+      - "../LocalDevelopment/*"
