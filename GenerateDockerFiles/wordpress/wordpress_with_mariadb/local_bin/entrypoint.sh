@@ -218,7 +218,7 @@ setup_wordpress() {
                 #start atd daemon
                 service atd start
                 service atd status
-                echo 'bash /usr/local/bin/w3tc_cdn_config.sh' | at now +5 minutes
+                echo 'bash /usr/local/bin/w3tc_cdn_config.sh' | at now +10 minutes
             fi
         fi
     fi
