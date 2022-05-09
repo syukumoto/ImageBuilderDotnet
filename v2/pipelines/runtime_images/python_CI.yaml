@@ -15,7 +15,7 @@ variables:
     value: mcr.microsoft.com/oryx
   
   - name: baseImageVersion
-    value: "20220329.1"
+    value: "20220502.2"
 
   - name: stackName
     value: "python"
