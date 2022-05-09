@@ -118,13 +118,13 @@ function build_runtime_images()
                     local wawsimages_acr_tag_name_in_upper_case="${WAWS_IMAGE_REPO_NAME}/${stack_modifed_name}:${TAG_MOD}"
                     local wawsimages_acr_tag_name_in_lower_case="${wawsimages_acr_tag_name_in_upper_case,,}"
 
-                    local runtime_image_docker_file_path="$DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED/${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}/Dockerfile"
+                    local runtime_image_docker_file_path="Dockerfile"
 
                     display_files_in_artifacts_directory "${SYSTEM_ARTIFACTS_DIR}"
                     display_files_in_stack_directory "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"                    
-
-                    cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"                    
                     display_information_regarding_image_to_be_built $wawsimages_acr_tag_name_in_lower_case $runtime_image_docker_file_path
+
+                    cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/GitRepo/${STACK_VERSION}"
 
                     # Build Runtime Images:
                     # php-xdebug depends of published images
