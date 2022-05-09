@@ -29,7 +29,7 @@ parameters:
     type: string
     default: python
 
-  - name: Python_2.7
+  - name: Python_27
     type: boolean
     default: true
 
@@ -69,7 +69,7 @@ jobs:
   steps:
   - template: cleanup_job.yaml
 
-- ${{ if eq(parameters.Python_2.7, true) }}:
+- ${{ if eq(parameters.Python_27, true) }}:
   - job: Job_Build_Python_27_Image
     displayName: Build Python 2.7 Image
     dependsOn: Job_CleanUp
