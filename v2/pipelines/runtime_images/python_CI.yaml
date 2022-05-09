@@ -12,28 +12,28 @@ parameters:
   stack: "python"
 
   - name: Python_2.7
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
   - name: Python_3.6
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
   - name: Python_3.7
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
   - name: Python_3.8
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
   - name: Python_3.9
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
   - name: Python_3.10
-  type: boolean
-  default: true
+    type: boolean
+    default: true
 
 resources:
 - repo: self
