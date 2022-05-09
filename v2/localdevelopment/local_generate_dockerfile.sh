@@ -44,7 +44,8 @@ kudulite_branch="${KUDULITE_BRANCH:="dev"}"
 
 # Declaring constants
 declare -r IMAGEBUILDER_REPO_V2_SRC_FOLDER="../src"
-declare -r OUTPUT_DIRECTORY="../../output/DockerFiles"
+declare -r DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+declare -r OUTPUT_DIRECTORY="$DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED/../../output/DockerFiles"
 
 echo "Base Image          : $oryx_base_image_name"
 echo "Base Image Version  : $oryx_base_image_version"

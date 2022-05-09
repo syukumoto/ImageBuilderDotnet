@@ -16,7 +16,8 @@
 # --------------------------------------------------------------------------------------------
 
 declare -r IMAGEBUILDER_REPO_V2_SRC_FOLDER="../src"
-declare -r GENERATED_DOCKERFILES_DIRECTORY="../../output/DockerFiles"
+declare -r DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+declare -r GENERATED_DOCKERFILES_DIRECTORY="$DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED/../../output/DockerFiles"
 
 while getopts ":s:v:k:t:" opt; do
   case $opt in

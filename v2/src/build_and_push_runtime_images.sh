@@ -153,7 +153,7 @@ function build_runtime_images()
                         docker push $mcr_tag_in_lower_case
                     fi
 
-                    echo $mcr_tag_in_lower_case >> $DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED/$SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
+                    echo $mcr_tag_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
                 done
             fi
             
