@@ -5,11 +5,29 @@ pr:
       - "../../src/common/*"
 
 parameters:
-  ascName: WAWS_Container_Images
-  acrName: wawsimages.azurecr.io
-  baseImageName: "mcr.microsoft.com/oryx"
-  baseImageVersion: "20220329.1"
-  stack: "python"
+  - name: ascName
+    type: string
+    default: WAWS_Container_Images
+  
+  - name: ascName
+    type: string
+    default: WAWS_Container_Images
+
+  - name: acrName
+    type: string
+    default: wawsimages.azurecr.io
+
+  - name: baseImageName
+    type: string
+    default: "mcr.microsoft.com/oryx"
+
+  - name: baseImageVersion
+    type: string
+    default: "20220329.1"
+
+  - name: stack
+    type: string
+    default: python
 
   - name: Python_2.7
     type: boolean
