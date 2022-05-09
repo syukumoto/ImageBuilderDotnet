@@ -63,7 +63,7 @@ jobs:
     vmImage: ubuntu-18.04
   timeoutInMinutes: 150
   steps:
-  - template: cleanup_job.yaml
+  - template: ../cleanup_job.yaml
 
 - ${{ if eq(parameters.Python_27, true) }}:
   - job: Job_Build_Python_27_Image
