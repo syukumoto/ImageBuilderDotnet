@@ -1,0 +1,91 @@
+pr:
+  paths:
+    include: 
+      - "../../src/python/*"
+      - "../../src/common/*"
+
+parameters:
+  ascName: WAWS_Container_Images
+  acrName: wawsimages.azurecr.io
+  baseImageName: "mcr.microsoft.com/oryx"
+  baseImageVersion: "20220329.1"
+  stack: "python"
+
+  - name: Python_2.7
+  type: boolean
+  default: true
+
+  - name: Python_3.6
+  type: boolean
+  default: true
+
+  - name: Python_3.7
+  type: boolean
+  default: true
+
+  - name: Python_3.8
+  type: boolean
+  default: true
+
+  - name: Python_3.9
+  type: boolean
+  default: true
+
+  - name: Python_3.10
+  type: boolean
+  default: true
+
+resources:
+- repo: self
+  fetchDepth: 15
+
+variables:
+- group: AppServiceLinux
+
+jobs:
+- job: Job_CleanUp
+  displayName: Clean Machine
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 150
+  steps:
+  - template: cleanup_job.yaml
+
+${{ if eq(parameters.Python_2.7, true) }}:
+- job: Job_Build_Python_27_Image
+  displayName: Build Python 2.7 Image
+  dependsOn: Job_CleanUp
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+
+  steps:
+  - task: ComponentGovernanceComponentDetection@0
+
+  - task: ShellScript@2
+    displayName: 'Generate Dockerfile and its dependencies'
+    inputs:
+      scriptPath: ../../src/generate_dockerfiles_for_runtime_image.sh
+      args: ${{ parameters.stackName }} $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} $(System.DefaultWorkingDirectory)/v2/src/python 2.7
+  
+  - task: Docker@2
+  displayName: Logout of ACR
+  inputs:
+    command: logout
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+  - task: Docker@1
+  displayName: Container registry login
+  inputs:
+    command: login
+    azureSubscriptionEndpoint: ${{ parameters.ascName }}
+    azureContainerRegistry: ${{ parameters.acrName }}
+
+  - task: ShellScript@2
+  displayName: 'Build Images'
+  inputs:
+    scriptPath: ../../src/build_and_push_runtime_images.sh
+    args: $(Build.ArtifactStagingDirectory) appsvctest $(System.DefaultWorkingDirectory)/v2/src/python $(Build.BuildNumber) python $(Build.Reason) 2.7
+
+trigger: none
