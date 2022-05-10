@@ -5,20 +5,8 @@ pr:
       - "../../src/common/*"
 
 variables:
-  - name: ascName
-    value: WAWS_Container_Images
-  
-  - name: acrName
-    value: wawsimages.azurecr.io
-    
-  - name: baseImageName
-    value: mcr.microsoft.com/oryx
-  
   - name: baseImageVersion
     value: "20220502.2"
-
-  - name: stackName
-    value: "python"
 
 parameters:
   - name: Python_27
@@ -71,34 +59,75 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 2.7    
 
-    steps:
-    - task: ComponentGovernanceComponentDetection@0
+- ${{ if eq(parameters.Python_36, true) }}:
+  - job: Job_Build_Python_36_Image
+    displayName: Build Python 3.6 Image
+    dependsOn: Job_CleanUp
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 3.6 
 
-    - task: ShellScript@2
-      displayName: 'Generate Dockerfile and its dependencies'
-      inputs:
-        scriptPath: $(System.DefaultWorkingDirectory)/v2/src/generate_dockerfiles_for_runtime_images.sh
-        args: ${{ variables.stackName }} $(Build.ArtifactStagingDirectory) ${{ variables.baseImageName }} ${{ variables.baseImageVersion }} $(System.DefaultWorkingDirectory)/v2/src/python 2.7
-    
-    - task: Docker@2
-      displayName: Logout of ACR
-      inputs:
-        command: logout
-        azureSubscriptionEndpoint: ${{ variables.ascName }}
-        azureContainerRegistry: ${{ variables.acrName }}
+- ${{ if eq(parameters.Python_37, true) }}:
+  - job: Job_Build_Python_37_Image
+    displayName: Build Python 3.7 Image
+    dependsOn: Job_CleanUp
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 3.7    
 
-    - task: Docker@1
-      displayName: Container registry login
-      inputs:
-        command: login
-        azureSubscriptionEndpoint: ${{ variables.ascName }}
-        azureContainerRegistry: ${{ variables.acrName }}
+- ${{ if eq(parameters.Python_38, true) }}:
+  - job: Job_Build_Python_38_Image
+    displayName: Build Python 3.8 Image
+    dependsOn: Job_CleanUp
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 3.8
 
-    - task: ShellScript@2
-      displayName: 'Build Images'
-      inputs:
-        scriptPath: $(System.DefaultWorkingDirectory)/v2/src/build_and_push_runtime_images.sh
-        args: $(Build.ArtifactStagingDirectory) appsvctest $(System.DefaultWorkingDirectory)/v2/src/python $(Build.BuildNumber) ${{ variables.stackName }} $(Build.Reason) 2.7
+- ${{ if eq(parameters.Python_39, true) }}:
+  - job: Job_Build_Python_39_Image
+    displayName: Build Python 3.9 Image
+    dependsOn: Job_CleanUp
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 3.9
+
+- ${{ if eq(parameters.Python_310, true) }}:
+  - job: Job_Build_Python_310_Image
+    displayName: Build Python 3.10 Image
+    dependsOn: Job_CleanUp
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 100
+    template: build_runtime_image_job.yaml
+    parameters:
+      baseImageVersion : ${{ variables.baseImageVersion }}
+      stackName : python
+      stackVersion : 3.10
 
 trigger: none
