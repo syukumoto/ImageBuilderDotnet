@@ -7,6 +7,9 @@ pr:
 variables:
   - name: baseImageVersion
     value: "20220502.2"
+    
+  - name: stackName
+    value: python
 
 parameters:
   - name: Python_27
@@ -59,11 +62,12 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 2.7    
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 2.7
 
 - ${{ if eq(parameters.Python_36, true) }}:
   - job: Job_Build_Python_36_Image
@@ -72,11 +76,12 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 3.6 
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 3.6
 
 - ${{ if eq(parameters.Python_37, true) }}:
   - job: Job_Build_Python_37_Image
@@ -85,11 +90,12 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 3.7    
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 3.7
 
 - ${{ if eq(parameters.Python_38, true) }}:
   - job: Job_Build_Python_38_Image
@@ -98,11 +104,12 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 3.8
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 3.8
 
 - ${{ if eq(parameters.Python_39, true) }}:
   - job: Job_Build_Python_39_Image
@@ -111,11 +118,12 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 3.9
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 3.9
 
 - ${{ if eq(parameters.Python_310, true) }}:
   - job: Job_Build_Python_310_Image
@@ -124,10 +132,11 @@ jobs:
     pool:
       vmImage: ubuntu-18.04
     timeoutInMinutes: 100
-    template: build_runtime_image_job.yaml
-    parameters:
-      baseImageVersion : ${{ variables.baseImageVersion }}
-      stackName : python
-      stackVersion : 3.10
+    steps:
+      - template: build_runtime_image_job.yaml
+        parameters:
+          baseImageVersion : ${{ variables.baseImageVersion }}
+          stackName : ${{ variables.stackName }}
+          stackVersion : 3.10
 
 trigger: none
