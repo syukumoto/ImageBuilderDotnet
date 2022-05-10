@@ -18,7 +18,12 @@ declare -r BASE_IMAGE_REPO_NAME="$5/build"                              # mcr.mi
 declare -r ORYX_TAG="$6"                                                # Base Image Version; Oryx Version : 20190819.2
 
 declare -r APPSVC_REPO_DIR="$SYSTEM_ARTIFACTS_DIR/kudulite/GitRepo"
-declare -r METADATA_FILE="$SYSTEM_ARTIFACTS_DIR/metadata"               # file which contains list of images that are built 
+declare -r METADATA_FILE="$SYSTEM_ARTIFACTS_DIR/metadata"               # has value of APPSVC_REPO_DIR. This file will be removed soon.
+
+# In Image Builder v1, we were building and pushing images to MCR and in the later steps were testing the image
+# In v2 version, we want to avoid this. So we build the images, run a script that can test images and 
+# if they pass use another script to push images to MCR.
+declare -r LIST_OF_IMAGES_TO_PUSH_TO_MCR="kudulite_LIST_OF_IMAGES_TO_PUSH_TO_MCR"
 
 # Summary :
 # Replaces BASE_IMAGE_NAME_PLACEHOLDER in Dockerfile with mcr.microsoft.com/oryx/build:<tag>

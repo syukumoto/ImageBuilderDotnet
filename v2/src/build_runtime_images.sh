@@ -18,6 +18,11 @@ declare -r WAWS_IMAGE_REPO_NAME="wawsimages.azurecr.io"
 declare -r ACR_BUILD_IMAGES_ARTIFACTS_FILE="$SYSTEM_ARTIFACTS_DIR/builtImages.txt"
 declare -r DIRECTORY_FROM_WHICH_THIS_FILES_IS_EXECUTED="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 
+# In Image Builder v1, we were building and pushing images to MCR and in the later steps were testing the image
+# In v2 version, we want to avoid this. So we build the images, run a script that can test images and 
+# if they pass use another script to push images to MCR.
+declare -r LIST_OF_IMAGES_TO_PUSH_TO_MCR="${STACK}_LIST_OF_IMAGES_TO_PUSH_TO_MCR"
+
 # Summary :
 # This function displays message in the following format
 # Message
@@ -75,6 +80,15 @@ function display_information_regarding_image_to_be_built()
 }
 
 # Summary :
+# This function helps in clearing the file that contains the list of images that must be pushed to MCR
+#
+# Arguments :
+function clean_list_of_images_to_push_to_mcr()
+{
+    rm -f $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR
+}
+
+# Summary :
 # This function helps to build the runtime images for Azure App Service Linux
 #
 # Arguments :
@@ -82,6 +96,8 @@ function display_information_regarding_image_to_be_built()
 function build_runtime_images() 
 {
     if [ -f "$CONFIG_DIR/versionTemplateMap.txt" ]; then
+        clean_list_of_images_to_push_to_mcr
+
         while IFS=, read -r STACK_VERSION BASE_IMAGE STACK_VERSION_TEMPLATE_DIR STACK_TAGS || [[ -n $STACK_VERSION ]] || [[ -n $BASE_IMAGE ]] || [[ -n $STACK_VERSION_TEMPLATE_DIR ]] || [[ -n $STACK_TAGS ]]
         do
             # if STACK_VERSION_TO_BUILD is empty (not specified) or STACK_VERSION_TO_BUILD == STACK_VERSION
@@ -146,14 +162,12 @@ function build_runtime_images()
                         docker build -t "$wawsimages_acr_tag_name_in_lower_case" -f "$runtime_image_docker_file_path" .
                     fi
 
-                    # Push the generated images to MCR if the build reason is not pull request
-                    if [ "$BUILD_REASON" != "PullRequest" ]; then
-                        docker push $wawsimages_acr_tag_name_in_lower_case
-                        docker tag $wawsimages_acr_tag_name_in_lower_case $mcr_tag_in_lower_case
-                        docker push $mcr_tag_in_lower_case
-                    fi
-
+                    docker tag $wawsimages_acr_tag_name_in_lower_case $mcr_tag_in_lower_case
+                    
                     echo $mcr_tag_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
+
+                    echo $wawsimages_acr_tag_name_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR
+                    echo $mcr_tag_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR
                 done
             fi
             
