@@ -122,6 +122,72 @@ function buildDockerImage()
             fi
             
         done < "$CONFIG_DIR/${STACK}VersionTemplateMap.txt"
+    elif [[ $STACK = "DiagnosticServer" ]]; then
+        # DiagnosticServer Image
+        echo "Building DiagnosticServer"
+        local BuildVerRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${IMG_TAG}"
+        local BuildVerRepoTag="${BuildVerRepoTagUpperCase,,}"
+        local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK}:${IMG_TAG}"
+        local MCRRepoTag="${MCRRepoTagUpperCase,,}"
+        local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}/Dockerfile"
+
+        displayArtifactsDir "${SYSTEM_ARTIFACTS_DIR}"
+        cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}"
+
+        displayInformationRegardingImageToBeBuilt $BuildVerRepoTag $appSvcDockerfilePath
+        echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+        docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+        docker tag $BuildVerRepoTag $MCRRepoTag
+
+        # only push the images if merging to the main branch
+        if [ "$BUILD_REASON" != "PullRequest" ]; then
+            docker push $BuildVerRepoTag
+            docker push $MCRRepoTag
+        fi
+
+        echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
+
+    else
+        # KuduLite Image, add single image support
+
+        local BuildVerRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${IMG_TAG}"
+        local BuildVerRepoTag="${BuildVerRepoTagUpperCase,,}"
+        local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK}:${IMG_TAG}"
+        local MCRRepoTag="${MCRRepoTagUpperCase,,}"
+        local appSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}/Dockerfile"
+	
+        displayArtifactsDir "${SYSTEM_ARTIFACTS_DIR}"
+        cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}"
+        displayInformationRegardingImageToBeBuilt $BuildVerRepoTag $appSvcDockerfilePath
+        echo docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+        docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+        docker tag $BuildVerRepoTag $MCRRepoTag
+
+        # only push the images if merging to the master
+        if [ "$BUILD_REASON" != "PullRequest" ]; then
+            docker push $BuildVerRepoTag
+            docker push $MCRRepoTag
+        fi
+
+        echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
+
+        ## build note 12-lts and dotnetcore 3.1-lts to testing
+        local NodeTagUpperCase="${WAWS_IMAGE_REPO_NAME}/node:12-lts_${PIPELINE_BUILD_NUMBER}"
+        local NodeTag="${NodeTagUpperCase,,}"
+        local NodeAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/12/Dockerfile" 
+        cd "${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/12"
+        echo docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
+        docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
+        echo $NodeTag >> $SYSTEM_ARTIFACTS_DIR/nodebuiltImageList
+
+
+        local DotnetcoreTagUpperCase="${WAWS_IMAGE_REPO_NAME}/dotnetcore:3.1_${PIPELINE_BUILD_NUMBER}"
+        local DotnetcoreTag="${DotnetcoreTagUpperCase,,}"
+        local DotnetcoreAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/3.1/Dockerfile" 
+        cd "${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/3.1"
+        echo docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
+        docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
+        echo $DotnetcoreTag >> $SYSTEM_ARTIFACTS_DIR/dotnetcorebuiltImageList
     fi
 }
 
