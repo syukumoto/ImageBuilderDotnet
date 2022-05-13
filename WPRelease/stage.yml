@@ -40,6 +40,6 @@ stages:
       timeoutInMinutes: 1440 # task times out in 1 day
       inputs:
         notifyUsers: |
-            saisubodh@microsoft.com
+            wordpressdev@microsoft.com
         instructions: 'Please validate the build configuration and resume'
         onTimeout: 'reject'
