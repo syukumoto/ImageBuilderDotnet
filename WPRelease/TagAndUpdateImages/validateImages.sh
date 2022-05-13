@@ -4,7 +4,7 @@ set -e
 
 declare -r STACK="$1"
 declare -r STAGE_NUMBER=$2
-declare -r WAWS_IMAGE_REPO_NAME="pipelinewp.azurecr.io"
+declare -r WAWS_IMAGE_REPO_NAME="wawsimages.azurecr.io"
 
 function buildDockerImage() 
 {
@@ -20,7 +20,7 @@ function buildDockerImage()
         if [[ $CurrentStage -eq 7 ]]; then
             CurrentTag="latest"
         fi
-        CurrentImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${CurrentTag}"
+        CurrentImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/appsvc/${STACK}:${CurrentTag}"
         CurrentImageTag="${CurrentImageTagUpperCase,,}"
         
         echo "Pulling Docker Image: $CurrentImageTag"
