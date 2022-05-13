@@ -4,7 +4,7 @@ set -e
 
 declare -r STACK="$1"
 declare -r STAGE_NUMBER=$2
-declare -r WAWS_IMAGE_REPO_NAME="pipelinewp.azurecr.io"
+declare -r WAWS_IMAGE_REPO_NAME="wawsimages.azurecr.io"
 
 function buildDockerImage() 
 {
