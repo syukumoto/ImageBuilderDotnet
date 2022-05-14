@@ -32,5 +32,5 @@ steps:
 - task: ShellScript@2
   displayName: 'Building Image'
   inputs:
-    scriptPath: $(System.DefaultWorkingDirectory)/v2/src/build_and_push_runtime_images.sh
+    scriptPath: $(System.DefaultWorkingDirectory)/v2/src/build_runtime_images.sh
     args: $(Build.ArtifactStagingDirectory) appsvctest "$(System.DefaultWorkingDirectory)/v2/src/${{ parameters.stackName }}" $(Build.BuildNumber) ${{ parameters.stackName }} $(Build.Reason) ${{ parameters.stackVersion }}

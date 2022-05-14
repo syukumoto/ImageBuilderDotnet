@@ -62,7 +62,7 @@ function build_and_tag_runtime_image()
   local config_directory="$IMAGEBUILDER_REPO_V2_SRC_FOLDER/$stack_name"
   
   echo "Using local config directory as $config_directory"
-  $IMAGEBUILDER_REPO_V2_SRC_FOLDER/build_and_push_runtime_images.sh $GENERATED_DOCKERFILES_DIRECTORY appsvctest $config_directory $BUILD_TAG "$stack_name" "PullRequest" "$STACK_VERSION"
+  $IMAGEBUILDER_REPO_V2_SRC_FOLDER/build_runtime_images.sh $GENERATED_DOCKERFILES_DIRECTORY appsvctest $config_directory $BUILD_TAG "$stack_name" "PullRequest" "$STACK_VERSION"
 }
 
 # Summary : 

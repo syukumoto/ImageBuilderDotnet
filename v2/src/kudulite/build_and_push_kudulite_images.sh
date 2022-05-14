@@ -13,6 +13,15 @@ declare -r KUDULITE_TYPE_TO_BUILD=$5            # debian flavour of Kudu ( stret
 declare -r STACK="kudulite"
 declare -r WAWS_IMAGE_REPO_NAME="wawsimages.azurecr.io"
 
+# Summary :
+# This function helps in clearing the file that contains the list of images that must be pushed to MCR
+#
+# Arguments :
+function clean_list_of_images_to_push_to_mcr()
+{
+    rm -f $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR
+}
+
 # Summary : 
 # This function helps in building the kudulite image
 #
@@ -45,12 +54,12 @@ function build_kudulite_image()
     docker build -t "$wawsimages_acr_tag_name_in_lower_case" -f "$kudulite_image_docker_file_path" .
     docker tag $wawsimages_acr_tag_name_in_lower_case $mcr_tag_in_lower_case
 
-    # only push the images if merging to the master
-    if [ "$BUILD_REASON" != "PullRequest" ]; then
-        docker push $wawsimages_acr_tag_name_in_lower_case
-        docker push $mcr_tag_in_lower_case
-    fi
+    # Adding image names to a file which contains list of images that must be pushed to MCR
+    echo $wawsimages_acr_tag_name_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR
+    echo $mcr_tag_in_lower_case >> $SYSTEM_ARTIFACTS_DIR/$LIST_OF_IMAGES_TO_PUSH_TO_MCR    
 }
+
+clean_list_of_images_to_push_to_mcr
 
 # if KUDULITE_TYPE_TO_BUILD is empty (not specified), build all types
 if [[ -z $KUDULITE_TYPE_TO_BUILD ]]; then

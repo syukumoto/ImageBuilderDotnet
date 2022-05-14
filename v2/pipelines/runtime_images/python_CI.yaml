@@ -139,4 +139,23 @@ jobs:
           stackName : ${{ variables.stackName }}
           stackVersion : 3.10
 
+- job: Job_Push_Python_Images_To_MCR
+    displayName: Push images to MCR
+    dependsOn: 
+      Job_Build_Python_27_Image
+      Job_Build_Python_36_Image
+      Job_Build_Python_37_Image
+      Job_Build_Python_38_Image
+      Job_Build_Python_39_Image
+      Job_Build_Python_310_Image
+    pool:
+      vmImage: ubuntu-18.04
+    timeoutInMinutes: 15
+    steps:
+      - task: ShellScript@2
+        displayName: 'Publish python images to MCR'
+        inputs:
+          scriptPath: $(System.DefaultWorkingDirectory)/v2/src/push_images_to_mcr.sh
+          args: "$(Build.ArtifactStagingDirectory)" "${{ parameters.stackName }}" $(Build.BuildNumber)
+
 trigger: none
