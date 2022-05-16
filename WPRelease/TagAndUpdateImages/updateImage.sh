@@ -33,7 +33,7 @@ function buildDockerImage()
     # Build Image Tags are converted to lower case because docker doesn't accept upper case tags
     local MCRTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK}:${TAG}"
     local MCRTag="${MCRTagUpperCase,,}"
-    local BuildVerRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/appsvc/${STACK}:${TAG}"
+    local BuildVerRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${TAG}"
     local BuildVerRepoTag="${BuildVerRepoTagUpperCase,,}"
 
     #Stage Images are tagged to the previous stage image.
@@ -44,7 +44,7 @@ function buildDockerImage()
         PreviousStageTag="stage${PreviousStageNumber}"
     fi
 
-    local PreviousImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/appsvc/${STACK}:${PreviousStageTag}"
+    local PreviousImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${PreviousStageTag}"
     local PreviousImageTag="${PreviousImageTagUpperCase,,}"               
 
     #Pull previous stage image.

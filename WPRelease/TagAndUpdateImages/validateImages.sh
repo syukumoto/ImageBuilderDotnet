@@ -20,7 +20,7 @@ function buildDockerImage()
         if [[ $CurrentStage -eq 7 ]]; then
             CurrentTag="latest"
         fi
-        CurrentImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/appsvc/${STACK}:${CurrentTag}"
+        CurrentImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${CurrentTag}"
         CurrentImageTag="${CurrentImageTagUpperCase,,}"
         
         echo "Pulling Docker Image: $CurrentImageTag"
