@@ -47,7 +47,7 @@ update_php_config() {
 }
 
 temp_server_start() {
-    mkdir -p /home/site/temp-root
+    test ! -d /home/site/temp-root && mkdir -p /home/site/temp-root
     cp -r /usr/src/temp-server/* /home/site/temp-root/
     cp /usr/src/nginx/temp-server.conf /etc/nginx/conf.d/default.conf
     local try_count=1
@@ -71,7 +71,6 @@ temp_server_start() {
 temp_server_stop() {
     #kill any existing nginx processes
     killall nginx 2> /dev/null 
-    rm -rf /home/site/temp-root
 }
 
 translate_welcome_content() {
