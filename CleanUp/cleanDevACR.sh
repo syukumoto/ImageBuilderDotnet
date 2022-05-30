@@ -27,7 +27,7 @@ declare -r azQuery="[?timestamp<=\`$tsLimit\`].digest"
 
 for repo in "${REPOS[@]}"
 do
-    if [[ "$repo" == *"staticappsclient"* ]]; then
+    if [[ "$repo" == *"staticappsclient"* || "$repo" == *"ruby"* ]]; then
         echo "Skipping staticappsclient image $repo"
         continue
     fi
