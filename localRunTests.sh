@@ -5,9 +5,9 @@ stack="$1"
 artifacts="$2"
 if [ ! -z "$artifacts" ]
 then
-    echo "$artifacts/drop/*builtImageList"
+    echo "$artifacts/*builtImageList"
     echo "/home/vsts/work/1/s/Tests/$stack"
-    cp -R $artifacts/drop/*builtImageList /home/vsts/work/1/s/Tests/$stack
+    cp -R $artifacts/*builtImageList /home/vsts/work/1/s/Tests/$stack
 fi
 
 
