@@ -45,4 +45,4 @@ steps:
   displayName: 'Run unit tests'
   inputs:
     scriptPath: ./localRunTests.sh
-    args: ${{ parameters.stackName }} $(Build.ArtifactStagingDirectory)
+    args: ${{ parameters.stackName }} $(Build.ArtifactStagingDirectory)/drop
