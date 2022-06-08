@@ -5,6 +5,8 @@ stack="$1"
 artifacts="$2"
 if [ ! -z "$artifacts" ]
 then
+    echo "Specified artificats directory is $artifacts"
+    ls -R $artifacts
     echo "$artifacts/*builtImageList"
     echo "/home/vsts/work/1/s/Tests/$stack"
     cp -R $artifacts/*builtImageList /home/vsts/work/1/s/Tests/$stack
