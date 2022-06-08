@@ -1,15 +1,26 @@
 #!/bin/bash
 
 stack="$1"
-
 artifacts="$2"
+isTestRunLocally=$3
+
 if [ ! -z "$artifacts" ]
 then
-    echo "Specified artificats directory is $artifacts"
-    ls -R $artifacts
-    echo "Copying $artifacts/*builtImageList to /home/vsts/work/1/s/Tests/$stack"
-    cp -R $artifacts/*builtImageList /home/vsts/work/1/s/Tests/$stack
-    ls -R /home/vsts/work/1/s/Tests/$stack
+    echo "Artificats directory : $artifacts"
+    ls $artifacts
+    echo 
+
+    testsDir="/home/vsts/work/1/s/Tests/$stack"
+
+    if [[ ! -z "$isTestRunLocally" && "$isTestRunLocally" == "true" ]]; then
+        testsDir="Tests/$stack"
+    fi
+
+    echo "Copying $artifacts/*builtImageList to $testsDir"
+    cp -R $artifacts/*builtImageList $testsDir
+
+    echo "Tests Directory : $testsDir"
+    ls $testsDir
 fi
 
 
