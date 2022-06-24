@@ -276,6 +276,7 @@ setup_wordpress() {
 setup_post_startup_script() {
     test ! -d "/home/dev" && echo "INFO: /home/dev not found. Creating..." && mkdir -p /home/dev
     touch /home/dev/startup.sh
+    bash /home/dev/startup.sh
 }
 
 setup_nginx() {
@@ -392,9 +393,8 @@ else
     cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
 fi
 
-setup_post_startup_script
 
 cd /usr/bin/
 supervisord -c /etc/supervisord.conf
-
+setup_post_startup_script
 
