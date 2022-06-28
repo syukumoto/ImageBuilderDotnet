@@ -25,15 +25,6 @@
         .smush-filename-extension {
             background-color: $accessible-dark;
         }
-        .smush-cdn-stats {
-            .sui-circle-score {
-                svg {
-                    circle:last-child {
-                        stroke: $accessible-dark;
-                    }
-                }
-            }
-        }
         // Check images button.
         .sui-button {
             &.smush-button-check-success:before {
