@@ -43,3 +43,5 @@ stages:
   parameters:
     stageNumber: 7
     stageName: "Latest_Tag_Update"
+
+trigger: none
