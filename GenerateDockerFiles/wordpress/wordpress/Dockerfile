@@ -115,11 +115,6 @@ RUN set -ex \
 #---------------
    && apk add --no-cache openrc \
    && sed -i 's/"cgroup_add_service/" # cgroup_add_service/g' /lib/rc/sh/openrc-run.sh \
-#---------------
-# Nginx pavlov public Key
-#---------------
-#    && curl -O https://nginx.org/keys/thresh.key \
-#    && gpg import ./thresh.key \
 # ----------
 # Nginx
 # ---------- 
