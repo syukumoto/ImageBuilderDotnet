@@ -21,12 +21,12 @@ function pullDockerImage()
 
 function buildDockerImage() 
 {
-    if [[ $STAGE_NUMBER -gt 7 ]] || [[ $STAGE_NUMBER -lt 0 ]]; then
+    if [[ $STAGE_NUMBER -gt 8 ]] || [[ $STAGE_NUMBER -lt 0 ]]; then
         exit 1
     fi
 
     local TAG="stage${STAGE_NUMBER}"
-    if [ $STAGE_NUMBER -eq 7 ]; then
+    if [ $STAGE_NUMBER -eq 8 ]; then
         TAG="latest"
     fi
 

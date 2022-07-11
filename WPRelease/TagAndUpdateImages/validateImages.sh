@@ -8,7 +8,7 @@ declare -r WAWS_IMAGE_REPO_NAME="wawsimages.azurecr.io"
 
 function buildDockerImage() 
 {
-    if [[ $STAGE_NUMBER -gt 7 ]] || [[ $STAGE_NUMBER -lt 0 ]]; then
+    if [[ $STAGE_NUMBER -gt 8 ]] || [[ $STAGE_NUMBER -lt 0 ]]; then
         exit 1
     fi
 
@@ -17,7 +17,7 @@ function buildDockerImage()
     CurrentStage=0
     while [[ $CurrentStage -le $STAGE_NUMBER ]]; do
         CurrentTag="stage${CurrentStage}"
-        if [[ $CurrentStage -eq 7 ]]; then
+        if [[ $CurrentStage -eq 8 ]]; then
             CurrentTag="latest"
         fi
         CurrentImageTagUpperCase="${WAWS_IMAGE_REPO_NAME}/${STACK}:${CurrentTag}"
