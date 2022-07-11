@@ -46,6 +46,6 @@ stages:
 - template: stage.yml
   parameters:
     stageNumber: 8
-    stageName: "Latest_Tag_Update
+    stageName: "Latest_Tag_Update"
 
 trigger: none
