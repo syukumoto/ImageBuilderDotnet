@@ -1,6 +1,7 @@
 app_service_app_logs_import_succeeded = False
 app_service_app_logs_handler_registration_succeeded = False
 code_profiler_import_succeeded = False
+is_code_profiler_enabled = False
 failure_message = "There was an issue installing an App Service Platform feature for this site."
 
 def log_failure(feature, details, exception):
@@ -18,6 +19,8 @@ except Exception as e:
 
 try:
     import os
+    from appsvc_profiler.constants import CodeProfilerConstants
+
     c = CodeProfilerConstants()
     is_code_profiler_enabled_app_setting_value = os.environ.get(c.APP_SETTING_TO_ENABLE_CODE_PROFILER, None)
     is_code_profiler_enabled = is_code_profiler_enabled_app_setting_value is None or is_like_true(is_code_profiler_enabled_app_setting_value)
@@ -25,7 +28,6 @@ try:
     if is_code_profiler_enabled:
         # appsvc_profiler is currenly installed from appsvc_code_profiler-1.0.0-py3-none-any.whl
         from appsvc_profiler import CodeProfilerInstaller
-        from appsvc_profiler.constants import CodeProfilerConstants
         from appsvc_profiler.helpers import is_like_true
         code_profiler_import_succeeded = True
 
@@ -36,7 +38,9 @@ except Exception as e:
 
 def post_worker_init(worker):
     try:
+        global app_service_app_logs_import_succeeded
         global app_service_app_logs_handler_registration_succeeded
+
         if app_service_app_logs_import_succeeded:
             asal.startHandlerRegisterer()
             app_service_app_logs_handler_registration_succeeded = True
