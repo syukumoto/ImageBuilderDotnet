@@ -143,6 +143,25 @@ translate_welcome_content() {
     fi
 }
 
+setup_cdn_variables() {
+    IS_CDN_ENABLED="False"
+    if [[ $CDN_ENABLED ]] && [[ "$CDN_ENABLED" == "true" || "$CDN_ENABLED" == "TRUE" || "$CDN_ENABLED" == "True" ]] && [[ $CDN_ENDPOINT ]];then
+    	IS_CDN_ENABLED="True"
+    fi
+    
+    IS_BLOB_STORAGE_ENABLED="False"
+    if [[ $BLOB_STORAGE_ENABLED ]] && [[ "$BLOB_STORAGE_ENABLED" == "true" || "$BLOB_STORAGE_ENABLED" == "TRUE" || "$BLOB_STORAGE_ENABLED" == "True" ]] \
+    && [[ $STORAGE_ACCOUNT_NAME ]] && [[ $STORAGE_ACCOUNT_KEY ]] && [[ $BLOB_CONTAINER_NAME ]]; then
+	IS_BLOB_STORAGE_ENABLED="True"
+    fi
+
+}
+
+start_at_daemon() {
+    service atd start
+    service atd status
+}
+
 setup_wordpress() { 
     if [ ! $(grep "WORDPRESS_PULL_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
         while [ -d $WORDPRESS_HOME ]
