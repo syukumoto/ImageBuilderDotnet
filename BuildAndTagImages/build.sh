@@ -171,20 +171,20 @@ function buildDockerImage()
 
         echo $MCRRepoTag >> $SYSTEM_ARTIFACTS_DIR/${STACK}builtImageList
 
-        ## build note 12-lts and dotnetcore 3.1-lts to testing
-        local NodeTagUpperCase="${WAWS_IMAGE_REPO_NAME}/node:12-lts_${PIPELINE_BUILD_NUMBER}"
+        ## build note 14-lts and dotnetcore 6.0 to testing
+        local NodeTagUpperCase="${WAWS_IMAGE_REPO_NAME}/node:14-lts_${PIPELINE_BUILD_NUMBER}"
         local NodeTag="${NodeTagUpperCase,,}"
-        local NodeAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/12/Dockerfile" 
-        cd "${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/12"
+        local NodeAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/14/Dockerfile" 
+        cd "${SYSTEM_ARTIFACTS_DIR}/node/GitRepo/14"
         echo docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
         docker build -t "$NodeTag" -f "$NodeAppSvcDockerfilePath" .
         echo $NodeTag >> $SYSTEM_ARTIFACTS_DIR/nodebuiltImageList
 
 
-        local DotnetcoreTagUpperCase="${WAWS_IMAGE_REPO_NAME}/dotnetcore:3.1_${PIPELINE_BUILD_NUMBER}"
+        local DotnetcoreTagUpperCase="${WAWS_IMAGE_REPO_NAME}/dotnetcore:6.0_${PIPELINE_BUILD_NUMBER}"
         local DotnetcoreTag="${DotnetcoreTagUpperCase,,}"
-        local DotnetcoreAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/3.1/Dockerfile" 
-        cd "${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/3.1"
+        local DotnetcoreAppSvcDockerfilePath="${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/6.0/Dockerfile" 
+        cd "${SYSTEM_ARTIFACTS_DIR}/dotnetcore/GitRepo/6.0"
         echo docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
         docker build -t "$DotnetcoreTag" -f "$DotnetcoreAppSvcDockerfilePath" .
         echo $DotnetcoreTag >> $SYSTEM_ARTIFACTS_DIR/dotnetcorebuiltImageList
