@@ -71,11 +71,11 @@ function generateDockerFilesFor_PHP()
     GenerateDockerFiles/php/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir $stackVersion
 }
 
-# function generateDockerFilesFor_PHPXDebug()
-# {
-#     #chmod u+x GenerateDockerFiles/php-xdebug/generateDockerfiles.sh 
-#     #GenerateDockerFiles/php-xdebug/generateDockerfiles.sh $artifactStagingDirectory mcr.microsoft.com/appsvc $BuildNumber $appSvcGitUrl $configDir
-# }
+function generateDockerFilesFor_PHPXDebug()
+{
+    chmod u+x GenerateDockerFiles/php-xdebug/generateDockerfiles.sh 
+    GenerateDockerFiles/php-xdebug/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir $stackVersion
+}
 
 function generateDockerFilesFor_Ruby()
 {
@@ -102,7 +102,7 @@ if [[ -z $stackName ]]; then
     generateDockerFilesFor_NetCore
     generateDockerFilesFor_Python
     generateDockerFilesFor_PHP
-    #generateDockerFilesFor_PHPXDebug
+    generateDockerFilesFor_PHPXDebug
     generateDockerFilesFor_Ruby
     generateDockerFilesFor_Wordpress
     generateDockerFilesFor_Kudulite
@@ -125,6 +125,10 @@ case $stackName in
 
   "php")
     generateDockerFilesFor_PHP
+    ;;
+
+  "php-xdebug")
+    generateDockerFilesFor_PHPXDebug
     ;;
 
   "ruby")
