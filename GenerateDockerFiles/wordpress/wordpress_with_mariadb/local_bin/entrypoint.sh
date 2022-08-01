@@ -230,6 +230,8 @@ setup_wordpress() {
         fi
     fi
     
+    setup_cdn_variables
+    
     if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
     && [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [[ "$IS_BLOB_STORAGE_ENABLED" == "True" ]]; then
         BLOB_STORAGE_URL="${STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
@@ -245,14 +247,14 @@ setup_wordpress() {
         fi
     fi
     
-    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [[ "$IS_CDN_ENABLED" == "True" ]];then
-        if [[ "$IS_BLOB_STORAGE_ENABLED" == "True" ]] && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
+    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ "$IS_CDN_ENABLED" == "True" ]; then
+        if [ "$IS_BLOB_STORAGE_ENABLED" == "True" ] && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
         && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
-            echo 'bash /usr/local/bin/w3tc_cdn_config.sh BLOB_CDN' | at now +10 minutes
-        elif [[ "$IS_BLOB_STORAGE_ENABLED" != "True" ]] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_CDN" | at now +10 minutes
+        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
-            echo 'bash /usr/local/bin/w3tc_cdn_config.sh CDN' | at now +10 minutes
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh CDN" | at now +10 minutes
         fi
     fi
 
