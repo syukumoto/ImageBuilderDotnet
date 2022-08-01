@@ -1,13 +1,13 @@
 === Smush - Lazy Load Images, Optimize & Compress Images ===
 Plugin Name: Smush - Lazy Load Images, Optimize & Compress Images
-Version: 3.10.2
+Version: 3.10.3
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV, alexdunae
 Tags: optimize images, convert webp, lazy load, resize images, compress images, webp, performance, optimization, photography, optimizer, image optimizer, image compress, image optimize, webp format
 Requires at least: 5.3
 Tested up to: 6.0
-Stable tag: 3.10.2
+Stable tag: 3.10.3
 Requires PHP: 5.6
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -189,6 +189,21 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 4. Smush will find and optimize images for you.
 
 == Changelog ==
+
+= 3.10.3 ( 2022-07-14 ) =
+
+- Enhance: CDN activation process
+- Enhance: Improve media library image filters
+- Enhance: CDN compatibility with Avada theme
+- Enhance: Add notice about disabled folders in directory Smush module
+- Fix: Errors table UI on bulk smush page
+- Fix: Bulk smush UI when images have been removed when page was already loaded
+- Fix: Cron job of logger library not running properly
+- Fix: Remove tools meta box from dashboard page
+- Fix: Recover image from NextGen Gallery button does not reset Smush data
+- Fix: Image dimensions meta does not reset after restoring a resized image in NextGen Gallery
+- Fix: Incorrect percent of total savings on Dashboard page
+- Fix: Pro feature enable/disable toggles are clickable in free version
 
 = 3.10.2 ( 2022-06-16 ) =
 
