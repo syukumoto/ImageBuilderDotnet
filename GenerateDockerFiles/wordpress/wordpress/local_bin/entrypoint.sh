@@ -273,6 +273,11 @@ setup_wordpress() {
     fi
 }
 
+setup_post_startup_script() {
+    test ! -d "/home/dev" && echo "INFO: /home/dev not found. Creating..." && mkdir -p /home/dev
+    touch /home/dev/startup.sh
+}
+
 setup_nginx() {
     test ! -d "$NGINX_LOG_DIR" && echo "INFO: Log folder for nginx/php not found. creating..." && mkdir -p "$NGINX_LOG_DIR"
 }
@@ -386,6 +391,8 @@ if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYA
 else
     cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
 fi
+
+setup_post_startup_script
 
 cd /usr/bin/
 supervisord -c /etc/supervisord.conf

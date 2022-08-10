@@ -270,6 +270,11 @@ update_localdb_config(){
     export DATABASE_HOST DATABASE_NAME DATABASE_USERNAME DATABASE_PASSWORD   
 }
 
+setup_post_startup_script() {
+    test ! -d "/home/dev" && echo "INFO: /home/dev not found. Creating..." && mkdir -p /home/dev
+    touch /home/dev/startup.sh
+}
+
 setup_nginx() {
     test ! -d "$NGINX_LOG_DIR" && echo "INFO: Log folder for nginx/php not found. creating..." && mkdir -p "$NGINX_LOG_DIR"
     test -d "/home/etc/nginx" && echo "/home/etc/nginx exists.." && ln -s /home/etc/nginx /etc/nginx && ln -sf /usr/lib/nginx/modules /home/etc/nginx/modules
@@ -461,6 +466,8 @@ if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
 fi
 #ensure correct default.conf before starting/reloading WordPress server
 cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+
+setup_post_startup_script
 
 cd /usr/bin/
 supervisord -c /etc/supervisord.conf
