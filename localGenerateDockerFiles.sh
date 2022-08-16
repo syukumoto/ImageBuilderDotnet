@@ -74,7 +74,7 @@ function generateDockerFilesFor_PHP()
 function generateDockerFilesFor_PHPXDebug()
 {
     chmod u+x GenerateDockerFiles/php-xdebug/generateDockerfiles.sh 
-    GenerateDockerFiles/php-xdebug/generateDockerfiles.sh $artifactStagingDirectory $baseImageName $baseImageVersion $appSvcGitUrl $configDir $stackVersion
+    GenerateDockerFiles/php-xdebug/generateDockerfiles.sh $artifactStagingDirectory "mcr.microsoft.com/appsvc" $baseImageVersion $appSvcGitUrl $configDir $stackVersion
 }
 
 function generateDockerFilesFor_Ruby()
