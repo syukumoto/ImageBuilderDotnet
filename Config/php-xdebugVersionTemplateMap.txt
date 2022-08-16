@@ -1,6 +1,6 @@
-7.4-apache-xdebug,7.4-apache,7-apache-xdebug,7.4-apache-xdebug-bullseye
+7.4-apache-xdebug,7.4,7-apache-xdebug,7.4-apache-xdebug-bullseye
 7.4-fpm-xdebug,7.4-fpm,7-fpm-xdebug,7.4-fpm-xdebug-bullseye
-8.0-apache-xdebug,8.0-apache,8.0-apache-xdebug,8.0-apache-xdebug
+8.0-apache-xdebug,8.0,8.0-apache-xdebug,8.0-apache-xdebug
 8.0-fpm-xdebug,8.0-fpm,8.0-fpm-xdebug,8.0-fpm-xdebug|latest-xdebug
-8.1-apache-xdebug,8.1-apache,8.1-apache-xdebug,8.1-apache-xdebug
+8.1-apache-xdebug,8.1,8.1-apache-xdebug,8.1-apache-xdebug
 8.1-fpm-xdebug,8.1-fpm,8.1-fpm-xdebug,8.1-fpm-xdebug
