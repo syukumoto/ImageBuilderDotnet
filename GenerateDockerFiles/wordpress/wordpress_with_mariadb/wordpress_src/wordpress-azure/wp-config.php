@@ -114,11 +114,13 @@ if (!preg_match("/^localhost(:[0-9])*/", $_SERVER['HTTP_HOST']) && !preg_match("
 	$http_protocol='https://';
 }
 
+$site_url = (getenv('CUSTOM_SITE_URL')) ? getenv('CUSTOM_SITE_URL') : $_SERVER['HTTP_HOST'];
+
 //Relative URLs for swapping across app service deployment slots
-define('WP_HOME', $http_protocol . $_SERVER['HTTP_HOST']);
-define('WP_SITEURL', $http_protocol . $_SERVER['HTTP_HOST']);
+define('WP_HOME', $http_protocol . $site_url);
+define('WP_SITEURL', $http_protocol . $site_url);
 define('WP_CONTENT_URL', '/wp-content');
-define('DOMAIN_CURRENT_SITE', $_SERVER['HTTP_HOST']);
+define('DOMAIN_CURRENT_SITE', $site_url);
 
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
