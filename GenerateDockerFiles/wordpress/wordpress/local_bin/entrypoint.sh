@@ -117,6 +117,11 @@ setup_cdn_variables() {
     	IS_CDN_ENABLED="True"
     fi
     
+    IS_AFD_ENABLED="False"
+    if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]] && [[ $AFD_ENDPOINT ]]; then
+    	IS_AFD_ENABLED="True"
+    fi
+    
     IS_BLOB_STORAGE_ENABLED="False"
     if [[ $BLOB_STORAGE_ENABLED ]] && [[ "$BLOB_STORAGE_ENABLED" == "true" || "$BLOB_STORAGE_ENABLED" == "TRUE" || "$BLOB_STORAGE_ENABLED" == "True" ]] \
     && [[ $STORAGE_ACCOUNT_NAME ]] && [[ $STORAGE_ACCOUNT_KEY ]] && [[ $BLOB_CONTAINER_NAME ]]; then
@@ -263,6 +268,12 @@ setup_wordpress() {
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh CDN" | at now +10 minutes
         fi
+    fi
+    
+    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ "$IS_AFD_ENABLED" == "True" ] && [ "$IS_BLOB_STORAGE_ENABLED" == "True" ] \
+    && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        start_at_daemon
+        echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +10 minutes
     fi
 
     if [  $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "WP_LANGUAGE_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ] &&  [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
