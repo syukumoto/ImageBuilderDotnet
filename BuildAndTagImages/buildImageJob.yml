@@ -44,8 +44,8 @@ steps:
     command: 'restore'
     restoreSolution: "$(solution)"
     feedsToUse: config
-    nugetConfigPath: '$(Build.ArtifactStagingDirectory)/drop/Kudulite/${{ parameters.filesRootPath }})/nuget.config'
-    condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
+    nugetConfigPath: '$(Build.ArtifactStagingDirectory)/drop/Kudulite/${{ parameters.filesRootPath }}/nuget.config'
+  condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
 
 - task: ShellScript@2
   displayName: 'Build Images'
