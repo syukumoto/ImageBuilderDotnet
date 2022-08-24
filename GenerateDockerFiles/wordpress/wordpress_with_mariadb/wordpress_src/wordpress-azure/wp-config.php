@@ -114,8 +114,9 @@ if (!preg_match("/^localhost(:[0-9])*/", $_SERVER['HTTP_HOST']) && !preg_match("
 	$http_protocol='https://';
 }
 
-$site_url = (getenv('CUSTOM_SITE_URL')) ? getenv('CUSTOM_SITE_URL') : $_SERVER['HTTP_HOST'];
-# Update site_url value here.
+$site_url = $_SERVER['HTTP_HOST'];
+
+# site_url for Azure Front Door (if enabled).
 
 //Relative URLs for swapping across app service deployment slots
 define('WP_HOME', $http_protocol . $site_url);
