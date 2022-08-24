@@ -194,6 +194,10 @@ jobs:
       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
       echo "##vso[task.setvariable variable=PushBuildImages;]true"
       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: KuduLite
     
 - job: Job_BuildKuduLiteDynamicInstImage
   displayName: Build KuduLite DynamicInstall Image
