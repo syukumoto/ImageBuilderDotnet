@@ -38,14 +38,6 @@ steps:
 
 - task: NuGetAuthenticate@1
   condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
-  
-- task: NuGetCommand@2
-  inputs:
-    command: 'restore'
-    restoreSolution: "$(solution)"
-    feedsToUse: config
-    nugetConfigPath: '$(Build.ArtifactStagingDirectory)/drop/Kudulite/${{ parameters.filesRootPath }}/nuget.config'
-  condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
 
 - task: ShellScript@2
   displayName: 'Build Images'
