@@ -1,8 +1,8 @@
 cdn_type="$1"
 
 afd_update_site_url_condition() {
-    if [ $(grep "# site_url for Azure Front Door (if enabled)." $WORDPRESS_HOME/wp-config.php) ]; then
-        sed -i "# site_url for Azure Front Door (if enabled)./a \$site_url = getenv('AFD_CUSTOM_DOMAIN') ? getenv('AFD_CUSTOM_DOMAIN') : (getenv('AFD_ENDPOINT') ? getenv('AFD_ENDPOINT') : \$_SERVER['HTTP_HOST']);" $WORDPRESS_HOME/wp-config.php
+    if [[ $(grep "# site_url for Azure Front Door (if enabled)." $WORDPRESS_HOME/wp-config.php) ]]; then
+        sed -i "/# site_url for Azure Front Door (if enabled)./a \$site_url = getenv('AFD_CUSTOM_DOMAIN') ? getenv('AFD_CUSTOM_DOMAIN') : (getenv('AFD_ENDPOINT') ? getenv('AFD_ENDPOINT') : \$_SERVER['HTTP_HOST']);" $WORDPRESS_HOME/wp-config.php
     fi
 }
 
