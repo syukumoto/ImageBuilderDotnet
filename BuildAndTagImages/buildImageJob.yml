@@ -35,7 +35,6 @@ steps:
   inputs:
     artifactName: drop
 
-
 - task: NuGetAuthenticate@1
   condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
 

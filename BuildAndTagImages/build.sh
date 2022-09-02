@@ -160,7 +160,7 @@ function buildDockerImage()
         cd "${SYSTEM_ARTIFACTS_DIR}/${STACK}/${FILES_ROOT_PATH}"
         displayInformationRegardingImageToBeBuilt $BuildVerRepoTag $appSvcDockerfilePath
         echo docker build --build-arg FEED_ACCESSTOKEN="${VSS_NUGET_ACCESSTOKEN}" -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
-        docker build -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
+        docker build --build-arg FEED_ACCESSTOKEN="${VSS_NUGET_ACCESSTOKEN}" -t "$BuildVerRepoTag" -f "$appSvcDockerfilePath" .
         docker tag $BuildVerRepoTag $MCRRepoTag
 
         # only push the images if merging to the master
