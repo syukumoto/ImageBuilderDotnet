@@ -43,6 +43,9 @@ COPY sshd_config /etc/ssh/
 RUN mkdir -p /opt/startup
 COPY init_container.sh /opt/startup/init_container.sh
 
+COPY startssh.sh /opt/startup
+RUN chmod +x /opt/startup/startssh.sh
+
 # setup default site
 RUN mkdir /opt/defaultsite
 COPY hostingstart.html /opt/defaultsite

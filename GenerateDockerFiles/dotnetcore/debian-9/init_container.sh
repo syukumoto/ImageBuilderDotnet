@@ -19,8 +19,7 @@ cat /etc/motd
 eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
 
 # starting sshd process
-sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
-/usr/sbin/sshd
+source /opt/startup/startssh.sh
 
 # Format : coredump.hostname.processid.time 
 # Example: coredump.7d77b4ff1fea.15.1571222166

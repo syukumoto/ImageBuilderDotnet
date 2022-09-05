@@ -17,8 +17,7 @@ Note: Any data outside '/home' is not persisted
 EOL
 cat /etc/motd
 
-sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
-service ssh start
+source /opt/startup/startssh.sh
 
 # Get environment variables to show up in SSH session
 eval $(printenv | sed -n "s/^\([^=]\+\)=\(.*\)$/export \1=\2/p" | sed 's/"/\\\"/g' | sed '/=/s//="/' | sed 's/$/"/' >> /etc/profile)
