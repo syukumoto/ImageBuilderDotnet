@@ -42,162 +42,162 @@ jobs:
     displayName: 'Set variables'
   - template: GenerateDockerFiles/dockerFilesGenerateTask.yml
 
-# - job: Job_DockerBuildNodeImages
-#   displayName: Build Node JS Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: node
+- job: Job_DockerBuildNodeImages
+  displayName: Build Node JS Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: node
 
-# - job: Job_DockerBuildDotNetCoreImages
-#   displayName: Build ASP NET Core Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 140
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: dotnetcore
+- job: Job_DockerBuildDotNetCoreImages
+  displayName: Build ASP NET Core Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 140
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: dotnetcore
 
-# - job: Job_DockerBuildGoImages
-#   displayName: Build Go Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: go
+- job: Job_DockerBuildGoImages
+  displayName: Build Go Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: go
 
-# - job: Job_DockerBuildPythonImages
-#   displayName: Build Python Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: python
+- job: Job_DockerBuildPythonImages
+  displayName: Build Python Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: python
 
-# - job: Job_DockerBuildPhpImages
-#   displayName: Build PHP Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: php
+- job: Job_DockerBuildPhpImages
+  displayName: Build PHP Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: php
 
-# - job: Job_DockerBuildPhpXdebugImages
-#   displayName: Build PHP xdebug Dev Images
-#   dependsOn: 
-#   - Job_GenerateDockerFiles
-#   - Job_DockerBuildPhpImages
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: php-xdebug
+- job: Job_DockerBuildPhpXdebugImages
+  displayName: Build PHP xdebug Dev Images
+  dependsOn: 
+  - Job_GenerateDockerFiles
+  - Job_DockerBuildPhpImages
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: php-xdebug
 
-# - job: Job_DockerBuildRubyImages
-#   displayName: Build Ruby Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: ruby
+- job: Job_DockerBuildRubyImages
+  displayName: Build Ruby Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: ruby
 
-# - job: Job_DockerBuildWordPressImages
-#   displayName: Build WordPress Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')))
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: wordpress
+- job: Job_DockerBuildWordPressImages
+  displayName: Build WordPress Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  condition: and(succeeded(), not(startsWith(variables['Build.SourceBranch'], 'refs/heads/releases/')))
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"  
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: wordpress
 
-# - job: Job_BuildKuduLiteImage
-#   displayName: Build KuduLite Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+- job: Job_BuildKuduLiteImage
+  displayName: Build KuduLite Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
   
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: KuduLite
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: KuduLite
     
 - job: Job_BuildKuduLiteDynamicInstImage
   displayName: Build KuduLite DynamicInstall Image
@@ -218,97 +218,97 @@ jobs:
       filesRootPath: GitRepo-DynInst
       imgTag: buster_$(Build.BuildNumber)
 
-# - job: Job_BuildKuduLiteBullseyeImage
-#   displayName: Build KuduLite Bullseye Image
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: KuduLite
-#       filesRootPath: GitRepo-Bullseye
-#       imgTag: bullseye_$(Build.BuildNumber)
+- job: Job_BuildKuduLiteBullseyeImage
+  displayName: Build KuduLite Bullseye Image
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: KuduLite
+      filesRootPath: GitRepo-Bullseye
+      imgTag: bullseye_$(Build.BuildNumber)
 
-# - job: Job_BuildStaticSiteImage
-#   displayName: Build Static Site Dev Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: staticsite
+- job: Job_BuildStaticSiteImage
+  displayName: Build Static Site Dev Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: staticsite
 
-# - job: Job_BuildDiagnosticServerImage
-#   displayName: Build Diagnostic Server Images
-#   dependsOn: Job_GenerateDockerFiles
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 100
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-#   - template: BuildAndTagImages/buildImageJob.yml
-#     parameters:
-#       stackName: DiagnosticServer
+- job: Job_BuildDiagnosticServerImage
+  displayName: Build Diagnostic Server Images
+  dependsOn: Job_GenerateDockerFiles
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 100
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  - template: BuildAndTagImages/buildImageJob.yml
+    parameters:
+      stackName: DiagnosticServer
 
-# - job: Job_TestBuiltImages
-#   displayName: Test Images for Sanity and Versions
-#   dependsOn: 
-#   - Job_DockerBuildNodeImages
-#   - Job_DockerBuildDotNetCoreImages
-#   - Job_DockerBuildPythonImages
-#   - Job_DockerBuildPhpImages
-#   - Job_DockerBuildPhpXdebugImages
-#   - Job_BuildKuduLiteImage
-#   - Job_BuildKuduLiteBullseyeImage
-#   - Job_BuildStaticSiteImage
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 30
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]true"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
-#   - template: Tests/Tests.yml
-#     parameters:
-#       BuildNumber: $(Build.BuildNumber) 
+- job: Job_TestBuiltImages
+  displayName: Test Images for Sanity and Versions
+  dependsOn: 
+  - Job_DockerBuildNodeImages
+  - Job_DockerBuildDotNetCoreImages
+  - Job_DockerBuildPythonImages
+  - Job_DockerBuildPhpImages
+  - Job_DockerBuildPhpXdebugImages
+  - Job_BuildKuduLiteImage
+  - Job_BuildKuduLiteBullseyeImage
+  - Job_BuildStaticSiteImage
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 30
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushBuildImages;]true"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+  - template: Tests/Tests.yml
+    parameters:
+      BuildNumber: $(Build.BuildNumber) 
 
-# - job: Job_TagAppSvcTestImages
-#   displayName: Tag Dev Images to ACR Dev Repo
-#   dependsOn: Job_TestBuiltImages
-#   pool:
-#     vmImage: ubuntu-18.04
-#   timeoutInMinutes: 5
-#   steps:
-#   - script: |
-#       echo "##vso[task.setvariable variable=InitialChecks;]true"
-#       echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
-#       echo "##vso[task.setvariable variable=BuildBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushBuildImages;]false"
-#       echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
+- job: Job_TagAppSvcTestImages
+  displayName: Tag Dev Images to ACR Dev Repo
+  dependsOn: Job_TestBuiltImages
+  pool:
+    vmImage: ubuntu-18.04
+  timeoutInMinutes: 5
+  steps:
+  - script: |
+      echo "##vso[task.setvariable variable=InitialChecks;]true"
+      echo "##vso[task.setvariable variable=GenerateDockerFiles;]true"
+      echo "##vso[task.setvariable variable=BuildBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushBuildImages;]false"
+      echo "##vso[task.setvariable variable=PushRuntimeImages;]false"
 trigger: none
 
 pr:
