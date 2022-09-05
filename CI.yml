@@ -198,7 +198,7 @@ jobs:
   - template: BuildAndTagImages/buildImageJob.yml
     parameters:
       stackName: KuduLite
-    
+
 - job: Job_BuildKuduLiteDynamicInstImage
   displayName: Build KuduLite DynamicInstall Image
   dependsOn: Job_GenerateDockerFiles
