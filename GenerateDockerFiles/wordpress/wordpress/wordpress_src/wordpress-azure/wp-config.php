@@ -122,7 +122,7 @@ $site_url = $_SERVER['HTTP_HOST'];
 define('WP_HOME', $http_protocol . $site_url);
 define('WP_SITEURL', $http_protocol . $site_url);
 define('WP_CONTENT_URL', '/wp-content');
-define('DOMAIN_CURRENT_SITE', $site_url);
+define('DOMAIN_CURRENT_SITE', $_SERVER['HTTP_HOST']);
 
 /** Absolute path to the WordPress directory. */
 if ( ! defined( 'ABSPATH' ) ) {
