@@ -59,10 +59,8 @@ ENV PYTHON_USE_GUNICORN_CONFIG_FROM_PATH "/opt/startup/gunicorn.conf.py"
 # setup appServiceAppLogs
 RUN mkdir -p /opt/startup/app_logs
 COPY common/app_logs/ /opt/startup/app_logs/
-ENV PYTHONPATH "${PYTHONPATH}:/opt/startup/app_logs"
 
 #code profiler options
-ENV PYTHONPATH "${PYTHONPATH}:/opt/startup/code_profiler"
 RUN mkdir -p /opt/startup/code_profiler
 COPY common/code_profiler/ /opt/startup/code_profiler/
 RUN echo "alias vizviewer=/opt/startup/code_profiler/vizviewer.sh" >>/root/.bashrc \
