@@ -29,6 +29,9 @@ RUN apt-get update \
 COPY tcpping /usr/bin/tcpping
 RUN chmod 755 /usr/bin/tcpping
 
+COPY startssh.sh /opt/startup
+RUN chmod +x /opt/startup/startssh.sh
+
 WORKDIR ${HOME_SITE}
 
 EXPOSE 8000

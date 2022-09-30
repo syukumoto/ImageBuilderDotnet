@@ -49,6 +49,7 @@ ENV DOCKER_BUILD_HOME "/dockerbuild"
 # --------
 RUN set -ex \
     && apk update \
+    && apk add --update linux-headers \
     && apk add --no-cache openssl git net-tools tcpdump tcptraceroute vim curl wget bash\
 	&& cd /usr/bin \
 	&& wget http://www.vdberg.org/~richard/tcpping \
@@ -88,6 +89,7 @@ RUN set -ex \
     && pecl install imagick \
     && docker-php-ext-enable imagick \
     && docker-php-ext-install exif \
+	&& docker-php-ext-install soap \	
     && docker-php-ext-install bcmath \
     && docker-php-ext-install -j "$(nproc)" \
 	    mysqli \

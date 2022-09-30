@@ -47,6 +47,9 @@ RUN mkdir -p /opt/startup \
    && (sleep 1;/tmp/ssh_setup.sh 2>&1 > /dev/null) \
    && rm -rf /tmp/*
 
+COPY startssh.sh /opt/startup
+RUN chmod +x /opt/startup/startssh.sh
+
 COPY dotnet_monitor_config.json /dotnet_monitor_config.json
 COPY run-dotnet-monitor.sh /run-dotnet-monitor.sh
 RUN chmod +x /run-dotnet-monitor.sh

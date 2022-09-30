@@ -1,5 +1,4 @@
 app_service_app_logs_import_succeeded = False
-app_service_app_logs_handler_registration_succeeded = False
 code_profiler_import_succeeded = False
 is_code_profiler_enabled = False
 failure_message = "There was an issue installing an App Service Platform feature for this site."
@@ -39,11 +38,9 @@ except Exception as e:
 def post_worker_init(worker):
     try:
         global app_service_app_logs_import_succeeded
-        global app_service_app_logs_handler_registration_succeeded
 
         if app_service_app_logs_import_succeeded:
             asal.startHandlerRegisterer()
-            app_service_app_logs_handler_registration_succeeded = True
 
     except Exception as e:
         feature = "AppServiceAppLogs"
@@ -65,10 +62,9 @@ def post_worker_init(worker):
 
 def on_starting(server):
     global app_service_app_logs_import_succeeded
-    global app_service_app_logs_handler_registration_succeeded
 
     try:
-        if app_service_app_logs_import_succeeded and app_service_app_logs_handler_registration_succeeded:
+        if app_service_app_logs_import_succeeded :
             asal.initAppLogs()
 
     except Exception as e:
