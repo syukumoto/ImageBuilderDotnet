@@ -45,6 +45,10 @@ RUN chmod -R +x /opt/startup \
    && cd /opt/startup \
    && npm install 
 
+
+COPY startssh.sh /opt/startup
+RUN chmod +x /opt/startup/startssh.sh
+
 ENV PORT 8080
 ENV SSH_PORT 2222
 EXPOSE 2222 8080

@@ -7,7 +7,7 @@ LABEL maintainer Azure App Service Container Images <appsvc-images@microsoft.com
 ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
 #nginx
-ENV NGINX_VERSION 1.20.1
+ENV NGINX_VERSION 1.23.0
 ENV NGINX_LOG_DIR "/var/log/nginx"
 #php
 ENV PHP_HOME "/usr/local/etc/php"
@@ -43,6 +43,7 @@ ENV DOCKER_BUILD_HOME "/dockerbuild"
 # --------
 RUN set -ex \
     && apk update \
+    && apk add --update linux-headers \
     && apk add --no-cache openssl git net-tools tcpdump tcptraceroute vim curl wget bash\
 	&& cd /usr/bin \
 	&& wget http://www.vdberg.org/~richard/tcpping \
@@ -82,6 +83,7 @@ RUN set -ex \
     && pecl install imagick \
     && docker-php-ext-enable imagick \
     && docker-php-ext-install exif \
+	&& docker-php-ext-install soap \
     && docker-php-ext-install bcmath \
     && docker-php-ext-install -j "$(nproc)" \
 	    mysqli \
@@ -117,9 +119,13 @@ RUN set -ex \
    && sed -i 's/"cgroup_add_service/" # cgroup_add_service/g' /lib/rc/sh/openrc-run.sh \
 # ----------
 # Nginx
-# ----------
-# RUN set -ex\ 
-	&& GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
+# ---------- 
+# Replace GPG_KEYS based on the key used to sign NGINX package
+# or import the public key used to sign the NGINX package
+# NGINX public keys can be found here: https://nginx.org/en/pgp_keys.html
+# previous GPG_KEYS is "B0F4253373F8F6F510D42178520A9993A1C052F8"
+# RUN set -ex\      
+	&& GPG_KEYS=13C82A63B603576156E30A4EA0EA981B66B0D967 \
 	&& CONFIG="\
 		--prefix=/etc/nginx \
 		--sbin-path=/usr/sbin/nginx \

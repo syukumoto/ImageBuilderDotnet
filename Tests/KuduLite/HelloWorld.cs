@@ -109,8 +109,10 @@ namespace Tests
             await client.Containers.StartContainerAsync(name, new ContainerStartParameters());
             Thread.Sleep(10 * 1000);
 
-            ContainerExecCreateResponse resp = await client.Containers.ExecCreateContainerAsync(name, new ContainerExecCreateParameters()
+            var execParams = new ContainerExecCreateParameters()
             {
+                AttachStderr = true,
+                AttachStdout = true,
                 Cmd = new List<String>
                 {
                     "benv",
@@ -119,10 +121,16 @@ namespace Tests
                     "/opt/Kudu/KuduConsole/kudu.dll",
                     "/home/site",
                     "/home/site/wwwroot",
-                },
-            });
+                }
+            };
 
-            await client.Containers.StartContainerExecAsync(resp.ID);
+            var exec = await client.Exec.ExecCreateContainerAsync(name, execParams);
+            var stream = await client.Exec.StartAndAttachContainerExecAsync(exec.ID, false);
+            (string containerLogs, string error) = await stream.ReadOutputToEndAsync(CancellationToken.None);
+
+            Console.WriteLine($"Container Logs : {containerLogs}");
+            Console.WriteLine($"Errors: {error}");
+            Console.WriteLine();
 
             Thread.Sleep(10 * 1000);
         }
@@ -195,9 +203,9 @@ namespace Tests
         [Fact]
         public async Task NodeTests()
         {
-            string runtimeImage = GetImages("nodebuiltImageList").Where(s => s.Contains("12-lts")).First();
+            string runtimeImage = GetImages("nodebuiltImageList").Where(s => s.Contains("14-lts")).First();
             string kuduImage = GetImages("KuduLitebuiltImageList").First();
-            await TestKuduImages("node", "12-lts", "node", kuduImage, runtimeImage, "Hello World!");
+            await TestKuduImages("node", "14-lts", "node", kuduImage, runtimeImage, "Hello World!");
         }
 
         [Fact]
@@ -212,9 +220,9 @@ namespace Tests
                 File.Move("dotnetcore/repository/Program.cs-tmp", "dotnetcore/repository/Program.cs");
             }
 
-            string runtimeImage = GetImages("dotnetcorebuiltImageList").Where(s => s.Contains("3.1")).First();
+            string runtimeImage = GetImages("dotnetcorebuiltImageList").Where(s => s.Contains("6.0")).First();
             string kuduImage = GetImages("KuduLitebuiltImageList").First();
-            await TestKuduImages("dotnetcore", "3.1", "dotnetcore", kuduImage, runtimeImage, "Hello, World!");
+            await TestKuduImages("dotnetcore", "6.0", "dotnetcore", kuduImage, runtimeImage, "Hello, World!");
         }
     }
 }

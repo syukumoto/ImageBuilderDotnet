@@ -49,8 +49,7 @@ sed -i "s/APACHE_SERVER_LIMIT/$APACHE_SERVER_LIMIT/g" /etc/apache2/mods-availabl
 sed -i "s/APACHE_MAX_REQ_WORKERS/$APACHE_MAX_REQ_WORKERS/g" /etc/apache2/mods-available/mpm_prefork.conf
 
 # starting sshd process
-sed -i "s/SSH_PORT/$SSH_PORT/g" /etc/ssh/sshd_config
-/usr/sbin/sshd
+source /opt/startup/startssh.sh
 
 appPath="/home/site/wwwroot"
 runFromPath="/tmp/webapp"

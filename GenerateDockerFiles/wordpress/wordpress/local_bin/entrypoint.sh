@@ -111,6 +111,30 @@ translate_welcome_content() {
     fi
 }
 
+setup_cdn_variables() {
+    IS_CDN_ENABLED="False"
+    if [[ $CDN_ENABLED ]] && [[ "$CDN_ENABLED" == "true" || "$CDN_ENABLED" == "TRUE" || "$CDN_ENABLED" == "True" ]] && [[ $CDN_ENDPOINT ]]; then
+    	IS_CDN_ENABLED="True"
+    fi
+    
+    IS_AFD_ENABLED="False"
+    if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]] && [[ $AFD_ENDPOINT ]]; then
+    	IS_AFD_ENABLED="True"
+    fi
+    
+    IS_BLOB_STORAGE_ENABLED="False"
+    if [[ $BLOB_STORAGE_ENABLED ]] && [[ "$BLOB_STORAGE_ENABLED" == "true" || "$BLOB_STORAGE_ENABLED" == "TRUE" || "$BLOB_STORAGE_ENABLED" == "True" ]] \
+    && [[ $STORAGE_ACCOUNT_NAME ]] && [[ $STORAGE_ACCOUNT_KEY ]] && [[ $BLOB_CONTAINER_NAME ]]; then
+	IS_BLOB_STORAGE_ENABLED="True"
+    fi
+
+}
+
+start_at_daemon() {
+    service atd start
+    service atd status
+}
+
 setup_wordpress() {
     if [ ! -d $WORDPRESS_LOCK_HOME ]; then
         mkdir -p $WORDPRESS_LOCK_HOME
@@ -215,34 +239,46 @@ setup_wordpress() {
         && wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-config.json --path=$WORDPRESS_HOME --allow-root; then
             echo "W3TC_PLUGIN_CONFIG_UPDATED" >> $WORDPRESS_LOCK_FILE
         fi
-    fi	
+    fi
     
-    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-        if [[ $CDN_ENABLED ]] && [[ "$CDN_ENABLED" == "true" || "$CDN_ENABLED" == "TRUE" || "$CDN_ENABLED" == "True" ]];then
-            if [[ $CDN_ENDPOINT ]]; then
-                echo "INFO: Scheduling CDN configuration 15 minutes from now.."
-                #start atd daemon
-                service atd start
-                service atd status
-                echo 'bash /usr/local/bin/w3tc_cdn_config.sh' | at now +10 minutes
-            fi
+    setup_cdn_variables
+    
+    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
+    && [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [[ "$IS_BLOB_STORAGE_ENABLED" == "True" ]]; then
+        BLOB_STORAGE_URL="${STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
+        if wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-blob-config.json --path=$WORDPRESS_HOME --allow-root \
+        && wp w3-total-cache option set cdn.azure.user $STORAGE_ACCOUNT_NAME --path=$WORDPRESS_HOME --allow-root \
+        && wp w3-total-cache option set cdn.azure.container $BLOB_CONTAINER_NAME --path=$WORDPRESS_HOME --allow-root \
+        && wp w3-total-cache option set cdn.azure.key $STORAGE_ACCOUNT_KEY --path=$WORDPRESS_HOME --allow-root \
+        && wp w3-total-cache option set cdn.enabled true --type=boolean --path=$WORDPRESS_HOME --allow-root \
+        && wp w3-total-cache option set cdn.azure.cname $BLOB_STORAGE_URL --type=array --path=$WORDPRESS_HOME --allow-root \
+        && wp plugin deactivate w3-total-cache --quiet --path=$WORDPRESS_HOME --allow-root \
+        && wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root; then
+            echo "BLOB_STORAGE_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
         fi
     fi
-
-    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-        if [[ $BLOB_STORAGE_ENABLED ]] && [[ "$BLOB_STORAGE_ENABLED" == "true" || "$BLOB_STORAGE_ENABLED" == "TRUE" || "$BLOB_STORAGE_ENABLED" == "True" ]] \
-        && [[ $STORAGE_ACCOUNT_NAME ]] && [[ $STORAGE_ACCOUNT_KEY ]] && [[ $BLOB_CONTAINER_NAME ]]; then
-            BLOB_STORAGE_URL="${STORAGE_ACCOUNT_NAME}.blob.core.windows.net"
-            if wp w3-total-cache import $WORDPRESS_SOURCE/w3tc-blob-config.json --path=$WORDPRESS_HOME --allow-root \
-            && wp w3-total-cache option set cdn.azure.user $STORAGE_ACCOUNT_NAME --path=$WORDPRESS_HOME --allow-root \
-            && wp w3-total-cache option set cdn.azure.container $BLOB_CONTAINER_NAME --path=$WORDPRESS_HOME --allow-root \
-            && wp w3-total-cache option set cdn.azure.key $STORAGE_ACCOUNT_KEY --path=$WORDPRESS_HOME --allow-root \
-            && wp w3-total-cache option set cdn.enabled true --type=boolean --path=$WORDPRESS_HOME --allow-root \
-            && wp w3-total-cache option set cdn.azure.cname $BLOB_STORAGE_URL --type=array --path=$WORDPRESS_HOME --allow-root \
-            && wp plugin deactivate w3-total-cache --quiet --path=$WORDPRESS_HOME --allow-root \
-            && wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root; then
-                echo "BLOB_STORAGE_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
-            fi
+    
+    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ "$IS_CDN_ENABLED" == "True" ] \
+    && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        if [ "$IS_BLOB_STORAGE_ENABLED" == "True" ] && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
+        && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+            start_at_daemon
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_CDN" | at now +10 minutes
+        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+            start_at_daemon
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh CDN" | at now +10 minutes
+        fi
+    fi
+    
+    if [ $(grep "W3TC_PLUGIN_CONFIG_UPDATED" $WORDPRESS_LOCK_FILE) ] && [ "$IS_AFD_ENABLED" == "True" ] \
+    && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        if [ "$IS_BLOB_STORAGE_ENABLED" == "True" ] && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
+        && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+            start_at_daemon
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +10 minutes
+        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+            start_at_daemon
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh AFD" | at now +10 minutes
         fi
     fi
 
@@ -271,6 +307,11 @@ setup_wordpress() {
 	    echo "INFO: NOT in Azure, chown for "$WORDPRESS_HOME 
 	    chown -R nginx:nginx $WORDPRESS_HOME
     fi
+}
+
+setup_post_startup_script() {
+    test ! -d "/home/dev" && echo "INFO: /home/dev not found. Creating..." && mkdir -p /home/dev
+    touch /home/dev/startup.sh
 }
 
 setup_nginx() {
@@ -386,6 +427,8 @@ if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYA
 else
     cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
 fi
+
+setup_post_startup_script
 
 cd /usr/bin/
 supervisord -c /etc/supervisord.conf

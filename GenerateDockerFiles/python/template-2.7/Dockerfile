@@ -66,4 +66,7 @@ COPY application.py /opt/defaultsite
 RUN chmod -R 777 /opt/startup
 COPY entrypoint.py /usr/local/bin
 
+COPY startssh.sh /opt/startup
+RUN chmod +x /opt/startup/startssh.sh
+
 ENTRYPOINT ["/opt/startup/init_container.sh"]

@@ -8,7 +8,7 @@
 
 namespace Smush\App\Pages;
 
-use Smush\App\Abstract_Page;
+use Smush\App\Abstract_Summary_Page;
 use Smush\App\Interface_Page;
 use Smush\Core\Settings;
 use WP_Smush;
@@ -20,7 +20,7 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Class Dashboard
  */
-class Dashboard extends Abstract_Page implements Interface_Page {
+class Dashboard extends Abstract_Summary_Page implements Interface_Page {
 
 	/**
 	 * Function triggered when the page is loaded before render any content.
@@ -87,23 +87,12 @@ class Dashboard extends Abstract_Page implements Interface_Page {
 			);
 		}
 
-		if ( self::should_render( 'webp' ) ) {
+		if ( self::should_render( 'cdn' ) ) {
 			$this->add_meta_box(
-				'dashboard/webp',
-				__( 'Local WebP', 'wp-smushit' ),
-				array( $this, 'local_webp_meta_box' ),
-				array( $this, 'local_webp_meta_box_header' ),
-				null,
-				'box-dashboard-left'
-			);
-		}
-
-		if ( self::should_render( 'tools' ) ) {
-			$this->add_meta_box(
-				'dashboard/tools',
-				__( 'Tools', 'wp-smushit' ),
-				array( $this, 'tools_meta_box' ),
-				null,
+				'dashboard/cdn',
+				__( 'CDN', 'wp-smushit' ),
+				array( $this, 'cdn_meta_box' ),
+				array( $this, 'cdn_meta_box_header' ),
 				null,
 				'box-dashboard-left'
 			);
@@ -145,12 +134,12 @@ class Dashboard extends Abstract_Page implements Interface_Page {
 			);
 		}
 
-		if ( self::should_render( 'cdn' ) ) {
+		if ( self::should_render( 'webp' ) ) {
 			$this->add_meta_box(
-				'dashboard/cdn',
-				__( 'CDN', 'wp-smushit' ),
-				array( $this, 'cdn_meta_box' ),
-				array( $this, 'cdn_meta_box_header' ),
+				'dashboard/webp',
+				__( 'Local WebP', 'wp-smushit' ),
+				array( $this, 'local_webp_meta_box' ),
+				array( $this, 'local_webp_meta_box_header' ),
 				null,
 				'box-dashboard-right'
 			);
@@ -183,20 +172,29 @@ class Dashboard extends Abstract_Page implements Interface_Page {
 
 		$core = WP_Smush::get_instance()->core();
 
-		$uncompressed_count = $core->total_count - $core->smushed_count - $core->skipped_count;
+		// Split human size to get format and size.
+		$human = explode( ' ', $core->stats['human'] );
 
 		$resize_count = $core->get_savings( 'resize', false, false, true );
 
+		list( $percent_optimized, $grade ) = $this->get_grade_data();
+
 		$args = array(
-			'cdn_status'      => WP_Smush::get_instance()->core()->mod->cdn->status(),
-			'is_cdn'          => $this->settings->get( 'cdn' ),
-			'is_lazy_load'    => $this->settings->get( 'lazy_load' ),
-			'is_local_webp'   => $this->settings->get( 'webp_mod' ),
-			'remaining'       => count( get_option( 'wp-smush-resmush-list', array() ) ) + max( $uncompressed_count, 0 ),
-			'resize_count'    => ! $resize_count ? 0 : $resize_count,
-			'upsell_url_cdn'  => $upsell_url_cdn,
-			'upsell_url_webp' => $upsell_url_webp,
-			'webp_configured' => true === WP_Smush::get_instance()->core()->mod->webp->is_configured(),
+			'human_format'      => empty( $human[1] ) ? 'B' : $human[1],
+			'human_size'        => empty( $human[0] ) ? '0' : round( (int) $human[0] ),
+			'cdn_status'        => WP_Smush::get_instance()->core()->mod->cdn->status(),
+			'is_cdn'            => $this->settings->get( 'cdn' ),
+			'is_lazy_load'      => $this->settings->get( 'lazy_load' ),
+			'is_local_webp'     => $this->settings->get( 'webp_mod' ),
+			'resize_count'      => ! $resize_count ? 0 : $resize_count,
+			'total_optimized'   => $core->stats['total_images'],
+			'stats_percent'     => $core->stats['percent'] > 0 ? number_format_i18n( $core->stats['percent'], 1 ) : 0,
+			'upsell_url_cdn'    => $upsell_url_cdn,
+			'upsell_url_webp'   => $upsell_url_webp,
+			'webp_configured'   => true === WP_Smush::get_instance()->core()->mod->webp->is_configured(),
+			'percent_grade'     => $grade,
+			'percent_metric'    => 0.0 === (float) $percent_optimized ? 100 : $percent_optimized,
+			'percent_optimized' => $percent_optimized,
 		);
 
 		$this->view( 'dashboard/summary-meta-box', $args );

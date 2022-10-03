@@ -21,20 +21,13 @@ use WP_Smush;
 class Configs {
 
 	/**
-	 * Name of the option holding the configs.
-	 *
-	 * @since 3.8.5
-	 */
-	const OPTION_NAME = 'preset_configs';
-
-	/**
 	 * List of pro features.
 	 *
 	 * @since 3.8.5
 	 *
 	 * @var array
 	 */
-	private $pro_features = array( 'lossy', 'original', 'backup', 'png_to_jpg', 's3', 'nextgen', 'cdn', 'auto_resize', 'webp', 'webp_mod' );
+	private $pro_features = array( 'original', 'backup', 'png_to_jpg', 's3', 'nextgen', 'cdn', 'auto_resize', 'webp', 'webp_mod' );
 
 	/**
 	 * Gets the local list of configs via Smush endpoint.
@@ -44,11 +37,11 @@ class Configs {
 	 * @return bool
 	 */
 	public function get_callback() {
-		$stored_configs = get_site_option( 'wp-smush-' . self::OPTION_NAME, false );
+		$stored_configs = get_site_option( 'wp-smush-preset_configs', false );
 
 		if ( false === $stored_configs ) {
 			$stored_configs = array( $this->get_basic_config() );
-			update_site_option( 'wp-smush-' . self::OPTION_NAME, $stored_configs );
+			update_site_option( 'wp-smush-preset_configs', $stored_configs );
 		}
 		return $stored_configs;
 	}
@@ -69,7 +62,7 @@ class Configs {
 		}
 
 		$sanitized_data = $this->sanitize_configs_list( $data );
-		update_site_option( 'wp-smush-' . self::OPTION_NAME, $sanitized_data );
+		update_site_option( 'wp-smush-preset_configs', $sanitized_data );
 
 		return $sanitized_data;
 	}
@@ -87,14 +80,14 @@ class Configs {
 	}
 
 	/**
-	 * Adds the basic configuration to the local configs.
+	 * Adds the default configuration to the local configs.
 	 *
 	 * @since 3.8.6
 	 */
 	private function get_basic_config() {
 		$basic_config = array(
 			'id'          => 1,
-			'name'        => __( 'Basic config', 'wp-smushit' ),
+			'name'        => __( 'Default config', 'wp-smushit' ),
 			'description' => __( 'Recommended performance config for every site.', 'wp-smushit' ),
 			'default'     => true,
 			'config'      => array(
@@ -219,8 +212,7 @@ class Configs {
 			throw new Exception( __( 'The file must be a JSON.', 'wp-smushit' ) );
 		}
 
-		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-		$json_file = file_get_contents( $file['tmp_name'] );
+		$json_file = file_get_contents( $file['tmp_name'] ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 		if ( ! $json_file ) {
 			throw new Exception( __( 'There was an error getting the contents of the file.', 'wp-smushit' ) );
 		}
@@ -271,7 +263,7 @@ class Configs {
 	 * @return void|WP_Error
 	 */
 	public function apply_config_by_id( $id ) {
-		$stored_configs = get_site_option( 'wp-smush-' . self::OPTION_NAME );
+		$stored_configs = get_site_option( 'wp-smush-preset_configs' );
 
 		$config = false;
 		foreach ( $stored_configs as $config_data ) {
@@ -367,6 +359,9 @@ class Configs {
 			$new_lazy_load = array_replace_recursive( $stored_lazy_load, $sanitized_config['lazy_load'] );
 			$settings_handler->set_setting( 'wp-smush-lazy_load', $new_lazy_load );
 		}
+
+		// Skip onboarding if applying a config.
+		update_option( 'skip-smush-setup', true );
 	}
 
 	/**
@@ -489,8 +484,9 @@ class Configs {
 					'flags'  => FILTER_REQUIRE_ARRAY,
 				),
 				'animation'       => array(
-					'filter' => FILTER_SANITIZE_SPECIAL_CHARS,
-					'flags'  => FILTER_REQUIRE_ARRAY,
+					'filter'  => FILTER_CALLBACK,
+					'options' => 'sanitize_text_field',
+					'flags'   => FILTER_REQUIRE_ARRAY,
 				),
 				'include'         => array(
 					'filter' => FILTER_VALIDATE_BOOLEAN,
@@ -501,8 +497,9 @@ class Configs {
 					'flags'  => FILTER_REQUIRE_ARRAY,
 				),
 				'exclude-classes' => array(
-					'filter' => FILTER_SANITIZE_SPECIAL_CHARS,
-					'flags'  => FILTER_REQUIRE_ARRAY,
+					'filter'  => FILTER_CALLBACK,
+					'options' => 'sanitize_text_field',
+					'flags'   => FILTER_REQUIRE_ARRAY,
 				),
 				'footer'          => FILTER_VALIDATE_BOOLEAN,
 				'native'          => FILTER_VALIDATE_BOOLEAN,
@@ -536,7 +533,6 @@ class Configs {
 			'cdn'          => Settings::get_instance()->get_cdn_fields(),
 			'webp_mod'     => array(),
 			'integrations' => Settings::get_instance()->get_integrations_fields(),
-			'tools'        => Settings::get_instance()->get_tools_fields(),
 			'settings'     => Settings::get_instance()->get_settings_fields(),
 		);
 

@@ -57,12 +57,6 @@
 		removeNotice( e );
 	} );
 
-	// Only used for the upgrade notice.
-	$( '.smush-notice .smush-notice-dismiss' ).on( 'click', ( e ) => {
-		removeNotice( e );
-		$.post( ajaxurl, { action: 'dismiss_upgrade_notice' } );
-	} );
-
 	// Dismiss the update notice.
 	$( '.wp-smush-update-info' ).on( 'click', '.notice-dismiss', ( e ) => {
 		e.preventDefault();

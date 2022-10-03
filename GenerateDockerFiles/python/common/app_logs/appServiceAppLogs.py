@@ -92,7 +92,8 @@ def workerLogHandlerRegisterer():
         root_logger = logging.getLogger()
         handler = CustomQueueHandler(appService_appLogsVars.logs_queue)
         formatter = logging.Formatter(
-            "{ 'time' : '%(asctime)s', 'level': '%(levelname)s', 'message' : '%(message)s', 'pid' : '%(process)d' }")
+            "{ 'time' : '%(asctime)s', 'level': '%(levelname)s', 'message' : '%(message)s', 'pid' : '%(process)d' }",
+            datefmt="%Y-%m-%d %H:%M:%SZ")
         handler.setLevel(logging.INFO)
         handler.setFormatter(formatter)
         root_logger.addHandler(handler)
@@ -180,7 +181,6 @@ def logsCollector():
             for conn in connections:
                 try:
                     conn.sendall((log+"\n").encode())
-                    appService_appLogsVars.logger.debug("Sent logs")
                 except:
                     bad_connections.add(conn)
 

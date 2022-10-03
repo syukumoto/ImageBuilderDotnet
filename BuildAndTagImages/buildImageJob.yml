@@ -35,6 +35,9 @@ steps:
   inputs:
     artifactName: drop
 
+- task: NuGetAuthenticate@1
+  condition: and(succeeded(), eq('${{ parameters.stackName }}', 'KuduLite'))
+
 - task: ShellScript@2
   displayName: 'Build Images'
   inputs:
@@ -42,6 +45,9 @@ steps:
     args: $(Build.ArtifactStagingDirectory)/drop appsvctest $(System.DefaultWorkingDirectory)/Config $(Build.BuildNumber) ${{ parameters.stackName }} $(Build.Reason) ${{ parameters.filesRootPath }} ${{ parameters.imgTag }} ${{ parameters.stackVersion }}
   env:
     DIAGNOSTICSERVER_NUGETTOKEN: $(DiagnosticServer_NugetToken)
+    # NuGetAuthenticate@1 task sets the environment variable VSS_NUGET_ACCESSTOKEN
+    # reference: https://github.com/MicrosoftDocs/azure-devops-docs/blob/main/docs/pipelines/tasks/package/nuget-authenticate.md#how-does-this-task-work
+    VSS_NUGET_ACCESSTOKEN: $(VSS_NUGET_ACCESSTOKEN)
 
 - task: ShellScript@2
   displayName: 'Run unit tests'

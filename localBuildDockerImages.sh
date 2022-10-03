@@ -83,6 +83,10 @@ case $stackName in
     buildAndTagImages "php"
     ;;
 
+  "php-xdebug")
+    buildAndTagImages "php-xdebug"
+    ;;
+
   "ruby")
     buildAndTagImages "ruby"
     ;;
