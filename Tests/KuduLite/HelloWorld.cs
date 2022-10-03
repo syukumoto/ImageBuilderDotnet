@@ -128,11 +128,8 @@ namespace Tests
             var stream = await client.Exec.StartAndAttachContainerExecAsync(exec.ID, false);
             (string containerLogs, string error) = await stream.ReadOutputToEndAsync(CancellationToken.None);
 
-            Console.WriteLine("Container Logs : ");
-            Console.WriteLine(containerLogs);
-
-            Console.WriteLine("Errors:");
-            Console.WriteLine(error);
+            Console.WriteLine($"Container Logs : {containerLogs}");
+            Console.WriteLine($"Errors: {error}");
             Console.WriteLine();
 
             Thread.Sleep(10 * 1000);
