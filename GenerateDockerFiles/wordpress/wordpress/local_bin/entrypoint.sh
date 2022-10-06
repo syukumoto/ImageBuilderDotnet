@@ -275,10 +275,10 @@ setup_wordpress() {
         if [ "$IS_BLOB_STORAGE_ENABLED" == "True" ] && [ $(grep "BLOB_STORAGE_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
         && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
-            echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +10 minutes
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +2 minutes
         elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
-            echo "bash /usr/local/bin/w3tc_cdn_config.sh AFD" | at now +10 minutes
+            echo "bash /usr/local/bin/w3tc_cdn_config.sh AFD" | at now +2 minutes
         fi
     fi
 
@@ -333,6 +333,20 @@ if ! [[ $SKIP_WP_INSTALLATION ]] || ! [[ "$SKIP_WP_INSTALLATION" == "true"
     setup_wordpress
 else 
     echo "INFO: Skipping WP installation..."
+fi
+    
+#Update AFD URL
+if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+    afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
+    if [[ $AFD_ENABLED ]]; then
+        if [[ $AFD_CUSTOM_DOMAIN ]]; then
+            afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
+        elif [[ $AFD_ENDPOINT ]]; then
+            afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+        fi
+    fi
+    wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
+    wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
 fi
 
 if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
