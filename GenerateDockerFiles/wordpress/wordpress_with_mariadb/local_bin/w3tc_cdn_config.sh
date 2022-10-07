@@ -1,9 +1,19 @@
 cdn_type="$1"
 
-afd_update_site_url_condition() {
-    if [[ $(grep "# site_url for Azure Front Door (if enabled)." $WORDPRESS_HOME/wp-config.php) ]]; then
-        sed -i "/# site_url for Azure Front Door (if enabled)./a \$site_url = getenv('AFD_CUSTOM_DOMAIN') ? getenv('AFD_CUSTOM_DOMAIN') : (getenv('AFD_ENDPOINT') ? getenv('AFD_ENDPOINT') : \$_SERVER['HTTP_HOST']);" $WORDPRESS_HOME/wp-config.php
-    fi
+afd_update_site_url() {
+    	afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
+    	if [[ $AFD_ENABLED ]]; then
+    	    if [[ $AFD_CUSTOM_DOMAIN ]]; then
+    	        afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
+    	    elif [[ $AFD_ENDPOINT ]]; then
+    	        afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+    	    fi
+    	fi
+   
+    	if wp config set WP_HOME "$afd_url" --raw --allow-root --path=/home/site/wwwroot \
+    	&& wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root; then
+    	    echo "${cdn_type}_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
+    	fi 
 }
 
 #Configure CDN settings 
@@ -27,14 +37,12 @@ elif [[ "$cdn_type" == "CDN" ]] && [[ $CDN_ENDPOINT ]] && [ ! $(grep "CDN_CONFIG
 elif [[ "$cdn_type" == "BLOB_AFD" ]] && [[ $AFD_ENDPOINT ]] && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
 && [[ $(curl --write-out '%{http_code}' --silent --output /dev/null {https://$AFD_ENDPOINT}) == "200" ]] \
 && wp w3-total-cache option set cdn.azure.cname $AFD_ENDPOINT --type=array --path=$WORDPRESS_HOME --allow-root; then
-    afd_update_site_url_condition
-    echo "BLOB_AFD_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
+    afd_update_site_url
     service atd stop
     redis-cli flushall
 elif [[ "$cdn_type" == "AFD" ]] && [[ $AFD_ENDPOINT ]] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
 && [[ $(curl --write-out '%{http_code}' --silent --output /dev/null {https://$AFD_ENDPOINT}) == "200" ]]; then
-    afd_update_site_url_condition
-    echo "AFD_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
+    afd_update_site_url
     service atd stop
     redis-cli flushall
 else
