@@ -61,7 +61,6 @@ RUN rm -f /usr/local/etc/php/conf.d/php.ini \
                 echo 'log_errors=On'; \
                 echo 'display_startup_errors=Off'; \
                 echo 'date.timezone=UTC'; \
-                echo 'zend_extension=opcache'; \
     } > /usr/local/etc/php/conf.d/php.ini
 
 WORKDIR /home/site/wwwroot
