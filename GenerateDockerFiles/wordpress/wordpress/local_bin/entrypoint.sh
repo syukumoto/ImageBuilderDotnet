@@ -338,6 +338,13 @@ if ! [[ $SKIP_WP_INSTALLATION ]] || ! [[ "$SKIP_WP_INSTALLATION" == "true"
 else 
     echo "INFO: Skipping WP installation..."
 fi
+
+# Migrates Database.. Retries 10 times.
+if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MIGRATION_IN_PROGRESS" == "TRUE" || "$MIGRATION_IN_PROGRESS" == "True" ]] && [[ $MIGRATE_NEW_DATABASE_NAME ]] && [[ $MIGRATE_MYSQL_DUMP_PATH ]] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $mysql_import_statusfile_path) ]; then
+    echo "SCHEDULING_MIGRATION" >> $WORDPRESS_LOCK_FILE
+    service atd start
+    echo "bash /usr/local/bin/migrate.sh 10" | at now +0 minutes
+fi
     
 #Update AFD URL
 if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
