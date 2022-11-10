@@ -42,7 +42,9 @@ ENV WORDPRESS_LOCK_HOME "/home/wp-locks"
 ENV WORDPRESS_LOCK_FILE $WORDPRESS_LOCK_HOME"/wp_deployment_status.txt"
 #
 ENV DOCKER_BUILD_HOME "/dockerbuild"
-
+# Migration
+ENV MYSQL_IMPORT_STATUSFILE_PATH "/home/dev/migrate/mysql/mysql_import_status.txt"
+ENV MYSQL_IMPORT_STATUSFILE_DIR "/home/dev/migrate/mysql/"
 #
 # --------
 # ~. tools
