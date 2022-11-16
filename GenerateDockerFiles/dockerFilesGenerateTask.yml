@@ -1,5 +1,5 @@
 parameters:
-  ascName: WAWS_Container_Images
+  ascName: WAWS_Linux_Container_Images_Subscription
   acrName: wawsimages.azurecr.io
   baseImageName: "mcr.microsoft.com/oryx"
   baseImageVersion: "20220825.1"
