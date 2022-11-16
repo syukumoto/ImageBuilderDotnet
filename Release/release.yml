@@ -23,7 +23,7 @@ jobs:
     displayName: WAWS Container Images ACR login
     inputs:
       command: login
-      azureSubscriptionEndpoint:  WAWS_Container_Images
+      azureSubscriptionEndpoint:  WAWS_Linux_Container_Images_Subscription
       azureContainerRegistry: wawsimages.azurecr.io
   - task: AzureCLI@2
     displayName: Azure CLI

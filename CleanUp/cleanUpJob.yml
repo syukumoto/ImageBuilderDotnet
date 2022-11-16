@@ -3,13 +3,13 @@ steps:
   displayName: Container registry login
   inputs:
     command: login
-    azureSubscriptionEndpoint: WAWS_Container_Images
+    azureSubscriptionEndpoint: WAWS_Linux_Container_Images_Subscription
     azureContainerRegistry: wawsimages.azurecr.io
 
 - task: AzureCLI@2
   displayName: Cleaning Up Dev ACR Repo - Removing old images
   inputs:
-    azureSubscription: WAWS_Container_Images
+    azureSubscription: WAWS_Linux_Container_Images_Subscription
     scriptType: bash
     scriptLocation: scriptPath
     scriptPath: ./CleanUp/cleanDevACR.sh

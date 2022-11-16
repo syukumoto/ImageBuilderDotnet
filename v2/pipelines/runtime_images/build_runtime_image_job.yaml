@@ -2,7 +2,7 @@ parameters:
   baseImageVersion: "20220502.2"
   stackName: ""
   stackVersion: ""
-  ascName: "WAWS_Container_Images"
+  ascName: "WAWS_Linux_Container_Images_Subscription"
   acrName: wawsimages.azurecr.io
   baseImageName: mcr.microsoft.com/oryx
   
