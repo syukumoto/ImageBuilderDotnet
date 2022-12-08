@@ -174,7 +174,6 @@ RUN set -ex \
 		--with-file-aio \
 		--with-http_v2_module \
 		--add-module=/usr/src/ngx_cache_purge-c7345057ad5429617fc0823e92e3fa8043840cef \
-		--add-module=/usr/src/ngx_brotli \
 	" \
 	&& addgroup -S nginx \
 	&& adduser -D -S -h /var/cache/nginx -s /sbin/nologin -G nginx nginx \
@@ -239,7 +238,6 @@ RUN set -ex \
 	&& strip /usr/sbin/nginx* \
 	&& strip /usr/lib/nginx/modules/*.so \
 	&& rm -rf /usr/src/nginx-$NGINX_VERSION \
-	&& rm -rf /usr/src/ngx_brotli \
 	&& rm -rf /usr/src/ngx_cache_purge-c7345057ad5429617fc0823e92e3fa8043840cef \
 	\
 	# Bring in gettext so we can get `envsubst`, then throw
@@ -300,7 +298,13 @@ RUN set -ex \
 	&& rm -rf /var/log/supervisor \
 	## Just take care of nginx and php logs
 	&& rm -rf /etc/logrotate.d \
-	&& mkdir -p /etc/logrotate.d 
+	&& mkdir -p /etc/logrotate.d \
+# =========
+# Brotli
+# =========
+    && apk add --no-cache nginx-mod-http-brotli
+
+
 # ====================
 # Download and Install
 # ~. tools
