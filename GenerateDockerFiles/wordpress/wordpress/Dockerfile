@@ -314,8 +314,8 @@ RUN set -ex \
 	&& ./configure \
 	&& make \
 	&& make install \
-	&& rm -rf /tmp/php-ext-brotli
-	&& apk del .brotli-build-deps \
+	&& rm -rf /tmp/php-ext-brotli \
+	&& apk del .brotli-build-deps
 
 # ====================
 # Download and Install
