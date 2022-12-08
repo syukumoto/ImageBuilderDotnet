@@ -301,12 +301,12 @@ RUN set -ex \
 # =========
 # Brotli
 # =========
-    && apk add --no-cache \
-			nginx-mod-http-brotli \
-			g++ \
-			make \
-			autoconf \
-			pkgconfig \
+	&& apk add --no-cache nginx-mod-http-brotli \
+	&& apk add --no-cache --virtual .brotli-build-deps \
+		g++ \
+		make \
+		autoconf \
+		pkgconfig \
 	&& mkdir -p /tmp/php-ext-brotli \
 	&& cd /tmp/php-ext-brotli \
 	&& git clone --recursive --depth=1 https://github.com/kjdev/php-ext-brotli.git /tmp/php-ext-brotli \
@@ -315,7 +315,7 @@ RUN set -ex \
 	&& make \
 	&& make install \
 	&& rm -rf /tmp/php-ext-brotli
-
+	&& apk del .brotli-build-deps \
 
 # ====================
 # Download and Install
