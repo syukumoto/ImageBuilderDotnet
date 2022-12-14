@@ -297,7 +297,26 @@ RUN set -ex \
 	&& rm -rf /var/log/supervisor \
 	## Just take care of nginx and php logs
 	&& rm -rf /etc/logrotate.d \
-	&& mkdir -p /etc/logrotate.d 
+	&& mkdir -p /etc/logrotate.d \
+# =========
+# Brotli
+# =========
+	&& apk add --no-cache nginx-mod-http-brotli \
+	&& apk add --no-cache --virtual .brotli-build-deps \
+		g++ \
+		make \
+		autoconf \
+		pkgconfig \
+	&& mkdir -p /tmp/php-ext-brotli \
+	&& cd /tmp/php-ext-brotli \
+	&& git clone --recursive --depth=1 https://github.com/kjdev/php-ext-brotli.git /tmp/php-ext-brotli \
+	&& phpize \
+	&& ./configure \
+	&& make \
+	&& make install \
+	&& rm -rf /tmp/php-ext-brotli \
+	&& apk del .brotli-build-deps
+
 # ====================
 # Download and Install
 # ~. tools
