@@ -1,5 +1,5 @@
 {
-    "version": "2.2.1",
+    "version": "2.2.7",
     "cluster.messagebus.debug": false,
     "cluster.messagebus.enabled": false,
     "cluster.messagebus.sns.region": "",
@@ -26,8 +26,12 @@
     "dbcache.redis.servers": [
         "127.0.0.1:6379"
     ],
+    "dbcache.redis.verify_tls_certificates": true,
     "dbcache.redis.password": "",
     "dbcache.redis.dbid": 0,
+    "dbcache.redis.timeout": 0,
+    "dbcache.redis.retry_interval": 0,
+    "dbcache.redis.read_timeout": 0,
     "dbcache.use_filters": false,
     "dbcache.reject.constants": [
         "APP_REQUEST",
@@ -112,8 +116,12 @@
     "objectcache.redis.servers": [
         "127.0.0.1:6379"
     ],
+    "objectcache.redis.verify_tls_certificates": true,
     "objectcache.redis.password": "",
     "objectcache.redis.dbid": 0,
+    "objectcache.redis.timeout": 0,
+    "objectcache.redis.retry_interval": 0,
+    "objectcache.redis.read_timeout": 0,
     "objectcache.groups.global": [
         "users",
         "userlogins",
@@ -155,8 +163,12 @@
     "pgcache.redis.servers": [
         "127.0.0.1:6379"
     ],
+    "pgcache.redis.verify_tls_certificates": true,
     "pgcache.redis.password": "",
     "pgcache.redis.dbid": 0,
+    "pgcache.redis.timeout": 0,
+    "pgcache.redis.retry_interval": 0,
+    "pgcache.redis.read_timeout": 0,
     "pgcache.cache.query": true,
     "pgcache.cache.home": true,
     "pgcache.cache.feed": true,
@@ -302,14 +314,18 @@
     "minify.redis.servers": [
         "127.0.0.1:6379"
     ],
+    "minify.redis.verify_tls_certificates": true,
     "minify.redis.password": "",
     "minify.redis.dbid": 0,
+    "minify.redis.timeout": 0,
+    "minify.redis.retry_interval": 0,
+    "minify.redis.read_timeout": 0,
     "minify.rewrite": true,
     "minify.options": [],
     "minify.symlinks": [],
     "minify.lifetime": 86400,
     "minify.upload": true,
-    "minify.html.enable": true,
+    "minify.html.enable": false,
     "minify.html.engine": "html",
     "minify.html.reject.feed": false,
     "minify.html.inline.css": false,
@@ -320,7 +336,7 @@
         "RSPEAK_",
         "mfunc"
     ],
-    "minify.css.enable": false,
+    "minify.css.enable": true,
     "minify.css.engine": "css",
     "minify.css.method": "both",
     "minify.css.http2push": false,
@@ -452,6 +468,7 @@
     "cdn.s3.bucket.location": "us-east-1",
     "cdn.s3.cname": [],
     "cdn.s3.ssl": "auto",
+    "cdn.s3.public_objects": "enabled",
     "cdn.s3_compatible.api_host": "auto",
     "cdn.cf.key": "",
     "cdn.cf.secret": "",
@@ -460,6 +477,7 @@
     "cdn.cf.id": "",
     "cdn.cf.cname": [],
     "cdn.cf.ssl": "auto",
+    "cdn.cf.public_objects": "enabled",
     "cdn.cf2.key": "",
     "cdn.cf2.secret": "",
     "cdn.cf2.id": "",
@@ -576,33 +594,33 @@
     ],
     "browsercache.cssjs.last_modified": true,
     "browsercache.cssjs.compression": true,
-    "browsercache.cssjs.brotli": false,
+    "browsercache.cssjs.brotli": true,
     "browsercache.cssjs.expires": true,
     "browsercache.cssjs.lifetime": 31536000,
     "browsercache.cssjs.nocookies": true,
-    "browsercache.cssjs.cache.control": false,
+    "browsercache.cssjs.cache.control": true,
     "browsercache.cssjs.cache.policy": "cache_public_maxage",
     "browsercache.cssjs.etag": true,
     "browsercache.cssjs.w3tc": false,
     "browsercache.cssjs.replace": false,
     "browsercache.cssjs.querystring": false,
     "browsercache.html.compression": true,
-    "browsercache.html.brotli": false,
+    "browsercache.html.brotli": true,
     "browsercache.html.last_modified": true,
-    "browsercache.html.expires": false,
+    "browsercache.html.expires": true,
     "browsercache.html.lifetime": 3600,
-    "browsercache.html.cache.control": false,
+    "browsercache.html.cache.control": true,
     "browsercache.html.cache.policy": "cache_public_maxage",
     "browsercache.html.etag": true,
     "browsercache.html.w3tc": false,
     "browsercache.html.replace": false,
     "browsercache.other.last_modified": true,
     "browsercache.other.compression": true,
-    "browsercache.other.brotli": false,
+    "browsercache.other.brotli": true,
     "browsercache.other.expires": true,
     "browsercache.other.lifetime": 31536000,
     "browsercache.other.nocookies": true,
-    "browsercache.other.cache.control": false,
+    "browsercache.other.cache.control": true,
     "browsercache.other.cache.policy": "cache_public_maxage",
     "browsercache.other.etag": true,
     "browsercache.other.w3tc": false,
@@ -893,7 +911,7 @@
             ]
         }
     },
-    "common.track_usage": true,
+    "common.track_usage": false,
     "common.tweeted": false,
     "config.check": true,
     "config.path": "",
@@ -926,8 +944,10 @@
     "jquerymigrate.disabled": false,
     "imageservice": {
         "compression": "lossy",
-        "auto": "enabled"
+        "auto": "enabled",
+        "visibility": "never"
     },
+    "imageservice.configuration_overloaded": true,
     "fragmentcache": {
         "engine": "redis"
     }

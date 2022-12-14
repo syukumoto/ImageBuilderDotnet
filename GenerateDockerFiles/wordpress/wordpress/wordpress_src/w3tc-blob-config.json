@@ -300,7 +300,7 @@
     "minify.engine": "file",
     "minify.error.notification": "admin",
     "minify.file.gc": 86400,
-    "minify.file.nfs": false,
+    "minify.file.nfs": true,
     "minify.file.locking": false,
     "minify.memcached.servers": [
         "127.0.0.1:11211"
