@@ -21,7 +21,17 @@ setup_cdn_variables() {
 
 }
 
-MIGRATION_STATUSFILE_PATH="/home/dev/migrate/import_status.txt"
+MIGRATION_DIR="/home/dev/migrate/"
+MIGRATION_STATUSFILE_PATH="${MIGRATION_DIR}import_status.txt"
+WPCONTENT_SPLIT_FILES_DIR="${MIGRATION_DIR}wpcontentsplit/"
+WPCONTENT_TEMP_ZIP_PATH="${MIGRATION_DIR}wp-content-temp.zip"
+WPCONTENT_SPLIT_ZIP_PATH="${WPCONTENT_SPLIT_FILES_DIR}WpContentSplit.zip"
+MYSQL_SPLIT_FILES_DIR="${MIGRATION_DIR}mysql/"
+MYSQL_TEMP_ZIP_PATH="${MIGRATION_DIR}mysql-temp.zip"
+MYSQL_SPLIT_ZIP_PATH="${MYSQL_SPLIT_FILES_DIR}MysqlSplit.zip"
+MYSQL_DUMP_PAT="${MIGRATION_DIR}${MYSQL_DUMP_FILE}"
+WPCONTENT_ROOT_DIR="${WORDPRESS_HOME}/wp-content"
+
 trycount=$1
 error="False"
 
@@ -29,16 +39,30 @@ test ! -d /home/dev/migrate/ && mkdir -p /home/dev/migrate/
 test ! -e $MIGRATION_STATUSFILE_PATH && touch $MIGRATION_STATUSFILE_PATH
 
 if (( $trycount > 0 )); then
-	if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MIGRATION_IN_PROGRESS" == "TRUE" || "$MIGRATION_IN_PROGRESS" == "True" ]]  \
-	&& [[ $MIGRATE_NEW_DATABASE_NAME ]] && [[ $MIGRATE_MYSQL_DUMP_PATH ]] \
-	&& [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MIGRATION_STATUSFILE_PATH) ]; then
+
+	if [ ! $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ] \
+	&& apk add --no-cache zip \
+	&& apk add --no-cache unzip \
+	&& zip -F $WPCONTENT_SPLIT_FILES_DIR --out $WPCONTENT_TEMP_ZIP_PATH \
+	&& rm -rf $WPCONTENT_SPLIT_FILES_DIR \
+	&& yes | unzip $WPCONTENT_TEMP_ZIP_PATH -d $WPCONTENT_ROOT_DIR \
+	&& zip -F $MYSQL_SPLIT_FILES_DIR --out $MYSQL_TEMP_ZIP_PATH \
+	&& rm -rf $MYSQL_SPLIT_FILES_DIR \
+	&& yes | unzip $MYSQL_TEMP_ZIP_PATH -d MYSQL_DUMP_PATH; then
+		echo "EXTRACTED_APP_AND_MYSQL_DATA"
+	else
+		error="True"
+	fi
+	
+	
+	if [ $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MIGRATION_STATUSFILE_PATH) ]; then
 		if apk add mysql-client --no-cache \
 		&& mysql -h $DATABASE_HOST -u $DATABASE_USERNAME --password=$DATABASE_PASSWORD -e "DROP DATABASE IF EXISTS $MIGRATE_NEW_DATABASE_NAME; CREATE DATABASE $MIGRATE_NEW_DATABASE_NAME;" --ssl=true \
 		&& mysql -h $DATABASE_HOST -u $DATABASE_USERNAME --password=$DATABASE_PASSWORD $MIGRATE_NEW_DATABASE_NAME < $MIGRATE_MYSQL_DUMP_PATH  --ssl=true; then
 			test ! -e $MIGRATION_STATUSFILE_PATH && mkdir -p $MYSQL_IMPORT_STATUSFILE_DIR && touch $MIGRATION_STATUSFILE_PATH
 			echo "MYSQL_DB_IMPORT_COMPLETED" >> $MIGRATION_STATUSFILE_PATH
 		else
-			echo "MYSQL_DB_IMPORT_FAIL_E" >> $MIGRATION_STATUSFILE_PATH
+			echo "MYSQL_DB_IMPORT_FAILED" >> $MIGRATION_STATUSFILE_PATH
 			error="True"
 		fi
 	fi
