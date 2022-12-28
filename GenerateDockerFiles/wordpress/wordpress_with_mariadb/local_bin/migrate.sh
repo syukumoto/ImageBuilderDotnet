@@ -37,21 +37,23 @@ error="False"
 
 test ! -d /home/dev/migrate/ && mkdir -p /home/dev/migrate/
 test ! -e $MIGRATION_STATUSFILE_PATH && touch $MIGRATION_STATUSFILE_PATH
+sed -i '/IMPORT_POST_PROCESSING_FAILED/d' $MIGRATION_STATUSFILE_PATH
+sed -i '/IMPORT_POST_PROCESSING_COMPLETED/d' $MIGRATION_STATUSFILE_PATH
 
 if (( $trycount > 0 )); then
 
-	if [ ! $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ] \
-	&& apk add --no-cache zip \
-	&& apk add --no-cache unzip \
-	&& zip -F $WPCONTENT_SPLIT_ZIP_PATH --out $WPCONTENT_TEMP_ZIP_PATH \
-	&& yes | unzip $WPCONTENT_TEMP_ZIP_PATH -d $WPCONTENT_ROOT_DIR \
-	&& zip -F $MYSQL_SPLIT_ZIP_PATH --out $MYSQL_TEMP_ZIP_PATH \
-	&& yes | unzip $MYSQL_TEMP_ZIP_PATH -d $MIGRATION_DIR; then
-		echo "EXTRACTED_APP_AND_MYSQL_DATA" >> $MIGRATION_STATUSFILE_PATH
-		rm -rf $MYSQL_SPLIT_FILES_DIR
-		rm -rf $WPCONTENT_SPLIT_FILES_DIR
-	else
-		error="True"
+	if [ ! $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ]; then
+		if apk add --no-cache zip \
+		&& apk add --no-cache unzip \
+		&& zip -F $WPCONTENT_SPLIT_ZIP_PATH --out $WPCONTENT_TEMP_ZIP_PATH \
+		&& yes | unzip $WPCONTENT_TEMP_ZIP_PATH -d $WPCONTENT_ROOT_DIR \
+		&& zip -F $MYSQL_SPLIT_ZIP_PATH --out $MYSQL_TEMP_ZIP_PATH \
+		&& yes | unzip $MYSQL_TEMP_ZIP_PATH -d $MIGRATION_DIR; then
+			echo "EXTRACTED_APP_AND_MYSQL_DATA" >> $MIGRATION_STATUSFILE_PATH
+			rm -rf $MYSQL_SPLIT_FILES_DIR
+			rm -rf $WPCONTENT_SPLIT_FILES_DIR
+		else
+			error="True"
 	fi
 	
 	if [ $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MIGRATION_STATUSFILE_PATH) ]; then
