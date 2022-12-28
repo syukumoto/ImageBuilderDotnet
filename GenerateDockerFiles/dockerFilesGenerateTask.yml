@@ -50,12 +50,12 @@ steps:
     scriptPath: ./GenerateDockerFiles/wordpress/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) $(System.DefaultWorkingDirectory)/Config
 
-- task: ShellScript@2
-  displayName: 'Generate KuduLite Docker Files'
-  condition: or(eq('${{ parameters.stack }}', ''), eq('${{ parameters.stack }}','kudulite'))
-  inputs:
-    scriptPath: ./GenerateDockerFiles/KuduLite/generateDockerfiles.sh
-    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.kuduliteInternalRepo }} $(System.DefaultWorkingDirectory)/Config ${{ parameters.kuduliteBranch }}
+#- task: ShellScript@2
+#  displayName: 'Generate KuduLite Docker Files'
+#  condition: or(eq('${{ parameters.stack }}', ''), eq('${{ parameters.stack }}','kudulite'))
+#  inputs:
+#    scriptPath: ./GenerateDockerFiles/KuduLite/generateDockerfiles.sh
+#    args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.kuduliteInternalRepo }} $(System.DefaultWorkingDirectory)/Config ${{ parameters.kuduliteBranch }}
 
 - task: ShellScript@2
   displayName: 'Generate Static Site Docker Files'
