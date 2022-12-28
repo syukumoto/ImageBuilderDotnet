@@ -54,6 +54,7 @@ if (( $trycount > 0 )); then
 			rm -rf $WPCONTENT_SPLIT_FILES_DIR
 		else
 			error="True"
+		fi
 	fi
 	
 	if [ $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MIGRATION_STATUSFILE_PATH) ]; then
