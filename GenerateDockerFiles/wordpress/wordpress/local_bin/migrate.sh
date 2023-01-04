@@ -33,15 +33,17 @@ MYSQL_DUMP_PATH="${MIGRATION_DIR}${MIGRATE_MYSQL_DUMP_FILE}"
 WPCONTENT_ROOT_DIR="${WORDPRESS_HOME}/wp-content"
 
 trycount=$1
-error="False"
-errorMsg=""
 
 test ! -d /home/dev/migrate/ && mkdir -p /home/dev/migrate/
 test ! -e $MIGRATION_STATUSFILE_PATH && touch $MIGRATION_STATUSFILE_PATH
 sed -i '/IMPORT_POST_PROCESSING_FAILED/d' $MIGRATION_STATUSFILE_PATH
 sed -i '/IMPORT_POST_PROCESSING_COMPLETED/d' $MIGRATION_STATUSFILE_PATH
 
-if (( $trycount > 0 )); then
+
+while (( $trycount > 0 ))
+do
+	error="False"
+	errorMsg=""
 
 	if [ ! $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ]; then
 		if apk add --no-cache zip \
@@ -193,14 +195,12 @@ if (( $trycount > 0 )); then
 		fi
 	fi
 	
-	if [[ "$error" == "True" ]]; then
-		service atd start
-		nextcount=$(($trycount-1))
-		echo "bash /usr/local/bin/migrate.sh $nextcount" | at now +0 minutes
-	else
+	trycount=$(($trycount-1))
+	if [[ "$error" == "True" ]] && (( $trycount <= 0 )); then
+		echo "MIGRATION_ERROR: $errorMsg" >> $MIGRATION_STATUSFILE_PATH
+		echo "IMPORT_POST_PROCESSING_FAILED" >> $MIGRATION_STATUSFILE_PATH	
+	elif [[ "$error" == "False" ]]; then
 		echo "IMPORT_POST_PROCESSING_COMPLETED" >> $MIGRATION_STATUSFILE_PATH
+		trycount=0
 	fi
-else
-	echo "MIGRATION_ERROR: $errorMsg" >> $MIGRATION_STATUSFILE_PATH
-	echo "IMPORT_POST_PROCESSING_FAILED" >> $MIGRATION_STATUSFILE_PATH
-fi
+done
