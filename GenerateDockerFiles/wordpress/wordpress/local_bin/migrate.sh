@@ -76,7 +76,7 @@ do
 	
 	setup_cdn_variables
 	
-	if [[ "$IS_BLOB_STORAGE_ENABLED" == "True" || "$IS_CDN_ENABLED" == "True" || "$IS_AFD_ENABLED" == "True" ]] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $MIGRATION_STATUSFILE_PATH) ]; then
+	if [[ "$MIGRATE_RETAIN_WP_FEATURES" == "true" || "$MIGRATE_RETAIN_WP_FEATURES" == "TRUE" || "$MIGRATE_RETAIN_WP_FEATURES" == "True" ]] && [[ "$IS_BLOB_STORAGE_ENABLED" == "True" || "$IS_CDN_ENABLED" == "True" || "$IS_AFD_ENABLED" == "True" ]] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $MIGRATION_STATUSFILE_PATH) ]; then
 		if wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root; then
 			echo "W3TC_PLUGIN_INSTALLED" >> $MIGRATION_STATUSFILE_PATH
 			if [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
