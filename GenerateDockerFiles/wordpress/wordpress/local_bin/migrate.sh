@@ -57,7 +57,7 @@ do
 			rm -rf $WPCONTENT_SPLIT_FILES_DIR
 		else
 			error="True"
-			errorMsg="App data and MySQL dump zip extraction failed."
+			errorMsg="App data and MySQL dump zip extraction failed. Please retry migration."
 		fi
 	fi
 	
@@ -70,7 +70,7 @@ do
 		else
 			echo "MYSQL_DB_IMPORT_FAILED" >> $MIGRATION_STATUSFILE_PATH
 			error="True"
-			errorMsg="MySQL dump import to database server failed."
+			errorMsg="MySQL dump import to database server failed. It is recommended to start a new migration run."
 		fi
 	fi
 	
@@ -98,7 +98,7 @@ do
 			fi
 		else
 			error="True"
-			errorMsg="W3 Total Cache plugin config update failed."
+			errorMsg="W3 Total Cache plugin config update failed. Please retry migration."
 		fi
 	fi
     
@@ -124,7 +124,7 @@ do
 			fi
 		else
 			error="True"
-			errorMsg="Blob Storage configuration in W3 Total Cache plugin failed."
+			errorMsg="Blob Storage configuration in W3 Total Cache plugin failed. Please retry migration."
 		fi
 	fi
     
@@ -142,7 +142,7 @@ do
 				fi
 			else
 				error="True"
-				errorMsg="CDN configuration with Blob Storage in W3 Total Cache failed."
+				errorMsg="CDN configuration with Blob Storage in W3 Total Cache failed. Please retry migration."
 			fi
 		elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $MIGRATION_STATUSFILE_PATH) ]; then
 			if wp w3-total-cache option set cdn.enabled true --type=boolean --path=$WORDPRESS_HOME --allow-root \
@@ -155,7 +155,7 @@ do
 				
 			else
 				error="True"
-				errorMsg="CDN configuration in W3 Total Cache failed."
+				errorMsg="CDN configuration in W3 Total Cache failed. Please retry migration."
 			fi
 		fi
 	fi
@@ -187,11 +187,11 @@ do
 				fi
 			else
 				error="True"
-				errorMsg="AFD configuration in W3 Total Cache failed."
+				errorMsg="AFD configuration in W3 Total Cache failed. Please retry migration."
 			fi
 		else
 			error="True"
-			errorMsg="AFD configuration in wp-config.php failed."
+			errorMsg="AFD configuration in wp-config.php failed. Please retry migration."
 		fi
 	fi
 	
