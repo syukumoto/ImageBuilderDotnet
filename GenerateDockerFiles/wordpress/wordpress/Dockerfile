@@ -28,6 +28,9 @@ ENV PHPMYADMIN_HOME "/home/phpmyadmin"
 ENV PHPREDIS_VERSION 5.3.4
 #Web Site Home
 ENV HOME_SITE "/home/site/wwwroot"
+ENV HOME_SITE_LOCAL_STG "/var/www/wordpress"
+#Maximum local storage of 10GB
+ENV MAXIMUM_LOCAL_STORAGE_SIZE_BYTES 10737418240
 # supervisor
 ENV SUPERVISOR_LOG_DIR "/var/log/supervisor"
 # wordpress
@@ -35,7 +38,10 @@ ENV WORDPRESS_SOURCE "/usr/src/wordpress"
 ENV WORDPRESS_HOME "/home/site/wwwroot"
 ENV WORDPRESS_LOCK_HOME "/home/wp-locks"
 ENV WORDPRESS_LOCK_FILE $WORDPRESS_LOCK_HOME"/wp_deployment_status.txt"
-#
+# Unison
+ENV UNISON "/usr/local/unison"
+ENV UNISON_LOG_DIR "/var/log/unison"
+ENV UNISON_VERSION master
 ENV DOCKER_BUILD_HOME "/dockerbuild"
 # Migration
 ENV MYSQL_IMPORT_STATUSFILE_PATH "/home/dev/migrate/mysql/mysql_import_status.txt"
@@ -268,8 +274,12 @@ RUN set -ex \
 	# change default root path to $HOME_SITE
 	&& mkdir -p /etc/nginx/conf.d \
     && mkdir -p ${HOME_SITE} \
-    && chown -R www-data:www-data $HOME_SITE \
+	&& mkdir -p ${HOME_SITE_LOCAL_STG} \
     && echo "<?php phpinfo();" > $HOME_SITE/index.php \
+    && chown -R nginx:nginx $HOME_SITE \
+	&& chown -R nginx:nginx $HOME_SITE_LOCAL_STG \
+	&& chmod -R 777 $HOME_SITE \
+	&& chmod -R 777 $HOME_SITE_LOCAL_STG \
 # -------------
 # log rotate & supervisor
 # -------------
@@ -298,6 +308,8 @@ RUN set -ex \
 	## Just take care of nginx and php logs
 	&& rm -rf /etc/logrotate.d \
 	&& mkdir -p /etc/logrotate.d \
+	&& rm -rf /usr/src/supervisor \
+	&& mkdir -p /usr/src/supervisor \
 # =========
 # Brotli
 # =========
@@ -365,6 +377,32 @@ RUN set -ex \
 	&& apk upgrade \
 	&& rm -rf /var/cache/apk/* \
 	&& rm -rf /tmp/*
+# ====================
+# Unison and rsync tool
+# ====================
+	RUN set -ex \
+	&& echo "Installing Unison." \
+	&& apk add --no-cache inotify-tools \
+	&& apk add --no-cache coreutils \
+	&& apk add --no-cache rsync \
+	&& apk add --no-cache --virtual .unison-build-deps \
+		make \
+		ocaml \
+		musl-dev \
+	&& cd /tmp \
+    && wget -O unison-$UNISON_VERSION.tar.gz https://github.com/bcpierce00/unison/archive/$UNISON_VERSION.tar.gz \
+	&& tar -xzvf unison-$UNISON_VERSION.tar.gz \
+    && rm unison-$UNISON_VERSION.tar.gz \
+    && cd unison-$UNISON_VERSION \
+    && make \
+	&& cp ./src/unison /usr/local/bin \
+	&& cp ./src/unison-fsmonitor /usr/local/bin \
+    && cd /tmp \
+    && rm -rf unison-$UNISON_VERSION \
+	&& mkdir -p $UNISON \
+	&& mkdir -p $UNISON_LOG_DIR \
+	&& apk del .unison-build-deps
+
 	 
 # ssh
 COPY sshd_config /etc/ssh/ 
@@ -379,7 +417,8 @@ COPY nginx_conf/wordpress-server.conf /etc/nginx/conf.d/default.conf
 COPY nginx_conf/spec-settings.conf /etc/nginx/conf.d/spec-settings.conf
 COPY nginx_conf/wordpress-server.conf /usr/src/nginx/wordpress-server.conf
 COPY nginx_conf/wordpress-phpmyadmin-server.conf /usr/src/nginx/wordpress-phpmyadmin-server.conf
-COPY nginx_conf/temp-server.conf /usr/src/nginx/temp-server.conf
+COPY nginx_conf/temp-server-installation.conf /usr/src/nginx/temp-server-installation.conf
+COPY nginx_conf/temp-server-maintenance.conf /usr/src/nginx/temp-server-maintenance.conf
 # phpmyadmin
 COPY phpmyadmin_src/. $PHPMYADMIN_SOURCE/
 # log rotater
@@ -388,9 +427,13 @@ RUN chmod 444 /etc/logrotate.conf
 COPY logrotate.d/. /etc/logrotate.d/
 RUN chmod -R 444 /etc/logrotate.d
 # supervisor
-COPY supervisord.conf /etc/
+COPY supervisord-original.conf /etc/supervisord.conf
+COPY supervisord-original.conf /usr/src/supervisor/
+COPY supervisord-stgoptmzd.conf /usr/src/supervisor/
 # wordpress
 COPY wordpress_src/. $WORDPRESS_SOURCE/
+# lsync config
+COPY lsyncd.conf /etc/lsyncd/lsyncd.conf
 #temporary server
 COPY temp_server_src/. /usr/src/temp-server/
 # php
