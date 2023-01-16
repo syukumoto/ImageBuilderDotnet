@@ -64,12 +64,12 @@ steps:
     scriptPath: ./GenerateDockerFiles/staticsite/generateDockerfiles.sh
     args: $(Build.ArtifactStagingDirectory) ${{ parameters.baseImageName }} ${{ parameters.baseImageVersion }} ${{ parameters.appSvcGitUrl }} $(System.DefaultWorkingDirectory)/Config
 
-#- task: ShellScript@2
-#  condition: or(eq('${{ parameters.stack }}', ''), eq('${{ parameters.stack }}','diagnostic-server'))
-#  displayName: 'Generate DiagnosticServer Docker Files'
-#  inputs:
-#    scriptPath: ./GenerateDockerFiles/DiagnosticServer/generateDockerfiles.sh
-#    args: $(Build.ArtifactStagingDirectory) ${{ parameters.DiagnosticServerInternalRepo }} $(System.DefaultWorkingDirectory)/Config
+- task: ShellScript@2
+  condition: or(eq('${{ parameters.stack }}', ''), eq('${{ parameters.stack }}','diagnostic-server'))
+  displayName: 'Generate DiagnosticServer Docker Files'
+  inputs:
+    scriptPath: ./GenerateDockerFiles/DiagnosticServer/generateDockerfiles.sh
+    args: $(Build.ArtifactStagingDirectory) ${{ parameters.DiagnosticServerInternalRepo }} $(System.DefaultWorkingDirectory)/Config
 
 
     # Publish Build Artifacts
