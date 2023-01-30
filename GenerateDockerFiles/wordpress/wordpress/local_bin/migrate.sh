@@ -33,14 +33,17 @@ MYSQL_DUMP_PATH="${MIGRATION_DIR}${MIGRATE_MYSQL_DUMP_FILE}"
 WPCONTENT_ROOT_DIR="${WORDPRESS_HOME}/wp-content"
 
 trycount=$1
-error="False"
 
 test ! -d /home/dev/migrate/ && mkdir -p /home/dev/migrate/
 test ! -e $MIGRATION_STATUSFILE_PATH && touch $MIGRATION_STATUSFILE_PATH
 sed -i '/IMPORT_POST_PROCESSING_FAILED/d' $MIGRATION_STATUSFILE_PATH
 sed -i '/IMPORT_POST_PROCESSING_COMPLETED/d' $MIGRATION_STATUSFILE_PATH
 
-if (( $trycount > 0 )); then
+
+while (( $trycount > 0 ))
+do
+	error="False"
+	errorMsg=""
 
 	if [ ! $(grep "EXTRACTED_APP_AND_MYSQL_DATA" $MIGRATION_STATUSFILE_PATH) ]; then
 		if apk add --no-cache zip \
@@ -54,6 +57,7 @@ if (( $trycount > 0 )); then
 			rm -rf $WPCONTENT_SPLIT_FILES_DIR
 		else
 			error="True"
+			errorMsg="App data and MySQL dump zip extraction failed. Please retry migration."
 		fi
 	fi
 	
@@ -66,12 +70,13 @@ if (( $trycount > 0 )); then
 		else
 			echo "MYSQL_DB_IMPORT_FAILED" >> $MIGRATION_STATUSFILE_PATH
 			error="True"
+			errorMsg="MySQL dump import to database server failed. It is recommended to start a new migration run."
 		fi
 	fi
 	
 	setup_cdn_variables
 	
-	if [[ "$IS_BLOB_STORAGE_ENABLED" == "True" || "$IS_CDN_ENABLED" == "True" || "$IS_BLOB_STORAGE_ENABLED" == "True" ]] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $MIGRATION_STATUSFILE_PATH) ]; then
+	if [[ "$MIGRATE_RETAIN_WP_FEATURES" == "true" || "$MIGRATE_RETAIN_WP_FEATURES" == "TRUE" || "$MIGRATE_RETAIN_WP_FEATURES" == "True" ]] && [[ "$IS_BLOB_STORAGE_ENABLED" == "True" || "$IS_CDN_ENABLED" == "True" || "$IS_AFD_ENABLED" == "True" ]] && [ ! $(grep "W3TC_PLUGIN_INSTALLED" $MIGRATION_STATUSFILE_PATH) ]; then
 		if wp plugin install w3-total-cache --force --activate --path=$WORDPRESS_HOME --allow-root; then
 			echo "W3TC_PLUGIN_INSTALLED" >> $MIGRATION_STATUSFILE_PATH
 			if [ ! $(grep "W3TC_PLUGIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
@@ -79,6 +84,7 @@ if (( $trycount > 0 )); then
 			fi
 		else
 			error="True"
+			errorMsg="W3 Total Cache plugin installation failed."
 		fi
         fi
         
@@ -92,6 +98,7 @@ if (( $trycount > 0 )); then
 			fi
 		else
 			error="True"
+			errorMsg="W3 Total Cache plugin config update failed. Please retry migration."
 		fi
 	fi
     
@@ -117,6 +124,7 @@ if (( $trycount > 0 )); then
 			fi
 		else
 			error="True"
+			errorMsg="Blob Storage configuration in W3 Total Cache plugin failed. Please retry migration."
 		fi
 	fi
     
@@ -134,6 +142,7 @@ if (( $trycount > 0 )); then
 				fi
 			else
 				error="True"
+				errorMsg="CDN configuration with Blob Storage in W3 Total Cache failed. Please retry migration."
 			fi
 		elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $MIGRATION_STATUSFILE_PATH) ]; then
 			if wp w3-total-cache option set cdn.enabled true --type=boolean --path=$WORDPRESS_HOME --allow-root \
@@ -146,6 +155,7 @@ if (( $trycount > 0 )); then
 				
 			else
 				error="True"
+				errorMsg="CDN configuration in W3 Total Cache failed. Please retry migration."
 			fi
 		fi
 	fi
@@ -177,19 +187,20 @@ if (( $trycount > 0 )); then
 				fi
 			else
 				error="True"
+				errorMsg="AFD configuration in W3 Total Cache failed. Please retry migration."
 			fi
 		else
 			error="True"
+			errorMsg="AFD configuration in wp-config.php failed. Please retry migration."
 		fi
 	fi
 	
-	if [[ "$error" == "True" ]]; then
-		service atd start
-		nextcount=$(($trycount-1))
-		echo "bash /usr/local/bin/migrate.sh $nextcount" | at now +0 minutes
-	else
+	trycount=$(($trycount-1))
+	if [[ "$error" == "True" ]] && (( $trycount <= 0 )); then
+		echo "MIGRATION_ERROR: $errorMsg" >> $MIGRATION_STATUSFILE_PATH
+		echo "IMPORT_POST_PROCESSING_FAILED" >> $MIGRATION_STATUSFILE_PATH	
+	elif [[ "$error" == "False" ]]; then
 		echo "IMPORT_POST_PROCESSING_COMPLETED" >> $MIGRATION_STATUSFILE_PATH
+		trycount=0
 	fi
-else
-	echo "IMPORT_POST_PROCESSING_FAILED" >> $MIGRATION_STATUSFILE_PATH
-fi
+done

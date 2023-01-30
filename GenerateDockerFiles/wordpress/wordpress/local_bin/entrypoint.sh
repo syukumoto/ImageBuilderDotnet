@@ -339,10 +339,10 @@ else
     echo "INFO: Skipping WP installation..."
 fi
 
-# Migrates Database.. Retries 10 times.
-if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MIGRATION_IN_PROGRESS" == "TRUE" || "$MIGRATION_IN_PROGRESS" == "True" ]] && [[ $MIGRATE_NEW_DATABASE_NAME ]] && [[ $MIGRATE_MYSQL_DUMP_FILE ]] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MYSQL_IMPORT_STATUSFILE_PATH) ] && [ ! $(grep "MYSQL_DB_IMPORT_FAILED" $MYSQL_IMPORT_STATUSFILE_PATH) ]; then
+# Runs migrate.sh.. Retries 3 times.
+if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MIGRATION_IN_PROGRESS" == "TRUE" || "$MIGRATION_IN_PROGRESS" == "True" ]] && [[ $MIGRATE_NEW_DATABASE_NAME ]] && [[ $MIGRATE_MYSQL_DUMP_FILE ]] && [[ $MIGRATE_RETAIN_WP_FEATURES ]] && [ ! $(grep "MYSQL_DB_IMPORT_COMPLETED" $MYSQL_IMPORT_STATUSFILE_PATH) ] && [ ! $(grep "MYSQL_DB_IMPORT_FAILED" $MYSQL_IMPORT_STATUSFILE_PATH) ]; then
     service atd start
-    echo "bash /usr/local/bin/migrate.sh 10" | at now +0 minutes
+    echo "bash /usr/local/bin/migrate.sh 3" | at now +0 minutes
 fi
     
 #Update AFD URL
