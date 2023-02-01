@@ -47,9 +47,19 @@ update_php_config() {
 }
 
 temp_server_start() {
+    local TEMP_SERVER_TYPE="${1}"
     test ! -d /home/site/temp-root && mkdir -p /home/site/temp-root
     cp -r /usr/src/temp-server/* /home/site/temp-root/
-    cp /usr/src/nginx/temp-server.conf /etc/nginx/conf.d/default.conf
+
+    if [[ "$TEMP_SERVER_TYPE" == "INSTALLATION" ]]; then
+        cp /usr/src/nginx/temp-server-installation.conf /etc/nginx/conf.d/default.conf
+    elif [[ "$TEMP_SERVER_TYPE" == "MAINTENANCE" ]]; then     
+        cp /usr/src/nginx/temp-server-maintenance.conf /etc/nginx/conf.d/default.conf
+    else 
+        echo "WARN: Unable to start temporary server. Missing parameter."
+        return;
+    fi
+
     local try_count=1
     while [ $try_count -le 10 ]
     do 
@@ -147,12 +157,16 @@ setup_wordpress() {
         echo "INFO: Found an existing WordPress status file ..."
     fi
         
+    if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
+        temp_server_stop
+    fi
+
     IS_TEMP_SERVER_STARTED="False"
     #Start server with static webpage until wordpress is installed
     if [ ! $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]; then
         echo "INFO: Starting temporary server while WordPress is being installed"
         IS_TEMP_SERVER_STARTED="True"
-        temp_server_start
+        temp_server_start "INSTALLATION"
     fi
 
     setup_phpmyadmin
@@ -168,7 +182,7 @@ setup_wordpress() {
             mv $WORDPRESS_HOME /home/bak/wordpress_bak$(date +%s)            
         done
         
-        mkdir -p $WORDPRESS_HOME
+        test ! -d "$WORDPRESS_HOME" && mkdir -p $WORDPRESS_HOME
         echo "INFO: Pulling WordPress code"
         if cp -r $WORDPRESS_SOURCE/wordpress-azure/* $WORDPRESS_HOME; then
             echo "WORDPRESS_PULL_COMPLETED" >> $WORDPRESS_LOCK_FILE
@@ -440,21 +454,64 @@ echo "Starting SSH ..."
 echo "Starting php-fpm ..."
 echo "Starting Nginx ..."
 
-if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
-    #stop temporary server
-    temp_server_stop
+UNISON_EXCLUDED_PATH="wp-content/uploads"
+IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE="False"
+
+if [[ $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPRESS_LOCAL_STORAGE_CACHE_ENABLED ]] && [[ "$WORDPRESS_LOCAL_STORAGE_CACHE_ENABLED" == "1" || "$WORDPRESS_LOCAL_STORAGE_CACHE_ENABLED" == "true" || "$WORDPRESS_LOCAL_STORAGE_CACHE_ENABLED" == "TRUE" || "$WEBSITE_LOCAL_STORAGE_CACHE_ENABLED" == "True" ]]; then
+    CURRENT_WP_SIZE="`du -sb --apparent-size $WORDPRESS_HOME/ --exclude="wp-content/uploads" | cut -f1`"
+    if [ "$CURRENT_WP_SIZE" -lt "$MAXIMUM_LOCAL_STORAGE_SIZE_BYTES" ]; then
+        IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE="True"
+    else
+        CURRENT_WP_SIZE="`du -sb --apparent-size $WORDPRESS_HOME/ --exclude="wp-content" | cut -f1`"
+        if [ "$CURRENT_WP_SIZE" -lt "$MAXIMUM_LOCAL_STORAGE_SIZE_BYTES" ]; then
+            IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE="True"
+            UNISON_EXCLUDED_PATH="wp-content"
+        fi
+    fi
 fi
 
-#ensure correct default.conf before starting WordPress server
+if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
+    if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
+        temp_server_stop
+    fi
+
+    IS_TEMP_SERVER_STARTED="True"
+    temp_server_start "MAINTENANCE"
+
+    echo "syncing data from ${WORDPRESS_HOME} to ${HOME_SITE_LOCAL_STG}"
+    rsync -a $WORDPRESS_HOME/ $HOME_SITE_LOCAL_STG/ --exclude $UNISON_EXCLUDED_PATH
+    ln -s $WORDPRESS_HOME/$UNISON_EXCLUDED_PATH $HOME_SITE_LOCAL_STG/$UNISON_EXCLUDED_PATH
+    chown -R nginx:nginx $HOME_SITE_LOCAL_STG
+    chmod -R 777 $HOME_SITE_LOCAL_STG
+    unison $WORDPRESS_HOME $HOME_SITE_LOCAL_STG -auto -batch -times -copythreshold 1000 -fastercheckUNSAFE -prefer $WORDPRESS_HOME -ignore "Path $UNISON_EXCLUDED_PATH" -perms 0 -logfile $UNISON_LOG_DIR/init_unison.log
+fi
+
+
 if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
     cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
 else
     cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
 fi
 
+if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
+    cp /usr/src/supervisor/supervisord-stgoptmzd.conf /etc/supervisord.conf
+    # updating the placeholders values in other files
+    sed -i "s#WORDPRESS_HOME#${WORDPRESS_HOME}#g" /etc/supervisord.conf
+    sed -i "s#HOME_SITE_LOCAL_STG#${HOME_SITE_LOCAL_STG}#g" /etc/supervisord.conf
+    sed -i "s#UNISON_EXCLUDED_PATH#${UNISON_EXCLUDED_PATH}#g" /etc/supervisord.conf
+    sed -i "s#UNISON_EXCLUDED_PATH#${UNISON_EXCLUDED_PATH}#g" /usr/local/bin/inotifywait-perms-service.sh
+    sed -i "s#WORDPRESS_HOME#${HOME_SITE_LOCAL_STG}#g" /etc/nginx/conf.d/default.conf
+else
+    cp /usr/src/supervisor/supervisord-original.conf /etc/supervisord.conf
+    sed -i "s#WORDPRESS_HOME#${WORDPRESS_HOME}#g" /etc/nginx/conf.d/default.conf
+fi
+
+if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
+    temp_server_stop
+fi
+
 setup_post_startup_script
 
 cd /usr/bin/
 supervisord -c /etc/supervisord.conf
-
 
