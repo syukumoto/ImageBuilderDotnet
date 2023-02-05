@@ -87,6 +87,7 @@ setup_phpmyadmin() {
     if [ ! $(grep "PHPMYADMIN_INSTALLED" $WORDPRESS_LOCK_FILE) ]; then
         if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
             if mkdir -p $PHPMYADMIN_HOME \
+                && chmod -R 777 $PHPMYADMIN_HOME \
                 && cp -R $PHPMYADMIN_SOURCE/phpmyadmin/* $PHPMYADMIN_HOME \
                 && cp $PHPMYADMIN_SOURCE/config.inc.php $PHPMYADMIN_HOME/config.inc.php \
                 && chmod 555 $PHPMYADMIN_HOME/config.inc.php; then
