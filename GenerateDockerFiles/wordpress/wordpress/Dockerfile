@@ -42,6 +42,9 @@ ENV WORDPRESS_LOCK_FILE $WORDPRESS_LOCK_HOME"/wp_deployment_status.txt"
 ENV UNISON "/usr/local/unison"
 ENV UNISON_LOG_DIR "/var/log/unison"
 ENV UNISON_VERSION master
+ENV FILESYNC_STATUS_FILE_DIR="/var/dev/filesync/"
+ENV FILESYNC_STATUS_FILE_PATH="/var/dev/filesync/status.txt"
+# docker
 ENV DOCKER_BUILD_HOME "/dockerbuild"
 # Migration
 ENV MYSQL_IMPORT_STATUSFILE_PATH "/home/dev/migrate/mysql/mysql_import_status.txt"
