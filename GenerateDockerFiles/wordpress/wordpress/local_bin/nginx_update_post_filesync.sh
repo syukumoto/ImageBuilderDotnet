@@ -9,8 +9,8 @@ do
 	sleep 10
 done
 
-# wait 5min for unison to sync fileserver and local storage before reloading nginx
-sleep 300
+# wait 10min for unison to sync fileserver and local storage before reloading nginx
+sleep 600
 
 # reload nginx configuration. Retry 20 times
 trycount=0
@@ -24,4 +24,3 @@ do
 	
 	trycount=$(($trycount+1))
 done
-
