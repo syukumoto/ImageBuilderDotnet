@@ -87,20 +87,10 @@ if ( ! defined( 'W3TC' ) ) {
 	<td>
 		<?php
 		$cdn_azure_user = $this->_config->get_string( 'cdn.azure.user' );
-		if ('' !== $cdn_azure_user) {
-			if (preg_match('/blob.core.usgovcloudapi.net/', getenv('BLOB_STORAGE_URL')))
-				echo esc_attr($cdn_azure_user) . '.blob.core.usgovcloudapi.net';
-			else if (preg_match('/blob.core.chinacloudapi.cn/', getenv('BLOB_STORAGE_URL')))
-				echo esc_attr($cdn_azure_user) . '.blob.core.chinacloudapi.cn';
-			else
-				echo esc_attr($cdn_azure_user) . '.blob.core.windows.net';
+		if ( '' !== $cdn_azure_user ) {
+			echo esc_attr( $cdn_azure_user ) . '.blob.core.windows.net';
 		} else {
-			if (preg_match('/blob.core.usgovcloudapi.net/', getenv('BLOB_STORAGE_URL')))
-				echo '&lt;account name&gt;.blob.core.usgovcloudapi.net';
-			else if (preg_match('/blob.core.chinacloudapi.cn/', getenv('BLOB_STORAGE_URL')))
-				echo '&lt;account name&gt;.blob.core.chinacloudapi.cn';
-			else
-				echo '&lt;account name&gt;.blob.core.windows.net';
+			echo '&lt;account name&gt;.blob.core.windows.net';
 		}
 
 		echo wp_kses(

@@ -400,7 +400,7 @@ class StorageServiceSettings extends ServiceSettings
                 $tokenizedSettings,
                 self::_getDefaultServiceEndpoint(
                     $tokenizedSettings,
-                    (preg_match('/blob.core.usgovcloudapi.net/',getenv('BLOB_STORAGE_URL')) ? 'blob.core.usgovcloudapi.net' : ((preg_match('/blob.core.chinacloudapi.cn/',getenv('BLOB_STORAGE_URL'))) ? 'blob.core.chinacloudapi.cn' :'blob.core.windows.net')) 
+                    Resources::BLOB_BASE_DNS_NAME
                 ),
                 self::_getDefaultServiceEndpoint(
                     $tokenizedSettings,
