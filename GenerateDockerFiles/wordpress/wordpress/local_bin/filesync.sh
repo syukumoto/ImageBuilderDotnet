@@ -12,7 +12,7 @@ do
 	&& rsync -a $WORDPRESS_HOME/ $HOME_SITE_LOCAL_STG/ --exclude $UNISON_EXCLUDED_PATH ; then
 		echo "RSYNC_COMPLETED" >> $FILESYNC_STATUS_FILE_PATH
 	fi
-
+	
 	#run synchronous unison command that generates checksums for faster asynchronous unison filesync 
 	#faster asynchronous unison ensures filesync happens before nginx is started after 10 min
 	if [ $(grep "RSYNC_COMPLETED" $FILESYNC_STATUS_FILE_PATH) ] && [ ! $(grep "SYNCHRONOUS_UNISON_COMPLETED" $FILESYNC_STATUS_FILE_PATH) ] \

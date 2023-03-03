@@ -9,8 +9,14 @@ do
 	sleep 10
 done
 
-# wait 10min for unison to sync fileserver and local storage before reloading nginx
-sleep 600
+# wait for unison-fsmonitor to come up
+while [ `ps -ef | grep unison-fsmonitor | grep -v grep | wc -l` -le 0 ]
+do
+	sleep 10
+done
+
+# wait 3min for unison to sync fileserver and local storage before reloading nginx
+sleep 180
 
 # reload nginx configuration. Retry 20 times
 trycount=0
