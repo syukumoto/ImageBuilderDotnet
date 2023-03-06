@@ -470,22 +470,7 @@ if [[ $(grep "FIRST_TIME_SETUP_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPR
         fi
     fi
 fi
-
-if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
-    if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
-        temp_server_stop
-    fi
-
-    IS_TEMP_SERVER_STARTED="True"
-    temp_server_start "MAINTENANCE"
-
-    echo "syncing data from ${WORDPRESS_HOME} to ${HOME_SITE_LOCAL_STG}"
-    rsync -a $WORDPRESS_HOME/ $HOME_SITE_LOCAL_STG/ --exclude $UNISON_EXCLUDED_PATH
-    ln -s $WORDPRESS_HOME/$UNISON_EXCLUDED_PATH $HOME_SITE_LOCAL_STG/$UNISON_EXCLUDED_PATH
-    chown -R nginx:nginx $HOME_SITE_LOCAL_STG
-    chmod -R 777 $HOME_SITE_LOCAL_STG
-    unison $WORDPRESS_HOME $HOME_SITE_LOCAL_STG -auto -batch -times -copythreshold 1000 -fastercheckUNSAFE -prefer $WORDPRESS_HOME -ignore "Path $UNISON_EXCLUDED_PATH" -perms 0 -logfile $UNISON_LOG_DIR/init_unison.log
-fi
+export UNISON_EXCLUDED_PATH
 
 
 if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
@@ -501,11 +486,12 @@ if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
     sed -i "s#HOME_SITE_LOCAL_STG#${HOME_SITE_LOCAL_STG}#g" /etc/supervisord.conf
     sed -i "s#UNISON_EXCLUDED_PATH#${UNISON_EXCLUDED_PATH}#g" /etc/supervisord.conf
     sed -i "s#UNISON_EXCLUDED_PATH#${UNISON_EXCLUDED_PATH}#g" /usr/local/bin/inotifywait-perms-service.sh
-    sed -i "s#WORDPRESS_HOME#${HOME_SITE_LOCAL_STG}#g" /etc/nginx/conf.d/default.conf
 else
     cp /usr/src/supervisor/supervisord-original.conf /etc/supervisord.conf
-    sed -i "s#WORDPRESS_HOME#${WORDPRESS_HOME}#g" /etc/nginx/conf.d/default.conf
 fi
+
+# Initial site's root directory is set to /home/site/wwwroot
+sed -i "s#WORDPRESS_HOME#${WORDPRESS_HOME}#g" /etc/nginx/conf.d/default.conf
 
 if [ "$IS_TEMP_SERVER_STARTED" == "True" ]; then
     temp_server_stop
