@@ -63,7 +63,6 @@ class Generic_Plugin_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 		add_action( 'admin_print_styles-toplevel_page_w3tc_dashboard', array( '\W3TC\Generic_Page_Dashboard', 'admin_print_styles_w3tc_dashboard' ) );
 		add_action( 'wp_ajax_w3tc_ajax', array( $this, 'wp_ajax_w3tc_ajax' ) );
-		add_action( 'wp_ajax_w3tc_monitoring_score', array( $this, 'wp_ajax_w3tc_monitoring_score' ) );
 
 		add_action( 'admin_head', array( $this, 'admin_head' ) );
 
@@ -102,9 +101,6 @@ class Generic_Plugin_Admin {
 				delete_transient( 'w3tc_message' );
 			}
 		}
-
-		// Should be in Support_PluginAdmin, but saving loading file by being here.
-		add_action( 'admin_print_scripts-performance_page_w3tc_support', array( '\W3TC\Support_Page', 'admin_print_scripts_w3tc_support' ) );
 	}
 
 	/**
@@ -172,30 +168,6 @@ class Generic_Plugin_Admin {
 	}
 
 	/**
-	 * Load action
-	 *
-	 * @throws Exception Exception.
-	 *
-	 * @return void
-	 */
-	public function wp_ajax_w3tc_monitoring_score() {
-		if ( ! $this->_config->get_boolean( 'widget.pagespeed.show_in_admin_bar' ) ) {
-			exit();
-		}
-
-		$score = '';
-
-		$modules = Dispatcher::component( 'ModuleStatus' );
-		$score   = apply_filters( 'w3tc_monitoring_score', $score );
-
-		header( 'Content-Type: application/x-javascript; charset=UTF-8' );
-		echo 'document.getElementById("w3tc_monitoring_score") && ( document.getElementById("w3tc_monitoring_score").innerHTML = "' .
-			esc_html( strtr( $score, '"', '.' ) ) . '" );';
-
-		exit();
-	}
-
-	/**
 	 * Admin init
 	 *
 	 * @return void
@@ -205,6 +177,178 @@ class Generic_Plugin_Admin {
 		if ( 'w3tc_deactivate_plugin' === Util_Request::get_string( 'action' ) ) {
 			Util_Activation::deactivate_plugin();
 		}
+
+		// These have been moved here as the admin_print_scripts-{$suffix} hook with translations won't take the user locale setting
+		// into account if it's called too soon, resulting in JS not loading.
+
+		// Translations are needed as the "prefix" used is based on the menu/page title, which is translated (11+ year old WP bug).
+
+		// Support page.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_support',
+			array(
+				'\W3TC\Support_Page',
+				'admin_print_scripts_w3tc_support',
+			)
+		);
+
+		// Minify.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_general',
+			array(
+				'\W3TC\Minify_Plugin_Admin',
+				'admin_print_scripts_w3tc_general',
+			)
+		);
+
+		// PageCache.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_pgcache',
+			array(
+				'\W3TC\PgCache_Page',
+				'admin_print_scripts_w3tc_pgcache',
+			)
+		);
+
+		// Extensions.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_extensions',
+			array(
+				'\W3TC\Extension_CloudFlare_Page',
+				'admin_print_scripts_w3tc_extensions',
+			)
+		);
+
+		// Usage Statistics.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_stats',
+			array(
+				'\W3TC\UsageStatistics_Page',
+				'admin_print_scripts_w3tc_stats',
+			)
+		);
+
+		$c             = Dispatcher::config();
+		$cdn_engine    = $c->get_string( 'cdn.engine' );
+		$cdnfsd_engine = $c->get_string( 'cdnfsd.engine' );
+
+		// CDN.
+		if ( 'google_drive' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_GoogleDrive_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'highwinds' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_Highwinds_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'limelight' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_LimeLight_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'rackspace_cdn' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_RackSpaceCdn_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'rscf' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_RackSpaceCloudFiles_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'stackpath' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_StackPath_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		} elseif ( 'stackpath2' === $cdn_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdn_StackPath2_Page',
+					'admin_print_scripts_w3tc_cdn',
+				)
+			);
+		}
+
+		// CDNFSD.
+		if ( 'cloudflare' === $cdnfsd_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Extension_CloudFlare_Page',
+					'admin_print_scripts_w3tc_extensions',
+				)
+			);
+		} elseif ( 'cloudfront' === $cdnfsd_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdnfsd_CloudFront_Page',
+					'admin_print_scripts_performance_page_w3tc_cdn',
+				)
+			);
+		} elseif ( 'limelight' === $cdnfsd_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdnfsd_LimeLight_Page',
+					'admin_print_scripts_performance_page_w3tc_cdn',
+				)
+			);
+		} elseif ( 'stackpath' === $cdnfsd_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdnfsd_StackPath_Page',
+					'admin_print_scripts_performance_page_w3tc_cdn',
+				)
+			);
+		} elseif ( 'stackpath2' === $cdnfsd_engine ) {
+			add_action(
+				'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_cdn',
+				array(
+					'\W3TC\Cdnfsd_StackPath2_Page',
+					'admin_print_scripts_performance_page_w3tc_cdn',
+				)
+			);
+		}
+
+		// PageSpeed page/widget.
+		add_action(
+			'admin_print_scripts-' . sanitize_title( __( 'performance', 'w3-total-cache' ) ) . '_page_w3tc_pagespeed',
+			array(
+				'\W3TC\PageSpeed_Page',
+				'admin_print_scripts_w3tc_pagespeed',
+			)
+		);
+		add_action(
+			'admin_print_scripts-toplevel_page_w3tc_dashboard',
+			array(
+				'\W3TC\PageSpeed_Widget',
+				'admin_print_scripts_w3tc_pagespeed_widget',
+			)
+		);
 
 		$page_val = Util_Request::get_string( 'page' );
 		if ( ! empty( $page_val ) ) {
@@ -399,6 +543,18 @@ class Generic_Plugin_Admin {
 				// Only admin can see W3TC notices and errors.
 				add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 				add_action( 'network_admin_notices', array( $this, 'admin_notices' ) );
+			}
+
+			global $pagenow;
+			if ( ! $this->is_w3tc_page &&
+				(
+					! empty( Util_Request::get_string( 'w3tc_note' ) ) ||
+					! empty( Util_Request::get_string( 'w3tc_error' ) ) ||
+					! empty( Util_Request::get_string( 'w3tc_message' ) )
+				)
+			) {
+				// This is needed for admin notice buttons displayed on non-w3tc pages after actions via admin top menu.
+				add_action( 'admin_print_scripts-' . $pagenow, array( $this, 'admin_print_scripts' ) );
 			}
 		}
 	}
@@ -880,7 +1036,7 @@ class Generic_Plugin_Admin {
 
 				$ftp_style = 'border: 1px solid black; background: white; ' .
 					'margin: 10px 30px 10px 30px; ' .
-					'padding: 10px; display: none';
+					'padding: 20px; max-width: 450px; display: none';
 
 				$ftp_form = str_replace( 'class="wrap"', '', $exs->credentials_form() );
 				$ftp_form = str_replace( '<form ', '<form name="w3tc_ftp_form" ', $ftp_form );
@@ -893,14 +1049,14 @@ class Generic_Plugin_Admin {
 					'<table>' .
 					'<tr>' .
 						'<td>' . esc_html__( 'Please execute commands manually', 'w3-total-cache' ) . '</td>' .
-						'<td>' . Util_Ui::button( __( 'View required changes', 'w3-total-cache' ), '', 'w3tc-show-required-changes' ) . '</td>' .
+						'<td>' . Util_Ui::button( __( 'View required changes', 'w3-total-cache' ), '', 'w3tc-show-required-changes button' ) . '</td>' .
 					'</tr>' .
 					'<tr>' .
 						'<td>' . esc_html__( 'or use FTP form to allow ', 'w3-total-cache' ) .
 							'<strong>' . esc_html__( 'W3 Total Cache', 'w3-total-cache' ) . '</strong>' .
 							esc_html__( 'make it automatically.', 'w3-total-cache' ) .
 						'</td>' .
-						'<td>' . Util_Ui::button( 'Update via FTP', '', 'w3tc-show-ftp-form' ) . '</td>' .
+						'<td>' . Util_Ui::button( 'Update via FTP', '', 'w3tc-show-ftp-form button' ) . '</td>' .
 					'</tr>' .
 					'</table>' .
 					'<div class="w3tc-required-changes" style="' . $changes_style . '">' . $r['required_changes'] . '</div>' .
@@ -942,6 +1098,11 @@ class Generic_Plugin_Admin {
 						'value'   => array(),
 					),
 					'p'     => array(),
+					'a'     => array(
+						'target' => array(),
+						'href'   => array(),
+						'class'  => array(),
+					),
 				)
 			);
 		}

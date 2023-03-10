@@ -1,13 +1,13 @@
 === Smush - Lazy Load Images, Optimize & Compress Images ===
 Plugin Name: Smush - Lazy Load Images, Optimize & Compress Images
-Version: 3.12.4
+Version: 3.12.5
 Author: WPMU DEV
 Author URI: https://wpmudev.com/
 Contributors: WPMUDEV, alexdunae
 Tags: optimize images, convert webp, lazy load, resize images, compress images, webp, performance, optimization, photography, optimizer, image optimizer, image compress, image optimize, webp format
 Requires at least: 5.3
 Tested up to: 6.1
-Stable tag: 3.12.4
+Stable tag: 3.12.5
 Requires PHP: 5.6
 License: GPL v2 - http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
 
@@ -195,8 +195,12 @@ It depends what side of the pond you live on...but whether you say optimize, opt
 
 == Changelog ==
 
-= 3.12.4 ( 2022-11-17 ) =
+= 3.12.5 ( 2023-02-22 ) =
+- Fix: CDN notice issue
+- Fix: PHP 8.2 compatibility warnings
+- Fix: Smush acting as free on staging
 
+= 3.12.4 ( 2022-11-17 ) =
 - Improvement: Code and compatibility improvements
 
 = 3.12.3 ( 2022-10-24 )

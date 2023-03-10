@@ -46,6 +46,32 @@ class Util_Rule {
 	}
 
 	/**
+	 * Returns litespeed rules path
+	 *
+	 * @return string
+	 */
+	static public function get_litespeed_rules_path() {
+		$config = Dispatcher::config();
+
+		$path = $config->get_string( 'config.path' );
+
+		if ( !$path ) {
+			$path = Util_Environment::site_path() . 'litespeed.conf';
+		}
+
+		return $path;
+	}
+
+	/**
+	 * Returns path of apache's primary rules file
+	 *
+	 * @return string
+	 */
+	static public function get_apache_rules_path() {
+		return Util_Environment::site_path() . '.htaccess';
+	}
+
+	/**
 	 * Returns path of pagecache core rules file
 	 *
 	 * @return string
@@ -54,7 +80,7 @@ class Util_Rule {
 		switch ( true ) {
 		case Util_Environment::is_apache():
 		case Util_Environment::is_litespeed():
-			return Util_Environment::site_path() . '.htaccess';
+			return Util_Rule::get_apache_rules_path();
 
 		case Util_Environment::is_nginx():
 			return Util_Rule::get_nginx_rules_path();
@@ -69,15 +95,10 @@ class Util_Rule {
 	 * @return string
 	 */
 	static public function get_browsercache_rules_cache_path() {
-		return Util_Rule::get_pgcache_rules_core_path();
-	}
+		if ( Util_Environment::is_litespeed() ) {
+			return Util_Rule::get_litespeed_rules_path();
+		}
 
-	/**
-	 * Returns path of browsercache no404wp rules file
-	 *
-	 * @return string
-	 */
-	static public function get_browsercache_rules_no404wp_path() {
 		return Util_Rule::get_pgcache_rules_core_path();
 	}
 
@@ -307,7 +328,7 @@ class Util_Rule {
 			} catch ( Util_WpFile_FilesystemOperationException $ex ) {
 				if ( $replace_start !== false ) {
 					$message = sprintf( __( 'Edit file <strong>%s</strong> and replace all lines between and including <strong>%s</strong> and <strong>%s</strong> markers with:',
-						'w3-total-caceh' ), $path, $start, $end );
+						'w3-total-cache' ), $path, $start, $end );
 				} else {
 					$message = sprintf( __( 'Edit file <strong>%s</strong> and add the following rules above the WordPress directives:',
 						'w3-total-cache' ), $path );

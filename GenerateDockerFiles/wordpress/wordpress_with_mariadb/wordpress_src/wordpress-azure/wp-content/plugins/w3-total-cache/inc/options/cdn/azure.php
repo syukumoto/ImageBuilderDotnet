@@ -103,7 +103,6 @@ if ( ! defined( 'W3TC' ) ) {
 				echo '&lt;account name&gt;.blob.core.windows.net';
 		}
 
-
 		echo wp_kses(
 			sprintf(
 				// translators: 1 opening HTML acronym tag, 2 closing HTML acronym tag.

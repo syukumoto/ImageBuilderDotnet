@@ -304,9 +304,8 @@ class CdnEngine_Azure extends CdnEngine_Base {
 	 *
 	 * @return array
 	 */
-	function get_domains()
-	{
-		if (!empty($this->_config['cname'])) {
+	function get_domains() {
+		if ( !empty( $this->_config['cname'] ) ) {
 			return (array) $this->_config['cname'];
 		} elseif (!empty($this->_config['user'])) {
 			if (preg_match('/blob.core.usgovcloudapi.net/', getenv('BLOB_STORAGE_URL'))) {
