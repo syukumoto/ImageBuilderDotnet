@@ -80,9 +80,9 @@ function buildDockerImage()
                         TAG_MOD="${TAG}"
                     fi
 
-		     if [[ $TAG_MOD = "8.0_stable" ]]
-		         TAG_MOD="8.0"
-		     fi
+                    if [[ $TAG_MOD = "8.0_stable" ]]; then
+                        TAG_MOD="8.0"
+                    fi
 
                     # Build Image Tags are converted to lower case because docker doesn't accept upper case tags
                     local MCRRepoTagUpperCase="${WAWS_IMAGE_REPO_NAME}/public/appsvc/${STACK_MOD}:${TAG_MOD}"
