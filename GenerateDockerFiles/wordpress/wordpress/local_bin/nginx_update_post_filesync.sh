@@ -22,8 +22,13 @@ sleep 180
 trycount=0
 while (( $trycount < 50 ))
 do 
-	if cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf \
-	&& sed -i "s#WORDPRESS_HOME#${HOME_SITE_LOCAL_STG}#g" /etc/nginx/conf.d/default.conf \
+	if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
+		cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+	else
+		cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+	fi
+
+	if sed -i "s#WORDPRESS_HOME#${HOME_SITE_LOCAL_STG}#g" /etc/nginx/conf.d/default.conf \
 	&& /usr/sbin/nginx -s reload; then
 		break
 	fi
