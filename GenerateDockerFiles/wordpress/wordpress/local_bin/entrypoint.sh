@@ -391,16 +391,12 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
     && [[ $WORDPRESS_MULTISITE_CONVERT ]] && [[ "$WORDPRESS_MULTISITE_CONVERT" == "true" || "$WORDPRESS_MULTISITE_CONVERT" == "TRUE" || "$WORDPRESS_MULTISITE_CONVERT" == "True" ]] \
     && [[ $WORDPRESS_MULTISITE_TYPE ]] && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "Subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "SUBDIRECTORY" ]]; then
 
-    echo $WEBSITE_HOSTNAME >> /home/dev/mslog.txt
-    echo $WORDPRESS_HOME >> /home/dev/mslog.txt    
     if wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root >> /home/dev/mslog.txt; then
         echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
         echo "conversion completed!!!" >> /home/dev/mslog.txt
     else
         echo "conversion command failed!!!" >> /home/dev/mslog.txt
     fi
-else 
-        echo "outer if check failed!!!" >> /home/dev/mslog.txt
 fi
 
 # set permalink as 'Day and Name' and default, it has best performance with nginx re_write config.
