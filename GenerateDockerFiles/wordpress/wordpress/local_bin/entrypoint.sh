@@ -385,6 +385,16 @@ if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     fi
 fi
 
+#Multi-site conversion
+if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] \
+    && [[ $WORDPRESS_MULTISITE_CONVERT ]] && [[ "$WORDPRESS_MULTISITE_CONVERT" == "true" || "$WORDPRESS_MULTISITE_CONVERT" == "TRUE" || "$WORDPRESS_MULTISITE_CONVERT" == "True" ]] \
+    && [[ $WORDPRESS_MULTISITE_TYPE ]] && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "Subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "SUBDIRECTORY" ]]; then
+
+    if wp core multisite-convert --path=$WORDPRESS_HOME --url=$WEBSITE_HOSTNAME --allow-root; then
+        echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
+    fi
+fi
+
 # set permalink as 'Day and Name' and default, it has best performance with nginx re_write config.
 # PERMALINK_DETECTED=$(grep "\$wp_rewrite->set_permalink_structure" $WORDPRESS_HOME/wp-settings.php)
 # if [ ! $PERMALINK_DETECTED ];then
@@ -474,10 +484,21 @@ export UNISON_EXCLUDED_PATH
 
 
 if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
-    cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    if [[ $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPRESS_MULTISITE_TYPE ]] \
+    && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "Subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "SUBDIRECTORY" ]]; then
+        cp /usr/src/nginx/wordpress-multisite-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    else
+        cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    fi
 else
-    cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+    if [[ $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPRESS_MULTISITE_TYPE ]] \
+    && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "Subdirectory" || "$WORDPRESS_MULTISITE_CONVERT" == "SUBDIRECTORY" ]]; then
+        cp /usr/src/nginx/wordpress-multisite-server.conf /etc/nginx/conf.d/default.conf
+    else
+        cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+    fi
 fi
+
 
 if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
     cp /usr/src/supervisor/supervisord-stgoptmzd.conf /etc/supervisord.conf
