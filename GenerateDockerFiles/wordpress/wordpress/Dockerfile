@@ -420,6 +420,8 @@ COPY nginx_conf/wordpress-server.conf /etc/nginx/conf.d/default.conf
 COPY nginx_conf/spec-settings.conf /etc/nginx/conf.d/spec-settings.conf
 COPY nginx_conf/wordpress-server.conf /usr/src/nginx/wordpress-server.conf
 COPY nginx_conf/wordpress-phpmyadmin-server.conf /usr/src/nginx/wordpress-phpmyadmin-server.conf
+COPY nginx_conf/wordpress-phpmyadmin-server.conf /usr/src/nginx/wordpress-multisite-server.conf
+COPY nginx_conf/wordpress-phpmyadmin-server.conf /usr/src/nginx/wordpress-multisite-phpmyadmin-server.conf
 COPY nginx_conf/temp-server-installation.conf /usr/src/nginx/temp-server-installation.conf
 COPY nginx_conf/temp-server-maintenance.conf /usr/src/nginx/temp-server-maintenance.conf
 # phpmyadmin
