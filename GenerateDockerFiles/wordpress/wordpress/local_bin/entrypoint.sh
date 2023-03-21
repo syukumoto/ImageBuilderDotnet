@@ -390,12 +390,9 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
     && [[ $WORDPRESS_MULTISITE_CONVERT ]] && [[ "$WORDPRESS_MULTISITE_CONVERT" == "true" || "$WORDPRESS_MULTISITE_CONVERT" == "TRUE" || "$WORDPRESS_MULTISITE_CONVERT" == "True" ]] \
     && [[ $WORDPRESS_MULTISITE_TYPE ]] && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "Subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "SUBDIRECTORY" ]]; then
 
-    if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root > /home/dev/log.txt \
-    && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root >> /home/dev/log.txt; then
+    if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root \
+    && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root; then
         echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
-        echo "conversion completed!" >> /home/dev/log.txt
-    else
-        echo "conversion command failed!" >> /home/dev/log.txt
     fi
 fi
 
