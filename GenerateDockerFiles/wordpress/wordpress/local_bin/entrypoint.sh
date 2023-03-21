@@ -392,6 +392,10 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
 
     if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root \
     && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root; then
+
+        # Removing duplicate occurance of DOMAIN_CURRENT_SITE
+        wp config delete DOMAIN_CURRENT_SITE --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
+        wp config set DOMAIN_CURRENT_SITE \$_SERVER[\'HTTP_HOST\'] --raw --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
         echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
     fi
 fi
