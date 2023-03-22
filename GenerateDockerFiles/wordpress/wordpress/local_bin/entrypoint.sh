@@ -359,20 +359,24 @@ if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MI
     service atd start
     echo "bash /usr/local/bin/migrate.sh 3" | at now +0 minutes
 fi
-    
-#Update AFD URL
-if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-    afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
-    if [[ $AFD_ENABLED ]]; then
-        if [[ $AFD_CUSTOM_DOMAIN ]]; then
-            afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
-        elif [[ $AFD_ENDPOINT ]]; then
-            afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+
+afd_update_site_url() {
+    if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
+        if [[ $AFD_ENABLED ]]; then
+            if [[ $AFD_CUSTOM_DOMAIN ]]; then
+                afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
+            elif [[ $AFD_ENDPOINT ]]; then
+                afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+            fi
         fi
+        wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root
+        wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root
     fi
-    wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
-    wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
-fi
+}
+
+# Update AFD URL
+afd_update_site_url
 
 if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     echo "INFO: Check SSL Setting..."    
@@ -385,10 +389,19 @@ if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     fi
 fi
 
-#Multi-site conversion
+# Multi-site conversion
 if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] \
     && [[ $WORDPRESS_MULTISITE_CONVERT ]] && [[ "$WORDPRESS_MULTISITE_CONVERT" == "true" || "$WORDPRESS_MULTISITE_CONVERT" == "TRUE" || "$WORDPRESS_MULTISITE_CONVERT" == "True" ]] \
     && [[ $WORDPRESS_MULTISITE_TYPE ]] && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "Subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "SUBDIRECTORY" ]]; then
+
+    # There is an issue with AFD where $_SERVER['HTTP_HOST'] header is still pointing to <sitename>.azurewebsites.net instead of AFD endpoint.
+    # This is causing database connection issue with multi-site WordPress because the main site domain (AFD endpoint) doesn't match the one in HTTP_HOST header.
+    if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        if [[ $AFD_ENABLED ]]; then
+            wp config set WP_HOME "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
+            wp config set WP_SITEURL "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
+        fi
+    fi
 
     if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root \
     && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root; then
@@ -398,6 +411,9 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
         wp config set DOMAIN_CURRENT_SITE \$_SERVER[\'HTTP_HOST\'] --raw --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
         echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
     fi
+
+    # Update AFD URL
+    afd_update_site_url
 fi
 
 # set permalink as 'Day and Name' and default, it has best performance with nginx re_write config.
