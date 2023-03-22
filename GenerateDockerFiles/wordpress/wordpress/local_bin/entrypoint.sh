@@ -363,7 +363,7 @@ fi
 afd_update_site_url() {
     if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
         afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
-        if [[ $AFD_ENABLED ]]; then
+        if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]]; then
             if [[ $AFD_CUSTOM_DOMAIN ]]; then
                 afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
             elif [[ $AFD_ENDPOINT ]]; then
@@ -397,7 +397,7 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
     # There is an issue with AFD where $_SERVER['HTTP_HOST'] header is still pointing to <sitename>.azurewebsites.net instead of AFD endpoint.
     # This is causing database connection issue with multi-site WordPress because the main site domain (AFD endpoint) doesn't match the one in HTTP_HOST header.
     if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-        if [[ $AFD_ENABLED ]]; then
+        if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]]; then
             wp config set WP_HOME "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
             wp config set WP_SITEURL "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
         fi
