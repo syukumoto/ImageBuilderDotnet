@@ -283,7 +283,7 @@ setup_wordpress() {
         && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_CDN" | at now +10 minutes
-        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        elif [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh CDN" | at now +10 minutes
         fi
@@ -295,7 +295,7 @@ setup_wordpress() {
         && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +2 minutes
-        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        elif [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh AFD" | at now +2 minutes
         fi
