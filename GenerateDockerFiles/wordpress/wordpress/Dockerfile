@@ -7,7 +7,7 @@ LABEL maintainer Azure App Service Container Images <appsvc-images@microsoft.com
 ENV SSH_PASSWD "root:Docker!"
 ENV SSH_PORT 2222
 #nginx
-ENV NGINX_VERSION 1.23.0
+ENV NGINX_VERSION 1.22.1
 ENV NGINX_LOG_DIR "/var/log/nginx"
 #php
 ENV PHP_HOME "/usr/local/etc/php"
