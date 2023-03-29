@@ -10,7 +10,7 @@ afd_update_site_url() {
     	    fi
     	fi
    
-        if wp config set WP_HOME "$afd_url" --raw --allow-root --path=$WORDPRESS_HOME \
+        if wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root \
     	&& wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root; then
     	    echo "${cdn_type}_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
     	fi 
