@@ -10,7 +10,7 @@ afd_update_site_url() {
     	    fi
     	fi
    
-    	if wp config set WP_HOME "$afd_url" --raw --allow-root --path=/home/site/wwwroot \
+        if wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root \
     	&& wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root; then
     	    echo "${cdn_type}_CONFIGURATION_COMPLETE" >> $WORDPRESS_LOCK_FILE
     	fi 
@@ -19,6 +19,7 @@ afd_update_site_url() {
 #Configure CDN settings 
 if [[ "$cdn_type" == "BLOB_CDN" ]] && [[ $CDN_ENDPOINT ]] && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
 && [[ $(curl --write-out '%{http_code}' --silent --output /dev/null {https://$CDN_ENDPOINT}) == "200" ]] \
+&& wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.azure.cname $CDN_ENDPOINT --type=array --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.includes.enable true --type=boolean --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.theme.enable true --type=boolean --path=$WORDPRESS_HOME --allow-root \
@@ -28,6 +29,7 @@ if [[ "$cdn_type" == "BLOB_CDN" ]] && [[ $CDN_ENDPOINT ]] && [ ! $(grep "BLOB_CD
     redis-cli flushall
 elif [[ "$cdn_type" == "CDN" ]] && [[ $CDN_ENDPOINT ]] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
 && [[ $(curl --write-out '%{http_code}' --silent --output /dev/null {https://$CDN_ENDPOINT}) == "200" ]] \
+&& wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.enabled true --type=boolean --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.engine "mirror" --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.mirror.domain $CDN_ENDPOINT --type=array --path=$WORDPRESS_HOME --allow-root; then
@@ -36,6 +38,7 @@ elif [[ "$cdn_type" == "CDN" ]] && [[ $CDN_ENDPOINT ]] && [ ! $(grep "CDN_CONFIG
     redis-cli flushall
 elif [[ "$cdn_type" == "BLOB_AFD" ]] && [[ $AFD_ENDPOINT ]] && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] \
 && [[ $(curl --write-out '%{http_code}' --silent --output /dev/null {https://$AFD_ENDPOINT}) == "200" ]] \
+&& wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root \
 && wp w3-total-cache option set cdn.azure.cname $AFD_ENDPOINT --type=array --path=$WORDPRESS_HOME --allow-root; then
     afd_update_site_url
     service atd stop

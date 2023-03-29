@@ -283,7 +283,7 @@ setup_wordpress() {
         && [ ! $(grep "BLOB_CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_CDN" | at now +10 minutes
-        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        elif [ ! $(grep "CDN_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh CDN" | at now +10 minutes
         fi
@@ -295,7 +295,7 @@ setup_wordpress() {
         && [ ! $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh BLOB_AFD" | at now +2 minutes
-        elif [ "$IS_BLOB_STORAGE_ENABLED" != "True" ] && [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        elif [ ! $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
             start_at_daemon
             echo "bash /usr/local/bin/w3tc_cdn_config.sh AFD" | at now +2 minutes
         fi
@@ -359,20 +359,24 @@ if [[ $MIGRATION_IN_PROGRESS ]] && [[ "$MIGRATION_IN_PROGRESS" == "true" || "$MI
     service atd start
     echo "bash /usr/local/bin/migrate.sh 3" | at now +0 minutes
 fi
-    
-#Update AFD URL
-if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
-    afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
-    if [[ $AFD_ENABLED ]]; then
-        if [[ $AFD_CUSTOM_DOMAIN ]]; then
-            afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
-        elif [[ $AFD_ENDPOINT ]]; then
-            afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+
+afd_update_site_url() {
+    if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        afd_url="\$http_protocol . \$_SERVER['HTTP_HOST']"
+        if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]]; then
+            if [[ $AFD_CUSTOM_DOMAIN ]]; then
+                afd_url="\$http_protocol . '$AFD_CUSTOM_DOMAIN'"
+            elif [[ $AFD_ENDPOINT ]]; then
+                afd_url="\$http_protocol . '$AFD_ENDPOINT'"
+            fi
         fi
+        wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root
+        wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root
     fi
-    wp config set WP_HOME "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
-    wp config set WP_SITEURL "$afd_url" --raw --path=$WORDPRESS_HOME --allow-root 
-fi
+}
+
+# Update AFD URL
+afd_update_site_url
 
 if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     echo "INFO: Check SSL Setting..."    
@@ -383,6 +387,52 @@ if [ -e "$WORDPRESS_HOME/wp-config.php" ]; then
     else        
         echo "INFO: SSL Settings exist!"
     fi
+fi
+
+# Multi-site conversion
+if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] \
+    && [[ $WORDPRESS_MULTISITE_CONVERT ]] && [[ "$WORDPRESS_MULTISITE_CONVERT" == "true" || "$WORDPRESS_MULTISITE_CONVERT" == "TRUE" || "$WORDPRESS_MULTISITE_CONVERT" == "True" ]] \
+    && [[ $WORDPRESS_MULTISITE_TYPE ]] && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "Subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "SUBDIRECTORY" ]]; then
+
+    # There is an issue with AFD where $_SERVER['HTTP_HOST'] header is still pointing to <sitename>.azurewebsites.net instead of AFD endpoint.
+    # This is causing database connection issue with multi-site WordPress because the main site domain (AFD endpoint) doesn't match the one in HTTP_HOST header.
+    if [ $(grep "BLOB_AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ] || [ $(grep "AFD_CONFIGURATION_COMPLETE" $WORDPRESS_LOCK_FILE) ]; then
+        if [[ $AFD_ENABLED ]] && [[ "$AFD_ENABLED" == "true" || "$AFD_ENABLED" == "TRUE" || "$AFD_ENABLED" == "True" ]]; then
+            wp config set WP_HOME "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
+            wp config set WP_SITEURL "\$http_protocol . \$_SERVER['HTTP_HOST']" --raw --path=$WORDPRESS_HOME --allow-root
+        fi
+    fi
+
+    IS_W3TC_ENABLED="False"
+    if wp plugin is-active w3-total-cache --path=$WORDPRESS_HOME --allow-root; then
+        IS_W3TC_ENABLED="True"
+    fi
+
+    IS_SMUSHIT_ENABLED="False"
+    if wp plugin is-active wp-smushit --path=$WORDPRESS_HOME --allow-root; then
+        IS_SMUSHIT_ENABLED="True"
+    fi
+
+    if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root \
+    && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root; then
+
+        # Removing duplicate occurance of DOMAIN_CURRENT_SITE
+        wp config delete DOMAIN_CURRENT_SITE --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
+        wp config set DOMAIN_CURRENT_SITE \$_SERVER[\'HTTP_HOST\'] --raw --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
+        echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
+    fi
+
+    #Re-activate W3TC & SmushIt plugins
+    if [[ "$IS_W3TC_ENABLED" == "True" ]]; then
+        wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root
+    fi
+
+    if [[ "$IS_SMUSHIT_ENABLED" == "True" ]]; then
+        wp plugin activate wp-smushit --path=$WORDPRESS_HOME --allow-root
+    fi
+
+    # Update AFD URL
+    afd_update_site_url
 fi
 
 # set permalink as 'Day and Name' and default, it has best performance with nginx re_write config.
@@ -474,10 +524,21 @@ export UNISON_EXCLUDED_PATH
 
 
 if [[ $SETUP_PHPMYADMIN ]] && [[ "$SETUP_PHPMYADMIN" == "true" || "$SETUP_PHPMYADMIN" == "TRUE" || "$SETUP_PHPMYADMIN" == "True" ]]; then
-    cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    if [[ $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPRESS_MULTISITE_TYPE ]] \
+    && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "Subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "SUBDIRECTORY" ]]; then
+        cp /usr/src/nginx/wordpress-multisite-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    else
+        cp /usr/src/nginx/wordpress-phpmyadmin-server.conf /etc/nginx/conf.d/default.conf
+    fi
 else
-    cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+    if [[ $(grep "MULTISITE_CONVERSION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ $WORDPRESS_MULTISITE_TYPE ]] \
+    && [[ "$WORDPRESS_MULTISITE_TYPE" == "subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "Subdirectory" || "$WORDPRESS_MULTISITE_TYPE" == "SUBDIRECTORY" ]]; then
+        cp /usr/src/nginx/wordpress-multisite-server.conf /etc/nginx/conf.d/default.conf
+    else
+        cp /usr/src/nginx/wordpress-server.conf /etc/nginx/conf.d/default.conf
+    fi
 fi
+
 
 if [ "$IS_LOCAL_STORAGE_OPTIMIZATION_POSSIBLE" == "True" ]; then
     cp /usr/src/supervisor/supervisord-stgoptmzd.conf /etc/supervisord.conf
