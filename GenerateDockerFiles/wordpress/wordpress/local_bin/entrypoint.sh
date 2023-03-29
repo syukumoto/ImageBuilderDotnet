@@ -403,6 +403,16 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
         fi
     fi
 
+    IS_W3TC_ENABLED="False"
+    if wp plugin is-active w3-total-cache --path=$WORDPRESS_HOME --allow-root; then
+        IS_W3TC_ENABLED="True"
+    fi
+
+    IS_SMUSHIT_ENABLED="False"
+    if wp plugin is-active wp-smushit --path=$WORDPRESS_HOME --allow-root; then
+        IS_SMUSHIT_ENABLED="True"
+    fi
+
     if wp plugin deactivate --all --path=$WORDPRESS_HOME --allow-root \
     && wp core multisite-convert --url=$WEBSITE_HOSTNAME --path=$WORDPRESS_HOME --allow-root; then
 
@@ -410,6 +420,15 @@ if [[ $(grep "WP_INSTALLATION_COMPLETED" $WORDPRESS_LOCK_FILE) ]] && [[ ! $(grep
         wp config delete DOMAIN_CURRENT_SITE --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
         wp config set DOMAIN_CURRENT_SITE \$_SERVER[\'HTTP_HOST\'] --raw --path=$WORDPRESS_HOME --allow-root 2> /dev/null;
         echo "MULTISITE_CONVERSION_COMPLETED" >> $WORDPRESS_LOCK_FILE
+    fi
+
+    #Re-activate W3TC & SmushIt plugins
+    if [[ "$IS_W3TC_ENABLED" == "True" ]]; then
+        wp plugin activate w3-total-cache --path=$WORDPRESS_HOME --allow-root
+    fi
+
+    if [[ "$IS_SMUSHIT_ENABLED" == "True" ]]; then
+        wp plugin activate wp-smushit --path=$WORDPRESS_HOME --allow-root
     fi
 
     # Update AFD URL
